@@ -100,7 +100,6 @@ require([],
             if (!(model.protocol && model.tokenId && model.basePath && model.analyticsService && model.ideHost)) {
                 return;
             }
-            console.log(JSON.stringify(model));
             var url = model.protocol
                 + "://"
                 + model.ideHost
