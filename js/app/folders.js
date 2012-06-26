@@ -1,6 +1,5 @@
 define([
-    "util/precog"
-    , "util/md5"
+      "util/precog"
     , "util/storagemonitor"
     , "util/ui"
     , "util/utils"
@@ -13,11 +12,10 @@ define([
     , "order!jlib/jstree/jstree"
     , "order!jlib/jstree/jstree.themes"
 ],
-    function(precog, md5, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
+    function(precog, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
         var UPLOAD_SERVICE = "upload.php",
             DOWNLOAD_SERVICE = "download.php",
-//var UPLOAD_SERVICE = "https://appserver07.reportgrid.com/services/viz/precog/ide/upload.php",
-            STORE_KEY = "pg-quirrel-virtualpaths-"+md5(precog.config.tokenId),
+            STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
             basePath = precog.config.basePath || "/",
             store = createStore(STORE_KEY, { virtuals : { }});
 

@@ -21,11 +21,12 @@ require([
     , "app/editorsync"
     , "app/output"
     , "app/folders"
+    , "app/queries"
     , "app/support"
     , "util/precog"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildSupport, precog) {
+function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, precog) {
     precog.cache.disable();
 
     var layout = createLayout(config.get("ioPanesVertical"));
@@ -140,6 +141,8 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         editors.activate(editors.count()-1);
         editor.triggerExecute();
     });
+
+    var queries = buildQueries(layout.getQueries());
 
     editors.load();
     if(!editors.count()) editors.add();

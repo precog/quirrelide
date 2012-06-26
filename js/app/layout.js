@@ -64,17 +64,17 @@ define([
             defaults : defaults,
             south : {
                   size : "50%"
-                , initClosed : true
+                , initClosed : false
             }
         }));
 
-        // folder-system separation
+        // folder-toolbar separation
         layouts.push(container.find('.pg-folders').layout({
             defaults : defaults,
             north : toolbar
         }));
 
-        // folder-system separation
+        // queries-toolbar separation
         layouts.push(container.find('.pg-queries').layout({
             defaults : defaults,
             north : toolbar
@@ -191,6 +191,7 @@ define([
             getOutput     : function() { return container.find('.pg-output'); },
             getStatusBar  : function() { return container.find('.pg-statusbar'); },
             getSystem     : function() { return container.find('.pg-folders'); },
+            getQueries    : function() { return container.find('.pg-queries'); },
             getSupport    : function() { return container.find('.pg-support'); },
             setIoVertical : buildIO,
             isIoVertical  : function() { return isvertical; }

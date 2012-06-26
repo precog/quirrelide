@@ -1,9 +1,10 @@
 define([
       "util/querystring"
+    , "util/md5"
     , "https://api.reportgrid.com/js/precog.js"
 ],
 
-function(qs){
+function(qs, md5){
 // TODO basePath
 
     var config   = window.Precog.$.Config,
@@ -55,6 +56,7 @@ function(qs){
         },
         config : config,
         lastExecution : 2000,
+        hash : md5(config.tokenId),
         cache : window.Precog.cache
     };
 
