@@ -1,0 +1,1 @@
+node r.js -o name=main out=quirrel-ide.js baseUrl=. paths.jquery=empty:
