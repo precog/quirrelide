@@ -98,7 +98,13 @@ function extractFiles($file, $destination, $formats) {
 		$entry = $zip->getNameIndex($i);
 		foreach ($formats as $key => $format) {
 			if(strtolower(substr($entry, -strlen($format))) === $format) {
-				copy('zip://'.$file.'#'.$entry, $destination.$entry);
+				if(strpos($entry, '/.') || substr($entry, 0, 1) == '.')
+					continue;
+				try {
+					copy('zip://'.$file.'#'.$entry, $destination.$entry);
+				} catch(Exception $e) {
+					continue;
+				}
 				$content = file_get_contents($destination.$entry);
 				switch($format) {
 					case "csv":
@@ -108,9 +114,8 @@ function extractFiles($file, $destination, $formats) {
 						$result = parsejson($content);
 						break;
 				}
-var_dump($result);
 				if($result) {
-					$results["entries"] = array_merge($results["entries"], $result["entries"]);
+					$results["records"] = array_merge($results["records"], $result["records"]);
 					$results["failures"] += $result["failures"];
 				} else {
 					$results["failures"]++;
