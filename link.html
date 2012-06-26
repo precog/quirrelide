@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quirrel IDE Link Generator</title>
+    <link rel="stylesheet" href="css/generator.css">
+    <script src="js/require-jquery.js" data-main="js/generator"></script>
+</head>
+<body>
+<div class="main">
+    <h1>IDE Url Generator</h1>
+    <div class="controls">
+        <div class="section">
+            <label for="protocol">Protocol</label>
+            <select id="protocol">
+                <option value="https">HTTPS</option>
+                <option value="http">HTTP</option>
+            </select>
+            <div class="input-error"></div>
+        </div>
+        <div class="section">
+            <label for="ideHost">IDE Host</label>
+            <span class="protocol"></span>://<input id="ideHost" value="" type="text">
+            <div class="input-error"></div>
+        </div>
+        <div class="section">
+            <label for="analyticsService">Analytics Service</label>
+            <span class="protocol"></span>://<input id="analyticsService" type="text">
+            <div class="input-error"></div>
+        </div>
+        <div class="section">
+            <label for="tokenId">Token</label>
+            <input id="tokenId" value="" type="text">
+            <div class="input-error"></div>
+        </div>
+        <div class="section">
+            <label for="basePath">Base Path</label>
+            <input id="basePath" type="text">
+            <div class="input-error"></div>
+        </div>
+        <div class="section">
+            <label for="ideurl">IDE Url</label>
+            <input id="ideurl" value="" type="text">
+            <a id="gotoide" href="" target="_blank">GO!</a>
+            <div class="input-error"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
