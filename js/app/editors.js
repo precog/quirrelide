@@ -63,31 +63,32 @@ function(precog, md5, createStore, utils) {
         return "editors."+id;
     }
 
+    function editorByName(name) {
+        var editors = store.get("editors");
+        for(var key in editors) {
+            if(editors.hasOwnProperty(key)) {
+                var editor = editors[key];
+                if(editor.name === name) {
+                    return editor;
+                }
+            }
+        }
+        return null;
+    }
+
     var currentIndex = null,
         wrapper = {
             save : function(editor) {
-                store.set(editorKey(editor.id), editor);
+                store.set(editorKey(editor.id), editor, true);
                 $(wrapper).trigger("saved", editor);
                 return editor;
             },
             open : function(name, code) {
-                var editors = store.get("editors");
-                for(var key in editors) {
-                    if(editors.hasOwnProperty(key)) {
-                        var editor = editors[key];
-                        if(editor.name === name) {
-                            this.activate(this.getIndexById(editor.id));
-                            console.log("EXISTS " + name);
-                            return;
-                        } else if(editor.name === "*"+name) {
-                            this.activate(this.getIndexById(editor.id));
-                            this.setCode(editor.code);
-                            console.log("EXISTS *** " + name);
-                            return;
-                        }
-                    }
+                var editor = editorByName(name);
+                if(editor) {
+                    this.activate(this.getIndexById(editor.id));
+                    return;
                 }
-                console.log("DOESNT EXIST " + name);
                 this.add({
                     name : name,
                     code : code,
@@ -133,6 +134,11 @@ function(precog, md5, createStore, utils) {
             },
             getIndexById : function(id) {
                 return list.indexOf(id);
+            },
+            getIndexByName : function(name) {
+                var editor = editorByName(name);
+                if(!editor) return -1;
+                return this.getIndexById(editor.id);
             },
             getById : function(id) {
                 return this.get(list.indexOf(id));

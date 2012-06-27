@@ -152,6 +152,12 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         editors.open(data.name, data.code);
     });
 
+    $(queries).on("removed", function(_, data) {
+        var index = editors.getIndexByName(data.name);
+        if(index >= 0)
+            editorbar.invalidateTab(index);
+    });
+
     var editorbar = buildBarEditor(layout.getBarEditor(), queries, editor);
 
     $(editors).on("saved", function(e, editor){
@@ -168,8 +174,19 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         editorbar.removeTab(index);
     });
 
+    function currentTabInvalidator() {
+        editorbar.invalidateTab(editors.current());
+    }
+
     $(editors).on("activated", function(e, index) {
         editorbar.activateTab(index);
+        setTimeout(function() {
+            $(editor).on("change", currentTabInvalidator);
+        }, 1000);
+    });
+
+    $(editors).on("deactivated", function(e, index) {
+        $(editor).off("change", currentTabInvalidator);
     });
 
     editors.load();

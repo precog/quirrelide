@@ -35,20 +35,20 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
         var menuselected, menu = ui.contextmenu(tplQueryContextMenut);
 
         menu.find(".pg-open").click(function(e) {
-            var id = $(menuselected).attr("class");
+            var id = $(menuselected).attr("data-name");
             openQuery(id);
             menu.hide();
             e.preventDefault(); return false;
         });
         menu.find(".pg-remove").click(function(e) {
-            var id = $(menuselected).attr("class");
+            var id = $(menuselected).attr("data-name");
             wrapper.remove(id);
             menu.hide();
             e.preventDefault(); return false;
         });
 
         function addQuery(id, name) {
-            var li = elList.append('<li class="'+id+'">'+name+'</li>').find("li:last");
+            var li = elList.append('<li class="" data-name="'+id+'">'+name+'</li>').find("li:last");
             li.click(function(e) {
                     var pos = $(e.currentTarget).offset(),
                         h = $(e.currentTarget).outerHeight();
@@ -62,18 +62,18 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
                     e.preventDefault(); return false;
                 })
                 .dblclick(function(e) {
-                    var id = $(e.currentTarget).attr("class");
+                    var id = $(e.currentTarget).attr("data-name");
                     openQuery(id);
                     menu.hide();
                     e.preventDefault(); return false;
                 });
             utils.sortNodes(elList.find("li"), function(a, b) {
-                return a.className < b.className ? -1 : (a.className > b.className ? 1 : 0);
+                return a.getAttribute("data-name") < b.getAttribute("data-name") ? -1 : (a.getAttribute("data-name") > b.getAttribute("data-name") ? 1 : 0);
             });
         }
 
         function removeQuery(id) {
-            elList.find("."+id).remove();
+            elList.find('[data-name="'+id+'"]').remove();
         }
 
         var queries = store.get("queries");

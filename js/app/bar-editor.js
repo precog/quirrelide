@@ -7,9 +7,13 @@ define([
     , "text!templates/toolbar.editor.html"
 ],
 
+// TODO remove editors dependency
+// TODO remove queries dependency
+// TODO add invalidate tab content
+
 function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
 
-    return function(el, queries, editor) {
+    return function(el, queries) {
         var wrapper;
         el.append(tplToolbar);
         var elContext = el.find('.pg-toolbar-context'),
@@ -41,13 +45,31 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
             }
         }, 'li a');
 
+        function getTabLabelElement(index) {
+            return tabs.find("li:nth("+index+") a");
+        }
+
         function changeTabName(index, value) {
             var maxlen = 25,
                 ellipsis = "...",
-                el = tabs.find("li:nth("+index+") a");
+                el = getTabLabelElement(index);
             if(value.length >= maxlen)
                 value = value.substr(0, maxlen-ellipsis.length)+ellipsis;
             el.html(value);
+        }
+
+        function invalidateTab(index) {
+            var el = getTabLabelElement(index),
+                content = el.html();
+            if(content.substr(0, 1) !== "*")
+                el.html("*"+content);
+        }
+
+        function revalidateTab(index) {
+            var el = getTabLabelElement(index),
+                content = el.html();
+            if(content.substr(0, 1) === "*")
+                el.html(content.substr(1));
         }
 
         ui.button(elContext, {
@@ -119,7 +141,13 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
                 tabs.tabs("select", index);
             },
             changeTabName : function(index, name) {
-                changeTabName(index, editor.name);
+                changeTabName(index, name);
+            },
+            invalidateTab : function(index) {
+                invalidateTab(index);
+            },
+            revalidateTab : function(index) {
+                revalidateTab(index);
             }
         }
     }
