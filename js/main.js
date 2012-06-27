@@ -181,6 +181,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     $(editors).on("activated", function(e, index) {
         editorbar.activateTab(index);
         setTimeout(function() {
+            editors.setDirty();
             $(editor).on("change", currentTabInvalidator);
         }, 1000);
     });

@@ -49,13 +49,16 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
             return tabs.find("li:nth("+index+") a");
         }
 
-        function changeTabName(index, value) {
+        function truncate(value) {
             var maxlen = 25,
-                ellipsis = "...",
-                el = getTabLabelElement(index);
+                ellipsis = "...";
             if(value.length >= maxlen)
                 value = value.substr(0, maxlen-ellipsis.length)+ellipsis;
-            el.html(value);
+            return value;
+        }
+
+        function changeTabName(index, value) {
+            getTabLabelElement(index).html(truncate(value));
         }
 
         function invalidateTab(index) {
@@ -132,7 +135,7 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
 
         return wrapper = {
             addTab : function(name, dirty) {
-                tabs.tabs("add", "#pg-editor-tab-" + (++index), name);
+                tabs.tabs("add", "#pg-editor-tab-" + (++index), truncate(name));
                 if(dirty)
                     this.invalidateTab(index-1);
             },

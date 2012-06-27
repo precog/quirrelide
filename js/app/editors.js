@@ -185,6 +185,9 @@ function(precog, md5, createStore, utils) {
             setCode : function(code, index) {
                 this.setField("code", code, index);
             },
+            setDirty : function(index) {
+                this.setField("notdirty", false, index);
+            },
             getOutputResult : function(index) {
                 return this.getField("output.result", null, index);
             },
