@@ -51,7 +51,8 @@ function(precog, md5, createStore, utils) {
     function createEditor(o) {
         o = $.extend({
             name : null,
-            hasname : false
+            hasname : false,
+            notdirty : false
         }, o);
         if(!o.name)
             o.name = anonymousName();
@@ -79,6 +80,7 @@ function(precog, md5, createStore, utils) {
     var currentIndex = null,
         wrapper = {
             save : function(editor) {
+                editor.notdirty = true;
                 store.set(editorKey(editor.id), editor, true);
                 $(wrapper).trigger("saved", editor);
                 return editor;

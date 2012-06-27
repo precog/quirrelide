@@ -7,7 +7,8 @@ define([
     , "text!templates/menu.context.queries.query.html"
 ],
 function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
-    var STORE_KEY = "pg-quirrel-queries-"+precog.hash,
+    var list = [],
+        STORE_KEY = "pg-quirrel-queries-"+precog.hash,
         store = createStore(STORE_KEY, { queries : {}});
 
     function normalizeName(value) {
@@ -70,10 +71,14 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
             utils.sortNodes(elList.find("li"), function(a, b) {
                 return a.getAttribute("data-name") < b.getAttribute("data-name") ? -1 : (a.getAttribute("data-name") > b.getAttribute("data-name") ? 1 : 0);
             });
+            list.push(name);
         }
 
         function removeQuery(id) {
             elList.find('[data-name="'+id+'"]').remove();
+            var pos = list.indexOf(name);
+            if(pos >= 0)
+                list.splice(pos, 1);
         }
 
         var queries = store.get("queries");
@@ -82,6 +87,26 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
                 addQuery(id, queries[id].name);
             }
         }
+
+        store.monitor.bind("queries", function(_, q) {
+            var names = [];
+            for(var query in q) {
+                if(q.hasOwnProperty(query))
+                    names.push(query);
+            }
+            var removed = utils.arrayDiff(list, names),
+                added   = utils.arrayDiff(names, list);
+
+            store.load();
+            for(var i = 0; i < removed.length; i++) {
+                removeQuery(normalizeName(removed[i]));
+                $(wrapper).trigger("removed", removed[i]);
+            }
+            for(var i = 0; i < added.length; i++) {
+                addQuery(normalizeName(added[i]), added[i]);
+            }
+            list = names;
+        });
 
         return wrapper = {
             exist : function(name) {
@@ -121,7 +146,7 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
                 if(!query) return false;
                 store.remove("queries."+id);
                 removeQuery(id);
-                $(wrapper).trigger("removed", query);
+                $(wrapper).trigger("removed", query.name);
                 return true;
             }
         };

@@ -61,7 +61,7 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
         function invalidateTab(index) {
             var el = getTabLabelElement(index),
                 content = el.html();
-            if(content.substr(0, 1) !== "*")
+            if(content && content.substr(0, 1) !== "*")
                 el.html("*"+content);
         }
 
@@ -131,8 +131,10 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
         });
 
         return wrapper = {
-            addTab : function(name) {
+            addTab : function(name, dirty) {
                 tabs.tabs("add", "#pg-editor-tab-" + (++index), name);
+                if(dirty)
+                    this.invalidateTab(index-1);
             },
             removeTab : function(index) {
                 tabs.tabs("remove", index);

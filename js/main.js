@@ -152,8 +152,8 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         editors.open(data.name, data.code);
     });
 
-    $(queries).on("removed", function(_, data) {
-        var index = editors.getIndexByName(data.name);
+    $(queries).on("removed", function(_, name) {
+        var index = editors.getIndexByName(name);
         if(index >= 0)
             editorbar.invalidateTab(index);
     });
@@ -167,7 +167,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     });
 
     $(editors).on("added", function(e, editor) {
-        editorbar.addTab(editor.name);
+        editorbar.addTab(editor.name, !editor.notdirty);
     });
 
     $(editors).on("removed", function(e, index) {
