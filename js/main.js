@@ -29,12 +29,12 @@ require([
 function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, precog) {
     precog.cache.disable();
 
-    var layout = createLayout(config.get("ioPanesVertical"));
+    var queries,
+        layout = createLayout(config.get("ioPanesVertical"));
 
     layout.container.hide();
 
     buildBarMain(layout.getBarMain());
-    buildBarEditor(layout.getBarEditor());
 
     $(theme).on("changed", function() {
         // refreshes the panes layout after theme changing
@@ -83,7 +83,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     support.addPanel("tutorial", "https://quirrel.precog.com/tutorial.html");
     support.addPanel("reference", "https://quirrel.precog.com/reference.html");
-    support.addPanel("IRC channel", "https://webchat.freenode.net/?channels=quirrel&uio=Mz1mYWxzZSY5PXRydWU32");
+    support.addPanel("IRC channel", "https://api.precog.com:9090/?channels=#quirrel");
 
 //    support.addPanel("live support", "http://widget.mibbit.com/?settings=3e7a9e32a26494b80748cfe11f66e956&server=irc.mibbit.net&channel=%23precog_test_channel");
 //    support.addPanel("wsirc", "http://wsirc.mobi/mobileChat.aspx?username=u_******&server=binary.ipocalypse.net%3A6667&channel=%23quirrel&autojoin=true&color=%23eeeeee&dark=false");
@@ -132,6 +132,10 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         output.set(result, type, options);
     });
 
+    $(editors).on("saved", function(_, data) {
+        queries.save(data.name, data.code);
+    });
+
     sync(editor, editors, config);
 
     var folders = buildFolders(layout.getSystem());
@@ -142,7 +146,31 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         editor.triggerExecute();
     });
 
-    var queries = buildQueries(layout.getQueries());
+    queries = buildQueries(layout.getQueries());
+
+    $(queries).on("requestopenquery", function(_, data) {
+        editors.open(data.name, data.code);
+    });
+
+    var editorbar = buildBarEditor(layout.getBarEditor(), queries, editor);
+
+    $(editors).on("saved", function(e, editor){
+        var index = editors.getIndexById(editor.id);
+        if(index < 0) return;
+        editorbar.changeTabName(index, editor.name);
+    });
+
+    $(editors).on("added", function(e, editor) {
+        editorbar.addTab(editor.name);
+    });
+
+    $(editors).on("removed", function(e, index) {
+        editorbar.removeTab(index);
+    });
+
+    $(editors).on("activated", function(e, index) {
+        editorbar.activateTab(index);
+    });
 
     editors.load();
     if(!editors.count()) editors.add();

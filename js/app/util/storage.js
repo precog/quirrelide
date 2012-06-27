@@ -52,17 +52,17 @@ function(traverse) {
                     else
                         return v;
                 },
-                set : function(key, value) {
+                set : function(key, value, instant) {
                     if(traverse.set(params, key, value))
                     {
-                        delayedSave();
+                        this.save(instant);
                         debug("set", key, value);
                     }
                 },
-                remove : function(key) {
+                remove : function(key, instant) {
                     debug("del", key);
                     traverse.remove(params, key);
-                    delayedSave();
+                    this.save(instant);
                 },
                 keys : function(key) {
                     var ref = traverse.get(params, key);
@@ -88,6 +88,7 @@ function(traverse) {
                     load();
                 },
                 clear : function() {
+                    // TODO: this should not flush everything
                     $.jStorage.flush();
                 },
                 toString : function() {

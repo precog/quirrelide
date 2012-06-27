@@ -4,19 +4,17 @@ define([
     , "util/ui"
     , "util/utils"
     , "text!templates/toolbar.folders.html"
+    , "text!templates/menu.context.queries.query.html"
 ],
-function(precog, createStore, ui, utils, tplToolbar) {
+function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
     var STORE_KEY = "pg-quirrel-queries-"+precog.hash,
-        store = createStore(STORE_KEY, { queries : {
-            "my_query" : {
-                name : "My Query",
-                code : "//list/all"
-            },
-            "a_query" : {
-                name : "A Query",
-                code : "//list/other"
-            },
-        }});
+        store = createStore(STORE_KEY, { queries : {}});
+
+    function normalizeName(value) {
+        value = value.trim().toLowerCase();
+        value.replace(/\s+/g, "_");
+        return value;
+    }
 
     store.monitor.start(500);
 
@@ -30,16 +28,46 @@ function(precog, createStore, ui, utils, tplToolbar) {
             elList    = elMain.append('<ul class="pg-query-list"></ul>');
         elActions.html("queries");
 
-        function normalizeName(value) {
-            value = value.trim().toLowerCase();
-            value.replace(/\s+/g, "_");
-            return value;
+        function openQuery(id) {
+            $(wrapper).trigger("requestopenquery", store.get("queries."+normalizeName(id)));
         }
 
+        var menuselected, menu = ui.contextmenu(tplQueryContextMenut);
+
+        menu.find(".pg-open").click(function(e) {
+            var id = $(menuselected).attr("class");
+            openQuery(id);
+            menu.hide();
+            e.preventDefault(); return false;
+        });
+        menu.find(".pg-remove").click(function(e) {
+            var id = $(menuselected).attr("class");
+            wrapper.remove(id);
+            menu.hide();
+            e.preventDefault(); return false;
+        });
+
         function addQuery(id, name) {
-            elList.append('<li class="'+id+'">'+name+'</li>');
+            var li = elList.append('<li class="'+id+'">'+name+'</li>').find("li:last");
+            li.click(function(e) {
+                    var pos = $(e.currentTarget).offset(),
+                        h = $(e.currentTarget).outerHeight();
+                    menu.css({
+                        position : "absolute",
+                        top : (pos.top + h) + "px",
+                        left : (pos.left) + "px",
+                        zIndex : e.currentTarget.style.zIndex + 100
+                    }).show();
+                    menuselected = e.currentTarget;
+                    e.preventDefault(); return false;
+                })
+                .dblclick(function(e) {
+                    var id = $(e.currentTarget).attr("class");
+                    openQuery(id);
+                    menu.hide();
+                    e.preventDefault(); return false;
+                });
             utils.sortNodes(elList.find("li"), function(a, b) {
-//                return 0;
                 return a.className < b.className ? -1 : (a.className > b.className ? 1 : 0);
             });
         }
@@ -56,17 +84,45 @@ function(precog, createStore, ui, utils, tplToolbar) {
         }
 
         return wrapper = {
+            exist : function(name) {
+                var id = normalizeName(name);
+                return !!store.get("queries."+id);
+            },
+            save : function(name, code) {
+                if(this.exist(name))
+                    return this.update(name, code);
+                else
+                    return this.create(name, code);
+            },
             create : function(name, code) {
                 var id = normalizeName(name);
-                var query = store.get(id);
-                if(query) return;
-
-
+                var query = store.get("queries."+id);
+                if(query) return false;
+                store.set("queries."+id, query = {
+                    name : name,
+                    code : code
+                });
+                addQuery(id, name);
+                $(wrapper).trigger("created", query);
+                return true;
+            },
+            update : function(name, code) {
+                var id = normalizeName(name);
+                var query = store.get("queries."+id);
+                if(!query) return false;
+                query.code = code;
+                store.set("queries."+id, query);
+                $(wrapper).trigger("updated", query);
+                return true;
             },
             remove : function(name) {
                 var id = normalizeName(name);
-                var query = store.get(id);
-                if(!query) return;
+                var query = store.get("queries."+id);
+                if(!query) return false;
+                store.remove("queries."+id);
+                removeQuery(id);
+                $(wrapper).trigger("removed", query);
+                return true;
             }
         };
     }

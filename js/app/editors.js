@@ -50,9 +50,11 @@ function(precog, md5, createStore, utils) {
 
     function createEditor(o) {
         o = $.extend({
-            name : null
+            name : null,
+            hasname : false
         }, o);
-        if(!o.name) o.name = anonymousName();
+        if(!o.name)
+            o.name = anonymousName();
         if(!o.id) o.id = createId();
         return o;
     }
@@ -62,17 +64,51 @@ function(precog, md5, createStore, utils) {
     }
 
     var currentIndex = null,
-        editors = {
+        wrapper = {
+            save : function(editor) {
+                store.set(editorKey(editor.id), editor);
+                $(wrapper).trigger("saved", editor);
+                return editor;
+            },
+            open : function(name, code) {
+                var editors = store.get("editors");
+                for(var key in editors) {
+                    if(editors.hasOwnProperty(key)) {
+                        var editor = editors[key];
+                        if(editor.name === name) {
+                            this.activate(this.getIndexById(editor.id));
+                            console.log("EXISTS " + name);
+                            return;
+                        } else if(editor.name === "*"+name) {
+                            this.activate(this.getIndexById(editor.id));
+                            this.setCode(editor.code);
+                            console.log("EXISTS *** " + name);
+                            return;
+                        }
+                    }
+                }
+                console.log("DOESNT EXIST " + name);
+                this.add({
+                    name : name,
+                    code : code,
+                    hasname : true
+                });
+                this.activate(list.length-1);
+            },
             add : function(options) {
                 var editor = createEditor(options);
                 store.set(editorKey(editor.id), editor);
                 list.push(editor.id);
                 store.set("list", list);
-                $(editors).trigger("added", editor);
+                $(wrapper).trigger("added", editor);
                 return editor;
             },
             remove : function(index) {
                 if(list.length == 1) return;
+                var id = list[index];
+                if(id) {
+                    store.remove(editorKey(id));
+                }
                 if(index === 0 && index === currentIndex) {
                     this.activate(1);
                 }
@@ -82,13 +118,9 @@ function(precog, md5, createStore, utils) {
                 } else if(index < currentIndex) {
                     currentIndex--;
                 }
-                var editor = list[index];
-                if(editor)
-                    store.remove(editorKey(editor.id));
                 list.splice(index, 1);
                 store.set("list", list);
-                $(editors).trigger("removed", index);
-                return editor;
+                $(wrapper).trigger("removed", index);
             },
             list : function() {
                 return list.splice(0);
@@ -98,6 +130,9 @@ function(precog, md5, createStore, utils) {
             },
             get : function(index) {
                 return store.get(this.getKey(index));
+            },
+            getIndexById : function(id) {
+                return list.indexOf(id);
             },
             getById : function(id) {
                 return this.get(list.indexOf(id));
@@ -109,20 +144,22 @@ function(precog, md5, createStore, utils) {
             load : function() {
                 var cached = store.get("list"),
                     values = $.map(cached, function(v) { return store.get(editorKey(v)); });
+                // cleanup for zombie editors (required by some old revision not properly cleaning up)
+
                 for(var i = 0; i < cached.length; i++) {
-                    editors.add(values[i]);
+                    this.add(values[i]);
                 }
             },
             activate : function(index) {
                 this.deactivate(currentIndex);
                 currentIndex = index;
-                $(editors).trigger("activated", index);
+                $(wrapper).trigger("activated", index);
 
             },
             deactivate : function(index) {
                 if(null === currentIndex) return;
                 currentIndex = null;
-                $(editors).trigger("deactivated", index);
+                $(wrapper).trigger("deactivated", index);
 
             },
             current : function() {
@@ -169,12 +206,12 @@ function(precog, md5, createStore, utils) {
         store.load();
         var removedIndexes = $.map(removed, function(v) { return list.indexOf(v); });
         for(var i = 0; i < removedIndexes.length; i++) {
-            editors.remove(removedIndexes[i]);
+            wrapper.remove(removedIndexes[i]);
         }
         for(var i = 0; i < added.length; i++) {
-            editors.add(store.get(editorKey(added[i])));
+            wrapper.add(store.get(editorKey(added[i])));
         }
     });
 
-    return editors;
+    return wrapper;
 });
