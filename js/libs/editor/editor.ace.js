@@ -29,6 +29,7 @@ function(require, ace, ui) {
         });
         editor.setShowPrintMargin(false);
         sess = editor.getSession();
+        sess.setUseWrapMode(true);
         sess.setMode(new (require("ace/mode/quirrel").Mode)());
         sess.getSelection().on("changeCursor", function() {
             $(wrapper).trigger("changeCursor", editor.getCursorPosition());
