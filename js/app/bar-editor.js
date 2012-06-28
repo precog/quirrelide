@@ -19,7 +19,7 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
         var elContext = el.find('.pg-toolbar-context'),
             autoGoToTab = false,
             tabs = ui.tabs(el.find('.pg-editor-tabs'), {
-                tabTemplate: "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close'>Remove Tab</span></li>",
+                tabTemplate: "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close pg-tab-close'>Remove Tab</span></li>",
                 add: function(event, ui) {
                     var index = ui.index;
                     if(autoGoToTab)
@@ -138,9 +138,22 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
                 tabs.tabs("add", "#pg-editor-tab-" + (++index), truncate(name));
                 if(dirty)
                     this.invalidateTab(index-1);
+
+
+                var closers = tabs.find(".pg-tab-close");
+                if(closers.length == 1) {
+                    closers.hide();
+                } else if(closers.length == 2) {
+                    closers.show();
+                }
             },
             removeTab : function(index) {
                 tabs.tabs("remove", index);
+
+                var closers = tabs.find(".pg-tab-close");
+                if(closers.length == 1) {
+                    closers.hide();
+                }
             },
             activateTab : function(index) {
                 tabs.tabs("select", index);
