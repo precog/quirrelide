@@ -8,10 +8,15 @@ define([
 function(require, ace, ui) {
     return function(el, vertical) {
         var wrapper,
+            sess,
             editor = ace.edit($(el).get(0));
 
         function execute() {
             $(wrapper).trigger('execute', wrapper.get());
+        }
+
+        function executeSelected() {
+            $(wrapper).trigger('execute', editor.session.getTextRange(editor.getSelectionRange()));
         }
 
         editor.commands.addCommand({
@@ -23,13 +28,17 @@ function(require, ace, ui) {
             exec: execute
         });
         editor.setShowPrintMargin(false);
-        var sess = editor.getSession();
+        sess = editor.getSession();
         sess.setMode(new (require("ace/mode/quirrel").Mode)());
         sess.getSelection().on("changeCursor", function() {
             $(wrapper).trigger("changeCursor", editor.getCursorPosition());
         });
-        sess.getSelection().on("changeSelection", function() {
+        sess.getSelection().on("changeSelection", function(e) {
             $(wrapper).trigger("changeSelection", editor.getSelection());
+            if(editor.getSelection().isEmpty())
+                runselected.hide();
+            else
+                runselected.show();
         });
         sess.on("change", (function() {
             var killChange;
@@ -45,11 +54,17 @@ function(require, ace, ui) {
         })());
 
         var run = ui.button(el, {
-            label : "run",
-            text : true,
-            icons : { primary : "ui-icon-circle-triangle-s" },
-            handler : execute
-        });
+                label : "run",
+                text : true,
+                icons : { primary : "ui-icon-circle-triangle-s" },
+                handler : execute
+            }),
+            runselected = ui.button(el, {
+                label : "run selected",
+                text : true,
+                icons : { primary : "ui-icon-circle-triangle-s" },
+                handler : executeSelected
+            });
 
         function orientButton(vertical) {
             run.css({
@@ -59,13 +74,24 @@ function(require, ace, ui) {
                 bottom: vertical ? "10px" : "25px",
                 zIndex: 100
             });
-            if(vertical)
+            runselected.css({
+                display: "block",
+                position: "absolute",
+                right: "100px",
+                bottom: vertical ? "10px" : "25px",
+                zIndex: 100
+            });
+            if(vertical) {
                 run.find(".ui-icon-circle-triangle-e").removeClass("ui-icon-circle-triangle-e").addClass("ui-icon-circle-triangle-s");
-            else
+                runselected.find(".ui-icon-circle-triangle-e").removeClass("ui-icon-circle-triangle-e").addClass("ui-icon-circle-triangle-s");
+            } else {
                 run.find(".ui-icon-circle-triangle-s").removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-e");
+                runselected.find(".ui-icon-circle-triangle-s").removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-e");
+            }
         }
 
         orientButton(vertical);
+        runselected.hide();
 
         wrapper = {
             get : function() {
