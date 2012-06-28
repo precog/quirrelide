@@ -75,6 +75,11 @@ function(notification, ui, createStore, tplMain, tplCode, tplFileSystem, tplQuer
                     store.set("main", false);
                     if(n.find('input[type="checkbox"]').attr("checked"))
                         displayPaneTips(layout);
+                    else {
+                        for(var i = 0; i < tips.length; i++) {
+                            store.set(tips[i].store, false)
+                        }
+                    }
                 }
             });
 
