@@ -63,6 +63,7 @@ function cliterminate($file) {
 }
 
 function clierror($file, $error) {
+	echo "$error\n";
 	writestatus($file, array("error" => $error, "code" => 500 ));
 	cliterminate($file);
 }
@@ -143,6 +144,7 @@ function parsejson($content) {
 			$records = $json;
 		else
 			$records[] = array($json);
+		$total = count($records);
 	} catch(Exception $e) {
 		// try one json per line
 		$lines = explode("\n", $content);
@@ -268,7 +270,7 @@ if(ISCLI) {
 		// check arguments length
 		if(!isset($argv) || count($argv) != 6) {
 			// no filename ... no way to send a proper message
-			die("no arguments or invalid number");
+			die("invalid number of arguments\n");
 		}
 		array_shift($argv);
 		// get arguments
