@@ -1,6 +1,9 @@
 define([
       "order!util/ui"
     , "app/editors"
+    , "util/notification"
+    , "util/querystring"
+    , "util/converters"
     , "order!util/dialog-export"
     , "order!util/dialog-lineinput"
     , "config/output-languages"
@@ -11,7 +14,7 @@ define([
 // TODO remove queries dependency
 // TODO add invalidate tab content
 
-function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
+function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
 
     return function(el, queries) {
         var wrapper;
@@ -113,7 +116,23 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
                     body    = 'I need help with the following query:\n\n' + editors.getCode();
 
                 document.location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
-                e.preventDefault(); return false;
+            }
+        });
+
+        var copier;
+        ui.button(elContext, {
+            icon : "ui-icon-link",
+            handler : function(e) {
+                var base = document.location.origin + document.location.pathname;
+                // strip q if it exists
+                var params = qs.all();
+                params.q = conv.quirrelToOneLine(editors.getCode());
+                if(copier) copier.remove();
+                copier = notification.copier("Create Query Link", {
+                    text : "Copy this link to pass the current query to someone else.<br>Don't forget that the URL contains your token!",
+                    copy : base + "?" + $.param(params),
+                    target : this
+                });
             }
         });
 

@@ -1,6 +1,7 @@
 define([
-    "jlib/pnotify/jquery.pnotify"
-], function() {
+      "util/dom"
+    , "jlib/pnotify/jquery.pnotify"
+], function(dom) {
     var timeout = 5000,
         shorttimeout = 2500,
         longtimeout  = 10000;
@@ -27,6 +28,14 @@ define([
 //        , { src : "", dst : "pnotify_", handler : defaultHandler }
     ];
 
+    function applyOptions(src, dst, map) {
+        for(var i = 0; i < map.length; i++) {
+            if("undefined" !== typeof src[map[i].src]) {
+                dst[map[i].dst] = map[i].handler(src[map[i].src]);
+            }
+        }
+    }
+
     return {
         success : function(title, o) {
             o = o || {};
@@ -38,26 +47,35 @@ define([
                 , pnotify_sticker : false
             };
 
-            for(var i = 0; i < map.length; i++) {
-                if("undefined" !== typeof o[map[i].src]) {
-                    options[map[i].dst] = map[i].handler(o[map[i].src]);
-                }
-            }
-
-//            if(o.text) options.pnotify_text = o.text;
-//            if(o.type) options.pnotify_type = o.type;
-//            if(o.icon) options.pnotify_notice_icon = 'ui-icon ' + o.icon;
-//            if("undefined" !== typeof o.timeout) options.pnotify_delay = o.timeout;
-//            if("undefined" !== typeof o.hide) options.pnotify_hide = o.hide;
-//            if(o.before_open)  options.pnotify_before_open  = o.before_open;
-//            if(o.before_close) options.pnotify_before_close = o.before_close;
-//            if("undefined" !== typeof o.history) options.pnotify_history = o.history;
-//            if("undefined" !== typeof o.sticker) options.pnotify_sticker = o.sticker;
-
-
-//            if("undefined" !== typeof o.width) options.width = o.sticker;
+            applyOptions(o, options, map);
 
             return $.pnotify(options);
+        },
+
+        copier : function(title, o) {
+            o = o || {};
+            o.voffset = o.voffset || 25;
+            o.width = '400px';
+
+            var keycombo = navigator.userAgent.indexOf("Mac OS X") != -1 ? "CMD+C" : "CTRL+C";
+
+            var text = '<div class="pg-message">'+ o.text+'</div><div class="pg-textarea"><textarea>'+ o.copy+'</textarea></div><div class="pg-footer">'+keycombo+' to copy the link</div>';
+
+            o.text = text;
+
+            var n = this.tip(title, o);
+
+            var area = n.find("textarea");
+
+            area.click(function() {
+                dom.selectText(area.get(0));
+            });
+
+            setTimeout(function() {
+                dom.selectText(area.get(0));
+            }, 500);
+
+            return n;
         },
 
         tip : function(title, o) {
@@ -69,11 +87,11 @@ define([
             o.shadow = true;
             o.type = "info";
             o.opacity = 0.95;
+            o.voffset = o.voffset || 40;
+            o.hoffset = o.hoffset || 10;
 
             var el = o.target || document.body,
-                n = this.success(title, o),
-                voffset = 40,
-                hoffset = 10;
+                n = this.success(title, o);
 
             function position() {
                 var pos = $(el).offset(),
@@ -81,13 +99,13 @@ define([
                     ww  = n.outerWidth();
 
                 var left = (vw - ww) / 2 + pos.left;
-                if(left < hoffset)
-                    left = hoffset;
-                else if(left + ww + hoffset > $(window).width())
-                    left = $(window).width() - hoffset - ww;
+                if(left < o.hoffset)
+                    left = o.hoffset;
+                else if(left + ww + o.hoffset > $(window).width())
+                    left = $(window).width() - o.hoffset - ww;
                 n.css({
                     left : left+"px",
-                    top  : (pos.top + voffset)+"px"
+                    top  : (pos.top + o.voffset)+"px"
                 });
             }
 
