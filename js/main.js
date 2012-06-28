@@ -23,10 +23,11 @@ require([
     , "app/folders"
     , "app/queries"
     , "app/support"
+    , "app/startup-tips"
     , "util/precog"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, precog) {
+function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog) {
     precog.cache.disable();
 
     var queries,
@@ -189,6 +190,8 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     $(editors).on("deactivated", function(e, index) {
         $(editor).off("change", currentTabInvalidator);
     });
+
+    var tips = buildTips(layout);
 
     editors.load();
     if(!editors.count()) editors.add();

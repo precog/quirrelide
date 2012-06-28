@@ -318,3 +318,18 @@
 .pg-queries .pg-queries ul .ui-button-text {
     padding: .2em 0.5em .2em 2.1em;
 }
+
+.ui-pnotify .pg-actions {
+    position: absolute;
+    bottom: 3px;
+    right: 4px;
+}
+
+.ui-pnotify .pg-actions label {
+    font-size: 83%;
+    font-style: italic;
+}
+
+.ui-pnotify .pg-actions input[type="checkbox"] {
+    margin: 0 6px;
+}
