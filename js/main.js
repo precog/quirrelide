@@ -25,9 +25,10 @@ require([
     , "app/support"
     , "app/startup-tips"
     , "util/precog"
+    , "util/querystring"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog) {
+function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {
     precog.cache.disable();
 
     var queries,
@@ -194,9 +195,23 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     var tips = buildTips(layout);
 
     editors.load();
-    if(!editors.count()) editors.add();
+
+
+    var query = qs.get("q");
+
+    function editorcontains(q) {
+        for(var i = 0; i < editors.count(); i++) {
+            if(editors.getCode(i) === q)
+                return true;
+        }
+        return false
+    }
+
+    if(!editors.count() || (query && !editorcontains(query))) {
+        editors.add(query && { code : query });
+    }
     setTimeout(function() {
-        editors.activate(0); // prevents bug in safari
+        editors.activate(editors.count()-1); // prevents bug in safari
 
         $(output).on("optionsChanged", function(_, options) {
 //console.log("SAVING OPTIONS " + JSON.stringify(options));
