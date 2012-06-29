@@ -144,8 +144,13 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
     var folders = buildFolders(layout.getSystem());
 
     $(folders).on("querypath", function(e, path) {
-        editors.add({ code : "/" + path });
-        editors.activate(editors.count()-1);
+        var q = "/" + path;
+        if(editors.getCode().trim() == "") {
+            editor.set(q);
+        } else {
+            editors.add({ code : q });
+            editors.activate(editors.count()-1);
+        }
         editor.triggerExecute();
     });
 
