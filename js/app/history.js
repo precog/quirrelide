@@ -26,9 +26,15 @@ function(precog, createStorage, md5) {
         save : function(name, code, result) {
             var id = encode(name),
                 history = store.get("history."+id, []);
+            var value  = result && result.result && result.result[0],
+                length = result && result.result && result.result.length || 0;
             history.unshift({
                 timestamp : +new Date(),
-                code : code
+                code : code,
+                sample : {
+                    first  : value,
+                    length : length
+                }
             });
             store.set("result."+id+"."+removed.timestamp, result);
             var values = this.getMaxValues();
@@ -56,6 +62,20 @@ function(precog, createStorage, md5) {
         },
         getMaxValue : function() {
             return store.get("max_values", DEFAULT_MAX_VALUES);
+        },
+        remove : function(name) {
+            var id = encode(name);
+            store.remove("history."+id);
+            store.remove("result."+id, true);
+        },
+        rename : function(oldname, newname) {
+            var oldid = encode(oldname),
+                newid = encode(newname),
+                history = store.get("history."+oldid),
+                results = store.get("result."+oldid);
+            remove(oldname);
+            store.set("history."+newid);
+            store.set("result."+newid, true);
         }
     };
 });

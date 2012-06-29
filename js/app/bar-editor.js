@@ -77,14 +77,14 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
             if(content.substr(0, 1) === "*")
                 el.html(content.substr(1));
         }
-/*
+
         var history = ui.button(elContext, {
             icon : "ui-icon-clock",
             handler : function() {
                 $(wrapper).trigger("requesthistorylist");
             }
         });
-*/
+
         ui.button(elContext, {
             icon : "ui-icon-disk",
             handler : function() {
@@ -133,7 +133,7 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
                 var base = document.location.origin + document.location.pathname;
                 // strip q if it exists
                 var params = qs.all();
-                params.q = conv.quirrelToOneLine(editors.getCode());
+                params.q = editors.getCode(); // conv.quirrelToOneLine(editors.getCode());
                 if(copier) copier.remove();
                 copier = notification.copier("Create Query Link", {
                     text : "Copy this link to pass the current query to someone else.<br>Don't forget that the URL contains your token!",

@@ -194,7 +194,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
     });
 
     $(editorbar).on("requesthistorylist", function() {
-        var data = history.getList(editors.getName());
+        var data = history.revisions(editors.getName());
         editorbar.displayHistoryList(data);
     });
 
