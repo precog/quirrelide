@@ -109,16 +109,23 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         editors.setOutputType(type);
     });
 
-    $(precog).on("execute", function(_, data, lastExecution) {
+    var queue = [];
+    $(precog).on("execute", function(_, query, lastExecution) {
+        queue.push({ query : query, name : editors.getName() });
         status.startRequest();
     });
 
     $(precog).on("completed", function(_, data) {
+        var exec = queue.shift();
+        history.save(exec.name, exec.query, data);
+
         status.endRequest(true);
         output.set(data);
+
         editors.setOutputResult(data);
     });
     $(precog).on("failed", function(_, data) {
+        queue.shift(); // cleanup the queue
         status.endRequest(false);
         output.set(data, "error");
         editors.setOutputResult(data);
@@ -196,6 +203,11 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 
     $(editors).on("deactivated", function(e, index) {
         $(editor).off("change", currentTabInvalidator);
+    });
+
+    $(editors).on("removed", function(e, name) {
+        if(!queries.exist(name))
+            history.remove(name);
     });
 
     $(editorbar).on("requesthistorylist", function() {

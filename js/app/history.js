@@ -21,28 +21,31 @@ function(precog, createStorage, md5) {
         revisions : function(name) {
             var id = encode(name),
                 history = store.get("history."+id, []);
-            return history.splice(0);
+            return history.slice(0);
         },
-        save : function(name, code, result) {
+        save : function(name, code, data) {
             var id = encode(name),
                 history = store.get("history."+id, []);
-            var value  = result && result.result && result.result[0],
-                length = result && result.result && result.result.length || 0;
+            code = code.trim();
+            if(code === history[0] && history[0].code) return;
+            var value  = (data && "undefined" !== typeof data[0]) ? data[0] : null,
+                length = (data && data.length) || 0,
+                timestamp = +new Date();
             history.unshift({
-                timestamp : +new Date(),
+                timestamp : timestamp,
                 code : code,
                 sample : {
                     first  : value,
                     length : length
                 }
             });
-            store.set("result."+id+"."+removed.timestamp, result);
-            var values = this.getMaxValues();
+            store.set("result."+id+"."+timestamp, data);
+            var values = this.getHistoryLength();
             while(history.length > values) {
                 var removed = history.pop();
                 store.remove("result."+id+"."+removed.timestamp);
             }
-            store.set("history."+id, history);
+            store.set("history."+id, history, true);
         },
         load : function(name, index) {
             var history = this.revisions(),
@@ -54,13 +57,13 @@ function(precog, createStorage, md5) {
                 index : index,
                 timestamp : rev.timestamp,
                 code: rev.code,
-                result : store.get("result."+id+"."+rev.timestamp)
+                data : store.get("result."+id+"."+rev.timestamp)
             };
         },
-        setMaxValue : function(values) {
+        setHistoryLength : function(values) {
             store.set("max_values", +values);
         },
-        getMaxValue : function() {
+        getHistoryLength : function() {
             return store.get("max_values", DEFAULT_MAX_VALUES);
         },
         remove : function(name) {

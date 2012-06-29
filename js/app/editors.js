@@ -108,9 +108,10 @@ function(precog, md5, createStore, utils) {
             },
             remove : function(index) {
                 if(list.length == 1) return;
-                var id = list[index];
+                var id = list[index],
+                    name = this.getName(index);
                 if(id) {
-                    store.remove(editorKey(id));
+                    store.remove(editorKey(id), true);
                 }
                 if(index === 0 && index === currentIndex) {
                     this.activate(1);
@@ -122,8 +123,8 @@ function(precog, md5, createStore, utils) {
                     currentIndex--;
                 }
                 list.splice(index, 1);
-                store.set("list", list);
-                $(wrapper).trigger("removed", index);
+                store.set("list", list, true);
+                $(wrapper).trigger("removed", name);
             },
             list : function() {
                 return list.splice(0);

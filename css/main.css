@@ -352,3 +352,61 @@
     font-style: italic;
     text-align: right;
 }
+
+.ui-pnotify .pg-history {
+    max-height: 420px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.ui-pnotify .pg-history ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ui-pnotify .pg-history-item {
+    padding: 4px 8px 6px;
+    position: relative;
+}
+
+.ui-pnotify .pg-history ul li {
+    margin-bottom: 4px;
+}
+
+.ui-pnotify .pg-history ul li:last-child {
+    margin-bottom: 0;
+}
+
+.ui-pnotify .pg-history pre {
+    white-space: pre;
+    margin: 0;
+    padding: 0;
+    font-size: 130%;
+    float:left;
+}
+
+.ui-pnotify .pg-history .pg-header {
+    font-weight: bold;
+    font-size: 83%;
+    float: left;
+    width: 6em;
+    clear: left;
+}
+
+.ui-pnotify .pg-history .pg-info {
+    font-style: italic;
+    font-size: 83%;
+    padding-top: 8px;
+    clear: left;
+}
+
+.pg-ide .pg-clear {
+    clear: left;
+}
+
+.ui-pnotify .pg-history .pg-toolbar {
+    position: absolute;
+    right: 3px;
+    bottom: 2px;
+}

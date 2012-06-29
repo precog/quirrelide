@@ -12,6 +12,7 @@ function() {
     var uid = 0;
     return {
         button : function(el, o) {
+            el = $(el);
             o = $.extend({
                 disabled : false,
                 label : "",
@@ -40,6 +41,7 @@ function() {
             return button;
         },
         menu : function(el, o) {
+            el = $(el);
             o = $.extend({
                 disabled : false
             }, o);
@@ -64,9 +66,11 @@ function() {
             return parent;
         },
         tabs : function(el, o) {
+            el = $(el);
             return el.tabs(o);
         },
         radios : function(el, actions) { /* group, label, handler */
+            el = $(el);
             if(actions) {
                 this.uid = ++uid;
                 el.find("*").remove();
@@ -83,6 +87,7 @@ function() {
             return el.buttonset();
         },
         checks : function(el, actions) { /* group, label, handler */
+            el = $(el);
             if(actions) {
                 this.uid = ++uid;
                 el.find("*").remove();
@@ -102,9 +107,11 @@ function() {
             return el.buttonset();
         },
         buttonset : function(el) {
+            el = $(el);
             return el.buttonset();
         },
         progressbar : function(el) {
+            el = $(el);
             return el.progressbar();
         }
     };
