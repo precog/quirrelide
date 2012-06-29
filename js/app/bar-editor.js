@@ -1,6 +1,9 @@
 define([
       "order!util/ui"
     , "app/editors"
+    , "util/notification"
+    , "util/querystring"
+    , "util/converters"
     , "order!util/dialog-export"
     , "order!util/dialog-lineinput"
     , "config/output-languages"
@@ -11,7 +14,7 @@ define([
 // TODO remove queries dependency
 // TODO add invalidate tab content
 
-function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
+function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
 
     return function(el, queries) {
         var wrapper;
@@ -19,7 +22,7 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
         var elContext = el.find('.pg-toolbar-context'),
             autoGoToTab = false,
             tabs = ui.tabs(el.find('.pg-editor-tabs'), {
-                tabTemplate: "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close'>Remove Tab</span></li>",
+                tabTemplate: "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close pg-tab-close'>Remove Tab</span></li>",
                 add: function(event, ui) {
                     var index = ui.index;
                     if(autoGoToTab)
@@ -113,7 +116,23 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
                     body    = 'I need help with the following query:\n\n' + editors.getCode();
 
                 document.location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
-                e.preventDefault(); return false;
+            }
+        });
+
+        var copier;
+        ui.button(elContext, {
+            icon : "ui-icon-link",
+            handler : function(e) {
+                var base = document.location.origin + document.location.pathname;
+                // strip q if it exists
+                var params = qs.all();
+                params.q = conv.quirrelToOneLine(editors.getCode());
+                if(copier) copier.remove();
+                copier = notification.copier("Create Query Link", {
+                    text : "Copy this link to pass the current query to someone else.<br>Don't forget that the URL contains your token!",
+                    copy : base + "?" + $.param(params),
+                    target : this
+                });
             }
         });
 
@@ -138,9 +157,22 @@ function(ui, editors, openExportDialog, openInputDialog, exportLanguages, tplToo
                 tabs.tabs("add", "#pg-editor-tab-" + (++index), truncate(name));
                 if(dirty)
                     this.invalidateTab(index-1);
+
+
+                var closers = tabs.find(".pg-tab-close");
+                if(closers.length == 1) {
+                    closers.hide();
+                } else if(closers.length == 2) {
+                    closers.show();
+                }
             },
             removeTab : function(index) {
                 tabs.tabs("remove", index);
+
+                var closers = tabs.find(".pg-tab-close");
+                if(closers.length == 1) {
+                    closers.hide();
+                }
             },
             activateTab : function(index) {
                 tabs.tabs("select", index);

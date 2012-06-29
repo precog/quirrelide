@@ -7,6 +7,24 @@ define([
     , "order!ui/jquery.ui.resizable"
     , "order!ui/jquery.ui.dialog"
 ], function(tplDialog, ui, dom) {
+
+    function ok(e) {
+        elDialog.find(".pg-error").hide()
+        var value = elDialog.find(".pg-lineinput input[type=text]").val();
+        if(currentValidator) {
+            var message = currentValidator(value);
+            if(message) {
+                elDialog.find(".pg-error").html(message).show();
+                if(e)
+                    e.preventDefault();
+                return false;
+            }
+        }
+        if(currentHandler)
+            currentHandler(value);
+        elDialog.dialog("close");
+    }
+
     var currentHandler,
         currentValidator,
         elDialog = $('body')
@@ -27,20 +45,7 @@ define([
                     }
                 }, {
                     text : "OK",
-                    click : function(e) {
-                        elDialog.find(".pg-error").hide()
-                        var value = elDialog.find(".pg-lineinput input[type=text]").val();
-                        if(currentValidator) {
-                            var message = currentValidator(value);
-                            if(message) {
-                                elDialog.find(".pg-error").html(message).show();
-                                e.preventDefault(); return false;
-                            }
-                        }
-                        if(currentHandler)
-                            currentHandler(value);
-                        elDialog.dialog("close");
-                    }
+                    click : ok
                 }]
             })
     ;
@@ -54,7 +59,12 @@ define([
         currentValidator = validator;
         currentHandler = handler;
         elDialog.find(".pg-message").html(message || "");
-        elDialog.find(".pg-lineinput input[type=text]").val(defaultInput || "");
+        elDialog.find(".pg-lineinput input[type=text]")
+            .val(defaultInput || "")
+            .keyup(function(e) {
+                if(e.keyCode == 13) // enter
+                    ok();
+            });
         elDialog.find(".pg-error").hide();
         elDialog.find("label").html((label && (label + ":")) || "");
         elDialog.dialog("option", "position", "center");

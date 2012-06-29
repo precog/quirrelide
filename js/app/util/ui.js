@@ -9,6 +9,7 @@ define([
 ],
 
 function() {
+    var uid = 0;
     return {
         button : function(el, o) {
             o = $.extend({
@@ -67,7 +68,7 @@ function() {
         },
         radios : function(el, actions) { /* group, label, handler */
             if(actions) {
-                this.uid = "undefined" == typeof this.uid ? 1 : this.uid + 1;
+                this.uid = ++uid;
                 el.find("*").remove();
                 $(actions).each(function(i, action) {
                     var name = action.group,
@@ -76,6 +77,25 @@ function() {
                     var btn = el.append('<input type="radio" id="'+id+'" name="'+name+'" /><label for="'+id+'">'+label+'</label>').find("#"+id);
                     btn.click(function() {
                         action.handler(action);
+                    });
+                });
+            }
+            return el.buttonset();
+        },
+        checks : function(el, actions) { /* group, label, handler */
+            if(actions) {
+                this.uid = ++uid;
+                el.find("*").remove();
+                $(actions).each(function(i, action) {
+                    var name = action.name || "",
+                        checked = action.checked || false,
+                        id = "pg-buttonset-" + this.uid + "-" + i,
+                        label = action.label;
+                    var btn = el.append('<input type="checkbox" id="'+id+'" name="'+name+'" '+(checked ? "checked " : "")+'/><label for="'+id+'">'+label+'</label>').find("#"+id);
+                    btn.click(function() {
+                        action.checked = !!btn.attr("checked");
+                        if(action.handler)
+                            action.handler(action);
                     });
                 });
             }
