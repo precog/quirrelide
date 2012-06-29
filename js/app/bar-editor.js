@@ -77,7 +77,14 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
             if(content.substr(0, 1) === "*")
                 el.html(content.substr(1));
         }
-
+/*
+        var history = ui.button(elContext, {
+            icon : "ui-icon-clock",
+            handler : function() {
+                $(wrapper).trigger("requesthistorylist");
+            }
+        });
+*/
         ui.button(elContext, {
             icon : "ui-icon-disk",
             handler : function() {
@@ -185,6 +192,9 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
             },
             revalidateTab : function(index) {
                 revalidateTab(index);
+            },
+            displayHistoryList : function(data) {
+                console.log("displayHistoryList", data);
             }
         }
     }

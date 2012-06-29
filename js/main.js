@@ -13,6 +13,7 @@ require([
       "app/util/config"
     , "app/layout"
     , "app/editors"
+    , "app/history"
     , "app/bar-main"
     , "app/bar-editor"
     , "app/bar-status"
@@ -28,7 +29,7 @@ require([
     , "util/querystring"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {
     precog.cache.disable();
 
     var queries,
@@ -190,6 +191,11 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     $(editors).on("deactivated", function(e, index) {
         $(editor).off("change", currentTabInvalidator);
+    });
+
+    $(editorbar).on("requesthistorylist", function() {
+        var data = history.getList(editors.getName());
+        editorbar.displayHistoryList(data);
     });
 
     var tips = buildTips(layout);

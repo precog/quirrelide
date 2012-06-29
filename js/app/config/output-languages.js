@@ -11,7 +11,7 @@ function(convert, precog) {
         token: "qrl",
         name : "Quirrel",
         handler : function(code) {
-            return "# Quirrel query generated with Quirrel IDE by Precog\n\n" + code.trim();
+            return "-- Quirrel query generated with Quirrel IDE by Precog\n\n" + code.trim();
         }
     }, {
         token: "js",

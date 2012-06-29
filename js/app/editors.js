@@ -206,6 +206,9 @@ function(precog, md5, createStore, utils) {
             setOutputOptions : function(options, index) {
                 this.setField("output.options", options, index);
             },
+            getName : function(index) {
+                return this.getField("name", "", index);
+            },
             monitor : store.monitor
         };
 

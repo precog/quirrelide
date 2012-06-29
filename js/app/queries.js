@@ -27,7 +27,7 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
             elContext = el.find(".pg-toolbar-context"),
             elMain    = el.find(".pg-queries"),
             elList    = elMain.append('<ul class="pg-query-list"></ul><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find("ul");
-        elActions.html("queries");
+        elActions.html("query manager");
 
         function openQuery(id) {
             $(wrapper).trigger("requestopenquery", store.get("queries."+normalizeName(id)));
