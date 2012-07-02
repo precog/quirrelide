@@ -20,7 +20,9 @@ function(ui) {
             } else {
                 data = currentData;
             }
-            options = o || options || { json : { compact : false }};
+            options = o || options;
+            if(!options.json)
+                options.json = { compact : false };
             var json = options.json.compact ? JSON.stringify(data) : JSON.stringify(data, null, spaces);
             toolbar.find('input[type="checkbox"]').attr("checked", options.json.compact).button("refresh");
             elOutput.text(json);
