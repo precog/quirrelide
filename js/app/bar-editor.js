@@ -4,17 +4,20 @@ define([
     , "util/notification"
     , "util/querystring"
     , "util/converters"
+    , "util/utils"
     , "order!util/dialog-export"
     , "order!util/dialog-lineinput"
     , "config/output-languages"
     , "text!templates/toolbar.editor.html"
+
+    , "libs/moment/moment"
 ],
 
 // TODO remove editors dependency
 // TODO remove queries dependency
 // TODO add invalidate tab content
 
-function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
+function(ui, editors, notification, qs, conv, utils, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
 
     return function(el, queries) {
         var wrapper;
@@ -52,16 +55,8 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
             return tabs.find("li:nth("+index+") a");
         }
 
-        function truncate(value) {
-            var maxlen = 25,
-                ellipsis = "...";
-            if(value.length >= maxlen)
-                value = value.substr(0, maxlen-ellipsis.length)+ellipsis;
-            return value;
-        }
-
         function changeTabName(index, value) {
-            getTabLabelElement(index).html(truncate(value));
+            getTabLabelElement(index).html(utils.truncate(value));
         }
 
         function invalidateTab(index) {
@@ -77,6 +72,13 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
             if(content.substr(0, 1) === "*")
                 el.html(content.substr(1));
         }
+
+        var history = ui.button(elContext, {
+            icon : "ui-icon-clock",
+            handler : function() {
+                $(wrapper).trigger("requesthistorylist");
+            }
+        });
 
         ui.button(elContext, {
             icon : "ui-icon-disk",
@@ -126,7 +128,7 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
                 var base = document.location.origin + document.location.pathname;
                 // strip q if it exists
                 var params = qs.all();
-                params.q = conv.quirrelToOneLine(editors.getCode());
+                params.q = editors.getCode(); // conv.quirrelToOneLine(editors.getCode());
                 if(copier) copier.remove();
                 copier = notification.copier("Create Query Link", {
                     text : "Copy this link to pass the current query to someone else.<br>Don't forget that the URL contains your token!",
@@ -152,9 +154,37 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
             }
         });
 
+        function formatHistoryItem(item) {
+            // item.timestamp
+            // item.code
+            // item.sample.first
+            // item.sample.length
+            var numlines = 3,
+                tlen = 40;
+            var execution = moment(new Date(item.timestamp)).fromNow();
+            var codeLines = item.code.split("\n");
+            if(codeLines.length > numlines)
+            {
+                var lines = codeLines.length - numlines;
+                codeLines.splice(numlines-1);
+                codeLines.push("... +" + lines + " more line(s)");
+            }
+            var code = codeLines.map(function(v) { return utils.truncate(v, tlen); }).join("\n");
+            return '<div class="pg-history-item ui-content ui-state-highlight ui-corner-all">'
+                + '<div class="pg-header">query:</div>'
+                + '<pre>'+code+'</pre>'
+                + '<div class="pg-header">sample:</div>'
+                + '<pre>'+utils.truncate(JSON.stringify(item.sample.first), tlen)+'</pre>'
+                + '<div class="pg-info">generated '+item.sample.length+' records<br>executed '+ execution +'</div>'
+                + '<div class="pg-toolbar"></div>'
+                + '<div class="pg-clear"></div>'
+                + '</div>'
+            ;
+        }
+
         return wrapper = {
             addTab : function(name, dirty) {
-                tabs.tabs("add", "#pg-editor-tab-" + (++index), truncate(name));
+                tabs.tabs("add", "#pg-editor-tab-" + (++index), utils.truncate(name));
                 if(dirty)
                     this.invalidateTab(index-1);
 
@@ -185,6 +215,30 @@ function(ui, editors, notification, qs, conv, openExportDialog, openInputDialog,
             },
             revalidateTab : function(index) {
                 revalidateTab(index);
+            },
+            displayHistoryList : function(data) {
+                var text;
+                data.shift(); // remove current elements
+                if(data.length == 0) {
+                    text = "No queries have been performed yet in this editor context.";
+                } else {
+                    text = '<div class="pg-history"><ul><li>'+data.map(formatHistoryItem).join('</li><li>')+'</li></ul></div>';
+                }
+                var n = notification.context("History", {
+                    target: history,
+                    text : text
+                });
+                n.find(".pg-toolbar").each(function(index) {
+                    var item = data[index];
+                    $(this).append("open in ")
+                    ui.button(this, {
+                        label : "current tab"
+                    });
+                    ui.button(this, {
+                        label : "new tab"
+                    });
+                });
+                console.log("displayHistoryList", JSON.stringify(data));
             }
         }
     }

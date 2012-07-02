@@ -52,20 +52,30 @@ define([
             return $.pnotify(options);
         },
 
-        copier : function(title, o) {
+        context : function(title, o) {
             o = o || {};
             o.voffset = o.voffset || 25;
-            o.width = '400px';
-
-            var keycombo = navigator.userAgent.indexOf("Mac OS X") != -1 ? "CMD+C" : "CTRL+C";
-
-            var text = '<div class="pg-message">'+ o.text+'</div><div class="pg-textarea"><textarea>'+ o.copy+'</textarea></div><div class="pg-footer">'+keycombo+' to copy the link</div>';
-
-            o.text = text;
+            o.width = o.width || '420px';
 
             var n = this.tip(title, o);
 
-            var area = n.find("textarea");
+            n.mouseenter(function() {
+                n.mouseleave(function() {
+                    n.remove();
+                });
+            });
+
+            return n;
+        },
+
+        copier : function(title, o) {
+            o = o || {};
+
+            var keycombo = navigator.userAgent.indexOf("Mac OS X") != -1 ? "CMD+C" : "CTRL+C";
+            o.text = '<div class="pg-message">'+ o.text+'</div><div class="pg-textarea"><textarea>'+ o.copy+'</textarea></div><div class="pg-footer">'+keycombo+' to copy the link</div>';
+
+            var n = this.context(title, o),
+                area = n.find("textarea");
 
             area.click(function() {
                 dom.selectText(area.get(0));

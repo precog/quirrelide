@@ -1,4 +1,5 @@
-define([],
+define([
+],
 
 function() {
    return {
@@ -18,6 +19,13 @@ function() {
            $(arr).each(function(i) {
                parent.appendChild(arr[i]);
            });
+       },
+       truncate : function(value, maxlen, ellipsis) {
+            maxlen = maxlen || 25;
+            ellipsis = ellipsis || "...";
+            if(value.length >= maxlen)
+                value = value.substr(0, maxlen-ellipsis.length)+ellipsis;
+            return value;
        }
    }
 });

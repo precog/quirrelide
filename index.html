@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quirrel IDE</title>
+    <title>Precog IDE</title>
 <!--
     <link rel="stylesheet" href="css/debug.css">
 -->
@@ -14,6 +14,20 @@
     <script src="js/require-jquery.js?tokenId=1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2&analyticsService=https://demo.precog.com/v1" data-main="js/main" type="text/javascript"></script>
 </head>
 <body>
+<script type="text/javascript">
 
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-589893-15']);
+    _gaq.push(['_setDomainName', 'precog.com']);
+    _gaq.push(['_setAllowLinker', true]);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
 </body>
 </html>

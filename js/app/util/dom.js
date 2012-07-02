@@ -1,24 +1,20 @@
 define([],
 
-    function() {
-        return {
-            selectText : function(element) {
-                var range;
-                if (document.body.createTextRange) { // ms
-                    range = document.body.createTextRange();
-                    range.moveToElementText(element);
-                    range.select();
-                } else if (window.getSelection) {
-                    var selection = window.getSelection();
-                    if (selection.setBaseAndExtent) { // webkit
-                        selection.setBaseAndExtent(element, 0, element, 1);
-                    } else { // moz, opera
-                        range = document.createRange();
-                        range.selectNodeContents(element);
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    }
-                }
+function() {
+    return {
+        selectText : function(element, start, end) {
+            start = start || 0;
+            end   = end || $(element).text().length;
+            if(element.setSelectionRange) {
+                element.focus();
+                element.setSelectionRange(start, end);
+            } else if(element.createTextRange) {
+                var range = element.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', end);
+                range.moveStart('character', start);
+                range.select();
             }
         }
-    });
+    }
+});

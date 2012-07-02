@@ -59,7 +59,7 @@ define([
                 elRoot = el.find(".pg-tree").append('<div class="pg-root"></div>').find(".pg-root"),
                 elFolders = el.find(".pg-tree").append('<div class="pg-structure"></div>').find(".pg-structure");
                 elUploader = el.append('<div style="display: none"><input name="files" type="file" multiple></div>').find('input[type=file]');
-            elActions.html("folders");
+            elActions.html("virtual file system");
             var tree = elFolders.jstree({
                 plugins : [
                     "themes"

@@ -5,7 +5,7 @@
  * Author: Alissa Pajer
  **/
 
-define ("BASE_URL", "http://api.precog.io/v1/");
+define ("BASE_URL", "http://api.precog.com/v1/");
 
 class PrecogAPI {
  

@@ -13,6 +13,7 @@ require([
       "app/util/config"
     , "app/layout"
     , "app/editors"
+    , "app/history"
     , "app/bar-main"
     , "app/bar-editor"
     , "app/bar-status"
@@ -28,7 +29,7 @@ require([
     , "util/querystring"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {
     precog.cache.disable();
 
     var queries,
@@ -108,16 +109,23 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         editors.setOutputType(type);
     });
 
-    $(precog).on("execute", function(_, data, lastExecution) {
+    var queue = [];
+    $(precog).on("execute", function(_, query, lastExecution) {
+        queue.push({ query : query, name : editors.getName() });
         status.startRequest();
     });
 
     $(precog).on("completed", function(_, data) {
+        var exec = queue.shift();
+        history.save(exec.name, exec.query, data);
+
         status.endRequest(true);
         output.set(data);
+
         editors.setOutputResult(data);
     });
     $(precog).on("failed", function(_, data) {
+        queue.shift(); // cleanup the queue
         status.endRequest(false);
         output.set(data, "error");
         editors.setOutputResult(data);
@@ -143,8 +151,13 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     var folders = buildFolders(layout.getSystem());
 
     $(folders).on("querypath", function(e, path) {
-        editors.add({ code : "/" + path });
-        editors.activate(editors.count()-1);
+        var q = "/" + path;
+        if(editors.getCode().trim() == "") {
+            editor.set(q);
+        } else {
+            editors.add({ code : q });
+            editors.activate(editors.count()-1);
+        }
         editor.triggerExecute();
     });
 
@@ -190,6 +203,16 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     $(editors).on("deactivated", function(e, index) {
         $(editor).off("change", currentTabInvalidator);
+    });
+
+    $(editors).on("removed", function(e, name) {
+        if(!queries.exist(name))
+            history.remove(name);
+    });
+
+    $(editorbar).on("requesthistorylist", function() {
+        var data = history.revisions(editors.getName());
+        editorbar.displayHistoryList(data);
     });
 
     var tips = buildTips(layout);

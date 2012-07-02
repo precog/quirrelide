@@ -63,7 +63,7 @@ require([],
             },
             host = {
                 validate : function (value) {
-                    if (!!value.match(/^(([a-z0-9_\-.]+)+([\/a-z0-9_\-.]+)*)$/i)) {
+                    if (!!value.match(/^(([a-z0-9_\-.]+)+([:]\d+)?([\/a-z0-9_\-.]+)*)$/i)) {
                         return true;
                     } else {
                         this.validationError = "invalid IDE host url";
