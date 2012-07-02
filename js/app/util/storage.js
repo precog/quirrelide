@@ -23,7 +23,7 @@ function(traverse) {
         var delayedSave = function() {
             dirty = true;
             clearInterval(this.killDelayedSave);
-            this.killDelayedSave = setTimeout(save, 100);
+            this.killDelayedSave = setTimeout(function() { save(); }, 100);
         };
 
         load();
@@ -55,8 +55,8 @@ function(traverse) {
                 set : function(key, value, instant) {
                     if(traverse.set(params, key, value))
                     {
-                        this.save(instant);
                         debug("set", key, value);
+                        this.save(instant);
                     }
                 },
                 remove : function(key, instant) {

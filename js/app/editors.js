@@ -45,7 +45,7 @@ function(precog, md5, createStore, utils) {
     })();
 
     function anonymousName() {
-        return "*query #" + (1 +last());
+        return "query #" + (1 +last());
     }
 
     function createEditor(o) {
@@ -63,7 +63,6 @@ function(precog, md5, createStore, utils) {
     function editorKey(id) {
         return "editors."+id;
     }
-
     function editorByName(name) {
         var editors = store.get("editors");
         for(var key in editors) {
@@ -110,9 +109,10 @@ function(precog, md5, createStore, utils) {
                 if(list.length == 1) return;
                 var id = list[index],
                     name = this.getName(index);
-                if(id) {
-                    store.remove(editorKey(id), true);
-                }
+                if(!id)
+                    return;
+
+                store.remove(editorKey(id), true);
                 if(index === 0 && index === currentIndex) {
                     this.activate(1);
                 }

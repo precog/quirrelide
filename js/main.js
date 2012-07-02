@@ -123,6 +123,10 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         output.set(data);
 
         editors.setOutputResult(data);
+
+        if(editorbar.historyPanelIsOpen()) {
+            refreshHistoryList();
+        }
     });
     $(precog).on("failed", function(_, data) {
         queue.shift(); // cleanup the queue
@@ -185,8 +189,8 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         editorbar.addTab(editor.name, !editor.notdirty);
     });
 
-    $(editors).on("removed", function(e, index) {
-        editorbar.removeTab(index);
+    $(editors).on("removed", function(e, name) {
+        editorbar.removeTabByName(name);
     });
 
     function currentTabInvalidator() {
@@ -199,7 +203,15 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
             editors.setDirty();
             $(editor).on("change", currentTabInvalidator);
         }, 1000);
+        if(editorbar.historyPanelIsOpen()) {
+            refreshHistoryList();
+        }
     });
+
+    function refreshHistoryList() {
+        var data = history.revisions(editors.getName());
+        editorbar.displayHistoryList(data);
+    }
 
     $(editors).on("deactivated", function(e, index) {
         $(editor).off("change", currentTabInvalidator);
@@ -210,9 +222,25 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
             history.remove(name);
     });
 
-    $(editorbar).on("requesthistorylist", function() {
-        var data = history.revisions(editors.getName());
-        editorbar.displayHistoryList(data);
+    $(editorbar).on("requesthistorylist", refreshHistoryList);
+
+    $(editorbar).on("requestopenrevision", function(e, info) {
+        var name = editors.getName(),
+            data = history.load(name, info.index);
+        if(info.usenewtab) {
+            editors.add({ code : data.code, output : { result : data.data } });
+            editors.activate(editors.count()-1);
+        } else {
+            editor.set(data.code);
+        }
+        output.set(data.data);
+    });
+
+    $(editorbar).on("tabrenamed", function(e, data) {
+        history.rename(data.oldname, data.newname);
+        if(editorbar.historyPanelIsOpen()) {
+            refreshHistoryList();
+        }
     });
 
     var tips = buildTips(layout);

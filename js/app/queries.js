@@ -147,7 +147,7 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
                 store.set("queries."+id, query = {
                     name : name,
                     code : code
-                });
+                }, true);
                 addQuery(id, name);
                 $(wrapper).trigger("created", query);
                 return true;
