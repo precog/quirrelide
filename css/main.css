@@ -410,3 +410,44 @@
     right: 3px;
     bottom: 2px;
 }
+
+.ui-pnotify span.pg-label {
+    display: block;
+    float: left;
+    width: 100px;
+}
+
+.ui-pnotify .pg-selection input[type="number"] {
+    width: 5em;
+}
+
+.ui-pnotify .pg-selection.ui-content {
+    margin-bottom: 4px;
+    width: 240px;
+    line-height: 2em;
+    padding: 0 0.2em;
+}
+
+.ui-pnotify .pg-selection.ui-content select {
+    width: 138px;
+}
+
+.ui-pnotify .pg-selection.ui-content:last-child {
+    margin-bottom: 0;
+}
+
+.pg-ide button.pg-rg-logo {
+    overflow: hidden;
+    width: 170px;
+}
+
+.pg-ide button.pg-rg-logo img {
+    display: block;
+    top: -4px;
+    left: -12px;
+    position: absolute;
+}
+
+.pg-ide .ui-widget.ui-content.pg-overflow-hidden {
+    overflow: hidden;
+}

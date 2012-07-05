@@ -1,5 +1,6 @@
 define([
-      "order!jquery"
+      "util/jsonmodel"
+    , "order!jquery"
     , "order!ui/jquery.ui.sortable"
     , "order!jlib/slickgrid/jquery.event.drag-2.0.min"
     , "order!jlib/slickgrid/slick.core"
@@ -9,7 +10,7 @@ define([
     , "order!jlib/slickgrid/slick.columnpicker"
 ],
 
-function() {
+function(jsonmodel) {
     var elPanel = $('<div class="ui-widget"><div class="pg-table" style="height:100%;width:100%"></div></div>'),
         elOutput = elPanel.find('.pg-table'),
         dataView = new Slick.Data.DataView(),
@@ -40,64 +41,6 @@ function() {
         grid.invalidateRows(args.rows);
         grid.render();
     });
-
-    function formatValue(row, cell, value, columnDef, dataContext, subordinate) {
-        if("undefined" === typeof value) {
-            return "[undefined]";
-        } else if(value === null) {
-            return "[null]";
-        } else if(value instanceof Array) {
-            var result = [];
-            for(var i = 0; i < value.length; i++)
-            {
-                result.push(formatValue(row, cell, value[i], columnDef, dataContext, true));
-            }
-            return result.join("; ");
-        } else if("object" === typeof value) {
-            var result = [];
-            for(var key in value) {
-                if(value.hasOwnProperty(key)) {
-                    var pair = key + ": " + formatValue(row, cell, value[key], columnDef, dataContext, true);
-                    result.push(pair);
-                }
-            }
-            return result.join(", ");
-        } else if(value === "") {
-            return "[empty]";
-        } else if(isNaN(value)) {
-            value = value.toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-            return '"' + value.replace(/"/g, '\\"') + '"';
-        } else {
-            return value;
-        }
-    }
-    function createModel(value) {
-        var columns = [];
-        if("object" === typeof value) {
-            for(var key in value) {
-                if(value.hasOwnProperty(key) && key !== "#id") {
-                    columns.push({
-                          id : key
-                        , name : key
-                        , field : key
-                        , sortable: true
-                        , formatter : formatValue
-
-                        , pgvalue : false
-                    });
-                }
-            }
-        } else {
-            columns.push({
-                  id : "value"
-                , name : "Value"
-                , field : "value"
-                , pgvalue : true
-                , sortable: true
-            });
-        }
-        return columns;
-    }
 
     function transformData(model, data) {
         var result = [];
@@ -176,7 +119,7 @@ function() {
                 id : "empty",
                 name : "No Records Match Your Query",
                 field : "empty"
-            }] : createModel(data[0]);
+            }] : jsonmodel.create(data);
             data = transformData(model, data);
 
             try {

@@ -113,6 +113,9 @@ function() {
         progressbar : function(el) {
             el = $(el);
             return el.progressbar();
+        },
+        select : function(el) {
+
         }
     };
 });

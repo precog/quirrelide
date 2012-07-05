@@ -45,6 +45,7 @@ define([
                 , pnotify_shadow : true
                 , pnotify_delay : timeout
                 , pnotify_sticker : false
+                , pnotify_insert_brs : false
             };
 
             applyOptions(o, options, map);
@@ -148,6 +149,14 @@ define([
             o.shadow = true;
             o.type = "info";
             o.opacity = 0.95;
+
+            var old = o.before_close;
+            o.before_close = function(e) {
+                if(old)
+                    old.apply(this, e);
+                remove_resize(this, e);
+            };
+
             var n = this.success(title, o);
 
             function center() {
@@ -166,14 +175,6 @@ define([
             function remove_resize() {
                 $(window).off("resize", center);
             }
-
-            var old = o.before_close;
-            o.before_close = function(e) {
-                console.log(old);
-                if(old)
-                    old.apply(this, e);
-                remove_resize(this, e);
-            };
 
             setTimeout(center, 0);
             return n;
