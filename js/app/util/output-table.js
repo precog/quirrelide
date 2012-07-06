@@ -108,7 +108,6 @@ function(jsonmodel) {
             return $('<div></div>');
         },
         update : function(data, options) {
-console.log("UPDATE TABLE");
             if(!options) options = {};
             if(changePagerHandler)
                 dataView.onPagingInfoChanged.unsubscribe(changePagerHandler);
