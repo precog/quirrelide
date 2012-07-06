@@ -451,3 +451,21 @@
 .pg-ide .ui-widget.ui-content.pg-overflow-hidden {
     overflow: hidden;
 }
+
+.pg-ide .pg-toolbar-result-type button {
+    display: block;
+    float: right;
+}
+
+.pg-ide .pg-current-options {
+    font-weight: normal;
+    margin-right: 0.5em;
+    font-size: 93%;
+    line-height: 1.2em;
+    text-align: right;
+    display: inline-block;
+}
+
+.pg-ide .pg-toolbar-context .pg-toolbar-result-type button {
+    padding: 0;
+}

@@ -2,26 +2,18 @@ define([
       "util/jsonmodel"
     , "util/ui"
     , "util/notification"
-//    , "order!ui/jquery.ui.core"
-//    , "order!ui/jquery.ui.widget"
-//    , "order!ui/jquery.ui.mouse"
-//    , "order!ui/jquery.ui.draggable"
-//    , "order!jlib/layout/jquery.layout"
     , "text!templates/panel.options.chart-output.html"
     , "https://api.reportgrid.com/js/reportgrid-core.js"
     , "https://api.reportgrid.com/js/reportgrid-charts.js"
-//    , "http://localhost/rg/js/reportgrid-charts.js"
 ],
 
 function(jsonmodel, ui, notification, tplOptionsPanel) {
     var wrapper,
-//        elPanel  = $('<div class="ui-widget ui-content"><div class="ui-layout-north"></div><div class="pg-chart ui-layout-center"></div><div class="ui-layout-south"></div></div>'),
         elPanel  = $('<div class="ui-widget ui-content pg-overflow-hidden"><div class="pg-chart"></div></div>'),
-//        elOutput = elPanel.find('.pg-chart-container'),
         elChart  = elPanel.find('.pg-chart');
 
     var spaces = 2,
-        toolbar, options, currentData;
+        toolbar, options, currentData, currentOptions;
 
     var noti, model, optionButton, params;
 
@@ -32,8 +24,9 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
 
     function render() {
         try {
-            console.log("REFRESHED");
+            elChart.find("*").remove();
             ReportGrid.chart(elChart.get(0), params);
+            updateMessage();
         } catch(e) {}
     }
 
@@ -46,6 +39,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
     }
 
     function refresh() {
+        clear();
         if(ReportGrid.tooltip) ReportGrid.tooltip.hide();
         if(!options.x || !options.y || options.x === options.y) return;
 
@@ -174,7 +168,26 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         };
     }
 
-    return wrapper = {
+    function clear() {
+        currentOptions.html("");
+        elChart.find("*").remove().removeClass("rg");
+        elChart.append('<div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>Please select the chart axis using the options button above.</p></div>')
+    }
+
+    function updateMessage() {
+        var message = "";
+        if(options.x && options.y && options.x !== options.y) {
+            message += options.x + " [x], ";
+            message += options.y + " [y]<br>";
+            if(options.segment) {
+                message += "segmented on " + options.segment +", ";
+            }
+            message += options.samplesize + " samples";
+        }
+        currentOptions.html(message);
+    }
+
+    wrapper = {
         type : "chart",
         name : "Chart",
         panel : function() { return elPanel; },
@@ -192,23 +205,20 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                 return;
             }
 
-            options = o || options || {};
+            options = o || { samplesize : 200 };
 
             // create model
             model = jsonmodel.create(data);
             // enable options
             if(optionButton) optionButton.button("enable");
 
+            refresh();
         },
 
         resize : function() {
             elChart.css({
                 width  : elPanel.innerWidth() + "px",
                 height : elPanel.innerHeight() + "px"
-                /*        position: "absolute",
-                 width : "100%",
-                 height: "100%"
-                 */
             });
             refresh();
         },
@@ -216,6 +226,8 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         activate : function() {
             if(!toolbar) {
                 toolbar = $(this.toolbar);
+
+                currentOptions = toolbar.append('<div class="pg-current-options"></div>').find(".pg-current-options");
 
                 optionButton = ui.button(toolbar, {
                     label : "options",
@@ -231,36 +243,15 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                         window.open("http://reportgrid.com/", "_blank");
                     }
                 }).addClass("pg-rg-logo");
-
-                /*
-                elPanel.layout({
-                    north : {
-                        size : 30
-                    },
-                    south : {
-                        size : 30
-                    }
-                });
-*/
-/*
-                ui.checks(toolbar, {
-                    label : "compact",
-                    handler : function(action) {
-                        if(options.json.compact === action.checked) return;
-                        options.json.compact = action.checked;
-                        wrapper.update(null, options);
-                        $(wrapper).trigger("optionsChanged", options);
-                    }
-                });
-*/
             }
-
             toolbar.show();
         },
         deactivate : function() {
             if(ReportGrid.tooltip) ReportGrid.tooltip.hide();
-            elChart.find("*").remove();
+            clear();
             toolbar.hide();
         }
     };
+
+    return wrapper;
 });
