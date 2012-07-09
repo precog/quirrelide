@@ -13,7 +13,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         elChart  = elPanel.find('.pg-chart');
 
     var spaces = 2,
-        toolbar, options, currentData, currentOptions;
+        toolbar, options, currentData;
 
     var noti, model, optionButton, params;
 
@@ -26,7 +26,6 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         try {
             elChart.find("*").remove();
             ReportGrid.chart(elChart.get(0), params);
-            updateMessage();
         } catch(e) {}
     }
 
@@ -169,22 +168,8 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
     }
 
     function clear() {
-        currentOptions.html("");
         elChart.find("*").remove().removeClass("rg");
         elChart.append('<div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>Please select the chart axis using the options button above.</p></div>')
-    }
-
-    function updateMessage() {
-        var message = "";
-        if(options.x && options.y && options.x !== options.y) {
-            message += options.x + " [x], ";
-            message += options.y + " [y]<br>";
-            if(options.segment) {
-                message += "segmented on " + options.segment +", ";
-            }
-            message += options.samplesize + " samples";
-        }
-        currentOptions.html(message);
     }
 
     wrapper = {
@@ -227,8 +212,6 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         activate : function() {
             if(!toolbar) {
                 toolbar = $(this.toolbar);
-
-                currentOptions = toolbar.append('<div class="pg-current-options"></div>').find(".pg-current-options");
 
                 optionButton = ui.button(toolbar, {
                     label : "options",
