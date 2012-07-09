@@ -26,6 +26,11 @@ function() {
             if(value.length >= maxlen)
                 value = value.substr(0, maxlen-ellipsis.length)+ellipsis;
             return value;
+       },
+       normalizeQueryName : function (value) {
+            value = value.trim().toLowerCase();
+            value.replace(/[ \-]+/g, "_");
+            return value;
        }
    }
 });

@@ -3,19 +3,15 @@ define([
     , "util/storagemonitor"
     , "util/ui"
     , "util/utils"
+    , "config/demo-queries"
     , "text!templates/toolbar.folders.html"
     , "text!templates/menu.context.queries.query.html"
 ],
-function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
+function(precog, createStore, ui, utils, demo, tplToolbar, tplQueryContextMenut) {
     var list = [],
+        DEMO_TOKEN = "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2",
         STORE_KEY = "pg-quirrel-queries-"+precog.hash,
-        store = createStore(STORE_KEY, { queries : {}});
-
-    function normalizeName(value) {
-        value = value.trim().toLowerCase();
-        value.replace(/\s+/g, "_");
-        return value;
-    }
+        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {})});
 
     store.monitor.start(500);
 
@@ -30,7 +26,7 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
         elActions.html("query manager");
 
         function openQuery(id) {
-            $(wrapper).trigger("requestopenquery", store.get("queries."+normalizeName(id)));
+            $(wrapper).trigger("requestopenquery", store.get("queries."+utils.normalizeQueryName(id)));
         }
 
         var menuselected, menu = ui.contextmenu(tplQueryContextMenut);
@@ -120,18 +116,18 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
 
             store.load();
             for(var i = 0; i < removed.length; i++) {
-                removeQuery(normalizeName(removed[i]));
+                removeQuery(utils.normalizeQueryName(removed[i]));
                 $(wrapper).trigger("removed", removed[i]);
             }
             for(var i = 0; i < added.length; i++) {
-                addQuery(normalizeName(added[i]), added[i]);
+                addQuery(utils.normalizeQueryName(added[i]), added[i]);
             }
             list = names;
         });
 
         return wrapper = {
             exist : function(name) {
-                var id = normalizeName(name);
+                var id = utils.normalizeQueryName(name);
                 return !!store.get("queries."+id);
             },
             save : function(name, code) {
@@ -141,7 +137,7 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
                     return this.create(name, code);
             },
             create : function(name, code) {
-                var id = normalizeName(name);
+                var id = utils.normalizeQueryName(name);
                 var query = store.get("queries."+id);
                 if(query) return false;
                 store.set("queries."+id, query = {
@@ -153,7 +149,7 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
                 return true;
             },
             update : function(name, code) {
-                var id = normalizeName(name);
+                var id = utils.normalizeQueryName(name);
                 var query = store.get("queries."+id);
                 if(!query) return false;
                 query.code = code;
@@ -162,7 +158,7 @@ function(precog, createStore, ui, utils, tplToolbar, tplQueryContextMenut) {
                 return true;
             },
             remove : function(name) {
-                var id = normalizeName(name);
+                var id = utils.normalizeQueryName(name);
                 var query = store.get("queries."+id);
                 if(!query) return false;
                 store.remove("queries."+id);
