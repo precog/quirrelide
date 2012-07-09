@@ -41,10 +41,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 
     $(theme).on("changed", function() {
         // refreshes the panes layout after theme changing
-//        setTimeout(function(){
-//            $(document.window).trigger("refresh");
-            layout.refresh();
-//        }, 1000);
+        layout.refresh();
     });
 
     $(theme).on("change", function(e, name) {
@@ -173,8 +170,9 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 
     $(queries).on("removed", function(_, name) {
         var index = editors.getIndexByName(name);
-        if(index >= 0)
+        if(index >= 0) {
             editorbar.invalidateTab(index);
+        }
     });
 
     var editorbar = buildBarEditor(layout.getBarEditor(), queries, editor);
@@ -193,15 +191,19 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         editorbar.removeTabByName(name);
     });
 
+    var invalidationSuspended = true;
     function currentTabInvalidator() {
+        if(invalidationSuspended) return;
+        editors.setDirty();
         editorbar.invalidateTab(editors.current());
     }
+
+    $(editor).on("change", currentTabInvalidator);
 
     $(editors).on("activated", function(e, index) {
         editorbar.activateTab(index);
         setTimeout(function() {
-            editors.setDirty();
-            $(editor).on("change", currentTabInvalidator);
+            invalidationSuspended = false;
         }, 1000);
         if(editorbar.historyPanelIsOpen()) {
             refreshHistoryList();
@@ -214,7 +216,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
     }
 
     $(editors).on("deactivated", function(e, index) {
-        $(editor).off("change", currentTabInvalidator);
+        invalidationSuspended = true;
     });
 
     $(editors).on("removed", function(e, name) {

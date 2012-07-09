@@ -14,7 +14,6 @@ define([
 ],
 
 // TODO remove editors dependency
-// TODO remove queries dependency
 // TODO add invalidate tab content
 
 function(ui, editors, notification, qs, conv, utils, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
@@ -205,9 +204,9 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
         return wrapper = {
             addTab : function(name, dirty) {
                 tabs.tabs("add", "#pg-editor-tab-" + (++index), utils.truncate(name));
-                if(dirty)
+                if(dirty) {
                     this.invalidateTab(index-1);
-
+                }
 
                 var closers = tabs.find(".pg-tab-close");
                 if(closers.length == 1) {
