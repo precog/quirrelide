@@ -192,6 +192,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         name : "Chart",
         panel : function() { return elPanel; },
         update : function(data, o) {
+            if(noti) noti.remove();
             if(data) {
                 currentData = data;
             } else {
@@ -248,6 +249,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         },
         deactivate : function() {
             if(ReportGrid.tooltip) ReportGrid.tooltip.hide();
+            if(noti) noti.remove();
             clear();
             toolbar.hide();
         }
