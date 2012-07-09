@@ -139,7 +139,6 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         var result  = editors.getOutputResult(),
             type    = editors.getOutputType(),
             options = editors.getOutputOptions();
-//console.log("LOADED OPTIONS " + JSON.stringify(options));
         output.set(result, type, options);
     });
 
