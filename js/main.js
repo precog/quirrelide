@@ -265,7 +265,6 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         editors.activate(editors.count()-1); // prevents bug in safari
 
         $(output).on("optionsChanged", function(_, options) {
-console.log("SAVING OPTIONS " + JSON.stringify(options));
             editors.setOutputOptions(options);
         });
 
