@@ -20,7 +20,7 @@ function(ui) {
             } else {
                 data = currentData;
             }
-            options = o || options || {};
+            options = o;
             if(!options.json)
                 options.json = { compact : false };
             var json = options.json.compact ? JSON.stringify(data) : JSON.stringify(data, null, spaces);

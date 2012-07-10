@@ -60,19 +60,19 @@ function(jsonmodel) {
     function updateDataView(data, options) {
         dataView.setItems([], "#id"); // forces correct refreshes of data
 
-        if(options && options.sort)
-            sortData(data, options.sort);
+        if(options && options.table.sort)
+            sortData(data, options.table.sort);
 
         dataView.beginUpdate();
         dataView.setItems(data, "#id");
         dataView.endUpdate();
-        if(options && options.pager && (("undefined" !== typeof options.pager.size) || ("undefined" !== typeof options.pager.pageNum)))
+        if(options && options.table.pager && (("undefined" !== typeof options.table.pager.size) || ("undefined" !== typeof options.table.pager.pageNum)))
         {
             var pager = {};
-            if(options.pager.size)
-                pager.pageSize = options.pager.size;
-            if(options.pager.page)
-                pager.pageNum = options.pager.page;
+            if(options.table.pager.size)
+                pager.pageSize = options.table.pager.size;
+            if(options.table.pager.page)
+                pager.pageNum = options.table.pager.page;
             dataView.setPagingOptions(pager);
         }
     }
@@ -108,7 +108,11 @@ function(jsonmodel) {
             return $('<div></div>');
         },
         update : function(data, options) {
-            if(!options) options = {};
+            if("undefined" === typeof options.table) {
+                options.table = {
+                    pager : {}
+                };
+            }
             if(changePagerHandler)
                 dataView.onPagingInfoChanged.unsubscribe(changePagerHandler);
             try {
@@ -127,12 +131,12 @@ function(jsonmodel) {
             } catch(e) {}
 
             changePagerHandler = function(e, args) {
-                options.pager = { size : args.pageSize, page : args.pageNum };
+                options.table.pager = { size : args.pageSize, page : args.pageNum };
                 $(wrapper).trigger("optionsChanged", options);
             }
 
-            if(options.sort) {
-                grid.setSortColumns(options.sort.map(function(col){
+            if(options.table.sort) {
+                grid.setSortColumns(options.table.sort.map(function(col){
                     return {
                         columnId : col.field,
                         sortAsc : col.asc
@@ -141,7 +145,7 @@ function(jsonmodel) {
             }
 
             grid.onSort.subscribe(function (e, args) {
-                options.sort = args.sortCols.map(function(def) {
+                options.table.sort = args.sortCols.map(function(def) {
                     return {
                         asc : def.sortAsc,
                         field : def.sortCol.field

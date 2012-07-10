@@ -202,7 +202,7 @@ function(precog, md5, createStore, utils) {
                 this.setField("output.type", type, index);
             },
             getOutputOptions : function(index) {
-                return this.getField("output.options", null, index);
+                return this.getField("output.options", {}, index);
             },
             setOutputOptions : function(options, index) {
                 this.setField("output.options", options, index);

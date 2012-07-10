@@ -117,8 +117,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         history.save(exec.name, exec.query, data);
 
         status.endRequest(true);
-        output.set(data);
-
+        output.setOutput(data, null, editors.getOutputOptions());
         editors.setOutputResult(data);
 
         if(editorbar.historyPanelIsOpen()) {
@@ -128,7 +127,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
     $(precog).on("failed", function(_, data) {
         queue.shift(); // cleanup the queue
         status.endRequest(false);
-        output.set(data, "error");
+        output.setOutput(data, "error", editors.getOutputOptions());
         editors.setOutputResult(data);
     });
     $(editor).on("execute", function(_, code) {
@@ -139,7 +138,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         var result  = editors.getOutputResult(),
             type    = editors.getOutputType(),
             options = editors.getOutputOptions();
-        output.set(result, type, options);
+        output.setOutput(result, type, options);
     });
 
     $(editors).on("saved", function(_, data) {
@@ -234,7 +233,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         } else {
             editor.set(data.code);
         }
-        output.set(data.data);
+        output.setOutput(data.data, null, editors.getOutputOptions());
     });
 
     $(editorbar).on("tabrenamed", function(e, data) {
@@ -266,7 +265,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         editors.activate(editors.count()-1); // prevents bug in safari
 
         $(output).on("optionsChanged", function(_, options) {
-//console.log("SAVING OPTIONS " + JSON.stringify(options));
+console.log("SAVING OPTIONS " + JSON.stringify(options));
             editors.setOutputOptions(options);
         });
 

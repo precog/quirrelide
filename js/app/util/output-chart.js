@@ -40,13 +40,13 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
     function refresh() {
         clear();
         if(ReportGrid.tooltip) ReportGrid.tooltip.hide();
-        if(!options.x || !options.y || options.x === options.y) return;
+        if(!options.chart.x || !options.chart.y || options.chart.x === options.chart.y) return;
 
-        if(!options.samplesize)
-            options.samplesize = 100;
+        if(!options.chart.samplesize)
+            options.chart.samplesize = 100;
 
-        var x = jsonmodel.axis(model, options.x),
-            y = jsonmodel.axis(model, options.y);
+        var x = jsonmodel.axis(model, options.chart.x),
+            y = jsonmodel.axis(model, options.chart.y);
 
         if(!x || !y) return;
 
@@ -57,9 +57,9 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         if(y.transformer) {
             datapoints = y.transformer(datapoints);
         }
-        datapoints = dataSort(datapoints, options.x);
-        if(datapoints.length > options.samplesize) {
-            datapoints = datapoints.slice(0, options.samplesize);
+        datapoints = dataSort(datapoints, options.chart.x);
+        if(datapoints.length > options.chart.samplesize) {
+            datapoints = datapoints.slice(0, options.chart.samplesize);
         }
 
         params = {
@@ -74,15 +74,15 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                         return axis;
                     },
                     datapointover : function(dp, stats) {
-                        return formatLabel(dp[options.x], x) + ": " + formatLabel(dp[options.y], y);
+                        return formatLabel(dp[options.chart.x], x) + ": " + formatLabel(dp[options.chart.y], y);
                     }
                 }
             }
         };
         if(params.options.visualization === "linechart")
             params.options.effect = "dropshadow";
-        if(options.segment)
-            params.options.segmenton = options.segment;
+        if(options.chart.segment)
+            params.options.segmenton = options.chart.segment;
         delayedRender();
     }
 
@@ -105,8 +105,8 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                    (!!column.multivalue)
                 || (column.type === "number")
                 || (column.subtype === "datetime")
-                || (options && options.x === column.field)
-                || (options && options.y === column.field)
+                || (options && options.chart.x === column.field)
+                || (options && options.chart.y === column.field)
             );
         }
 
@@ -129,10 +129,10 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
 
         function resetSegmentAndChangeOption(name) {
             return function() {
-                options[name] = $(this).val();
-                if(options.segment === options[name])
-                    options.segment = null;
-                feed(noti.find(".pg-segment"), model, options.segment, true, filterNumbersAndMultivalue);
+                options.chart[name] = $(this).val();
+                if(options.chart.segment === options.chart[name])
+                    options.chart.segment = null;
+                feed(noti.find(".pg-segment"), model, options.chart.segment, true, filterNumbersAndMultivalue);
                 $(wrapper).trigger("optionsChanged", options);
                 refresh();
             };
@@ -140,7 +140,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
 
         function changeOption(name) {
             return function() {
-                options[name] = $(this).val();
+                options.chart[name] = $(this).val();
                 $(wrapper).trigger("optionsChanged", options);
                 refresh();
             };
@@ -156,11 +156,11 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                     if(ReportGrid.tooltip) ReportGrid.tooltip.hide();
                 },
                 after_open : function() {
-                    var x = feed(noti.find(".pg-x"), model, options.x, false, filterMultivalue).change(resetSegmentAndChangeOption("x"));
-                    feed(noti.find(".pg-y"), model, options.y, false, filterMultivalue).change(resetSegmentAndChangeOption("y"));
-                    feed(noti.find(".pg-segment"), model, options.segment, true, filterNumbersAndMultivalue).change(changeOption("segment"));
-                    noti.find(".pg-sample").val(options.samplesize).change(changeOption("samplesize"));
-                    if(options.x !== noti.find(".pg-x").val())
+                    var x = feed(noti.find(".pg-x"), model, options.chart.x, false, filterMultivalue).change(resetSegmentAndChangeOption("x"));
+                    feed(noti.find(".pg-y"), model, options.chart.y, false, filterMultivalue).change(resetSegmentAndChangeOption("y"));
+                    feed(noti.find(".pg-segment"), model, options.chart.segment, true, filterNumbersAndMultivalue).change(changeOption("segment"));
+                    noti.find(".pg-sample").val(options.chart.samplesize).change(changeOption("samplesize"));
+                    if(options.chart.x !== noti.find(".pg-x").val())
                         x.change();
                 }
             })
@@ -178,20 +178,24 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
         panel : function() { return elPanel; },
         update : function(data, o) {
             if(noti) noti.remove();
+
+            if("undefined" == typeof o.chart)
+                o.chart = { samplesize : 200 };
+            options = o;
+
             if(data) {
                 currentData = data;
             } else {
                 data = currentData;
             }
             if(!data || data.length <= 1) {
+                model = [];
                 // print out message
                 elChart.html('<div class="pg-message ui-content ui-state-highlight ui-corner-all">The dataset doesn\'t contain enough values to build a chart.</div>');
                 // disable options
                 if(optionButton) optionButton.button("disable");
                 return;
             }
-
-            options = o || { samplesize : 200 };
 
             // create model
             model = jsonmodel.create(data);
