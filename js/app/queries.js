@@ -56,29 +56,27 @@ function(precog, createStore, ui, utils, demo, tplToolbar, tplQueryContextMenut)
 
         function addQuery(id, name) {
             var li = elList.append('<li class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" data-name="'+id+'"><span class="ui-button-icon-primary ui-icon ui-icon-script"></span><span class="ui-button-text">'+name+'</span></li>').find("li:last");
-            li.click(function(e) {
-                    var pos = $(e.currentTarget).offset(),
-                        h = $(e.currentTarget).outerHeight(),
-                        w = $(e.currentTarget).outerWidth();
-                    menu.css({
-                        position : "absolute",
-                        top : (pos.top + h) + "px",
-                        left : (pos.left) + "px",
-                        width : w + "px",
-                        zIndex : e.currentTarget.style.zIndex + 100
-                    }).show().find("ul").outerWidth(w);
-                    menuselected = e.currentTarget;
-                    e.preventDefault(); return false;
-                })
-                .dblclick(function(e) {
-                    var id = $(e.currentTarget).attr("data-name");
-                    openQuery(id);
-                    menu.hide();
-                    e.preventDefault(); return false;
-                })
-                .mouseenter(function() { $(this).addClass("ui-state-hover"); })
-                .mouseleave(function() { $(this).removeClass("ui-state-hover"); })
-            ;
+            ui.clickOrDoubleClick(li, function(e) {
+                var pos = $(e.currentTarget).offset(),
+                    h = $(e.currentTarget).outerHeight(),
+                    w = $(e.currentTarget).outerWidth();
+                menu.css({
+                    position : "absolute",
+                    top : (pos.top + h) + "px",
+                    left : (pos.left) + "px",
+                    width : w + "px",
+                    zIndex : e.currentTarget.style.zIndex + 100
+                }).show().find("ul").outerWidth(w);
+                menuselected = e.currentTarget;
+                e.preventDefault(); return false;
+            }, function(e) {
+                var id = $(e.currentTarget).attr("data-name");
+                openQuery(id);
+                menu.hide();
+                e.preventDefault(); return false;
+            });
+            li.mouseenter(function() { $(this).addClass("ui-state-hover"); })
+              .mouseleave(function() { $(this).removeClass("ui-state-hover"); });
             utils.sortNodes(elList.find("li"), function(a, b) {
                 return a.getAttribute("data-name") < b.getAttribute("data-name") ? -1 : (a.getAttribute("data-name") > b.getAttribute("data-name") ? 1 : 0);
             });
