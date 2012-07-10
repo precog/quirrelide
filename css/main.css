@@ -319,6 +319,15 @@
     padding: .2em 0.5em .2em 2.1em;
 }
 
+.ui-pnotify > .ui-widget.ui-pnotify-shadow {
+    position: relative;
+}
+
+.ui-pnotify h4, .ui-pnotify h5, .ui-pnotify h6 {
+    margin: 0;
+    margin-bottom: 4px;
+}
+
 .ui-pnotify .pg-actions {
     position: absolute;
     bottom: 3px;
@@ -400,9 +409,8 @@
     padding-top: 8px;
     clear: left;
 }
-
-.pg-ide .pg-clear {
-    clear: left;
+.ui-pnotify .pg-clear, .pg-ide .pg-clear {
+    clear: both;
 }
 
 .ui-pnotify .pg-history .pg-toolbar {
