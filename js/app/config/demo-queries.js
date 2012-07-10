@@ -4,6 +4,10 @@ define([
 
 function(utils) {
     var values = [{
+
+        name : "00 Income By State",
+        code : 'users := //users\nincomeByState := forall \'location\n\t{location: \'location, mean : mean(users.income where users.location = \'location)}\nincomeByState where incomeByState.mean = max(incomeByState.mean)'
+    }, {
         name : "01 Json - Object",
         code : '{name: "John", age: 29, gender: "male"}'
     }, {
