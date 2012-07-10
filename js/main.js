@@ -202,7 +202,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
         editorbar.activateTab(index);
         setTimeout(function() {
             invalidationSuspended = false;
-        }, 1000);
+        }, 2000);
         if(editorbar.historyPanelIsOpen()) {
             refreshHistoryList();
         }

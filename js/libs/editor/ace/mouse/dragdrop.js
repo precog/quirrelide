@@ -47,7 +47,7 @@ var DragdropHandler = function(mouseHandler) {
     var dragCursor, counter = 0;
 
     var mouseTarget = editor.container;
-    event.addListener(mouseTarget, "dragenter", function(e) {
+    event.addListener(mouseTarget, "dragenter", function(e) {console.log(e.type, counter,e.target);
         counter++;
         if (!dragSelectionMarker) {
             range = editor.getSelectionRange();
@@ -73,10 +73,11 @@ var DragdropHandler = function(mouseHandler) {
         editor.renderer.scrollCursorIntoView();
     };
     
-    event.addListener(mouseTarget, "dragleave", function(e) {
+    event.addListener(mouseTarget, "dragleave", function(e) {console.log(e.type, counter,e.target);
         counter--;
         if (counter > 0)
             return;
+        console.log(e.type, counter,e.target);
         clearInterval(timerId);
         editor.session.removeMarker(dragSelectionMarker);
         dragSelectionMarker = null;
@@ -85,6 +86,7 @@ var DragdropHandler = function(mouseHandler) {
     });
     
     event.addListener(mouseTarget, "drop", function(e) {
+        console.log(e.type, counter,e.target);
         counter = 0;
         clearInterval(timerId);
         editor.session.removeMarker(dragSelectionMarker);
