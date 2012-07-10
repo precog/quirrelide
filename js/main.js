@@ -1,11 +1,27 @@
 requirejs.config({
-    paths: {
+    waitSeconds : 4,
+    paths : {
           "ui"     : "libs/jquery/ui"
         , "util"   : "app/util"
         , "jlib"   : "libs/jquery"
         , "config" : "app/config"
         , "editor" : "libs/editor"
         , "ace"    : "libs/editor/ace"
+    },
+    shim : {
+          'ui/jquery.ui.sortable' : ['jquery']
+        , 'jlib/slickgrid/slick.core' : ['jquery', 'jlib/slickgrid/jquery.event.drag-2.0.min']
+        , 'jlib/slickgrid/slick.grid' : ['jlib/slickgrid/slick.core', 'ui/jquery.ui.sortable']
+        , 'jlib/slickgrid/slick.dataview' : ['jlib/slickgrid/slick.grid']
+        , 'jlib/slickgrid/slick.pager' : ['jlib/slickgrid/slick.dataview']
+        , 'jlib/slickgrid/slick.columnpicker' : ['jlib/slickgrid/slick.pager']
+        , "util/output-table" : ['jlib/slickgrid/slick.columnpicker']
+        , "ui/jquery.ui.dialog" : ["util/ui", "ui/jquery.ui.draggable", "ui/jquery.ui.position", "ui/jquery.ui.resizable", "ui/jquery.ui.dialog"]
+        , "util/ui" : ["ui/jquery.ui.core", "ui/jquery.ui.widget", "ui/jquery.ui.mouse", "ui/jquery.ui.button", "ui/jquery.ui.tabs", "ui/jquery.ui.menu", "ui/jquery.ui.progressbar"]
+        , "jlib/layout/jquery.layout" : ["util/ui", "ui/jquery.ui.core", "ui/jquery.ui.widget", "ui/jquery.ui.mouse", "ui/jquery.ui.draggable", "jlib/layout/jquery.layout"]
+        , "jlib/jstree/jstree" : ["jlib/jstree/vakata"]
+        , "jlib/jstree/jstree.themes" : ["jlib/jstree/jstree"]
+        , "app/folders" : ["jlib/jstree/jstree.themes"]
     }
 });
 

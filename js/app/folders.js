@@ -8,9 +8,6 @@ define([
     , "text!templates/toolbar.folders.html"
     , "text!templates/menu.context.system.node.html"
     , "text!templates/menu.context.system.root.html"
-    , "order!jlib/jstree/vakata"
-    , "order!jlib/jstree/jstree"
-    , "order!jlib/jstree/jstree.themes"
 ],
     function(precog, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
         var UPLOAD_SERVICE = "upload.php",

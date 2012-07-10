@@ -1,4 +1,6 @@
-define([],
+define([
+
+],
 
 function() {
     return {

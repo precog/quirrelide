@@ -2,7 +2,7 @@ define([
       "util/ui"
     , "config/output-results"
     , "config/output-formats"
-    , "order!util/dialog-export"
+    , "util/dialog-export"
     , "text!templates/toolbar.output.html"
 ],
 

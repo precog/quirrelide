@@ -1,4 +1,8 @@
-define(["util/storagemonitor"], function(createStore) {
+define([
+      "util/storagemonitor"
+],
+
+function(createStore) {
     var CONFIG_KEY = "pg-quirrel-ide-config",
         defaults = {
             theme : "gray",

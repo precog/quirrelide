@@ -1,15 +1,9 @@
 define([
       "text!templates/layout.full.html"
-    , "order!util/ui"
-    , "order!ui/jquery.ui.core"
-    , "order!ui/jquery.ui.widget"
-    , "order!ui/jquery.ui.mouse"
-    , "order!ui/jquery.ui.draggable"
-    , "order!jlib/layout/jquery.layout"
-    , "domReady!"
+    , "libs/jquery/layout/jquery.layout"
 ],
 
- function(template, ui) {
+ function(template) {
     var toolbarMainHeight = 38,
         toolbarHeight = 36,
         statusbarHeight = 24;

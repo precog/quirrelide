@@ -1,11 +1,5 @@
 define([
-      "order!ui/jquery.ui.core"
-    , "order!ui/jquery.ui.widget"
-    , "order!ui/jquery.ui.mouse"
-    , "order!ui/jquery.ui.button"
-    , "order!ui/jquery.ui.tabs"
-    , "order!ui/jquery.ui.menu"
-    , "order!ui/jquery.ui.progressbar"
+
 ],
 
 function() {

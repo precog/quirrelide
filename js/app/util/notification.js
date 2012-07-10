@@ -1,7 +1,9 @@
 define([
       "util/dom"
     , "jlib/pnotify/jquery.pnotify"
-], function(dom) {
+],
+
+function(dom) {
     var timeout = 5000,
         shorttimeout = 2500,
         longtimeout  = 10000;
@@ -25,7 +27,6 @@ define([
         , { src : "opacity", dst : "opacity", handler : defaultHandler }
         , { src : "stack", dst : "stack", handler : defaultHandler }
         , { src : "shadow", dst : "shadow", handler : defaultHandler }
-//        , { src : "", dst : "", handler : defaultHandler }
     ];
 
     function applyOptions(src, dst, map) {
@@ -55,7 +56,6 @@ define([
 
             if(!options.text) options.text = "";
             options.text += '\n<div class="pg-clear"></div>';
-console.log(JSON.stringify(options));
 
             return $.pnotify(options);
         },

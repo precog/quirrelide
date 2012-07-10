@@ -1,12 +1,12 @@
 define([
-      "order!util/ui"
+      "util/ui"
     , "app/editors"
     , "util/notification"
     , "util/querystring"
     , "util/converters"
     , "util/utils"
-    , "order!util/dialog-export"
-    , "order!util/dialog-lineinput"
+    , "util/dialog-export"
+    , "util/dialog-lineinput"
     , "config/output-languages"
     , "text!templates/toolbar.editor.html"
 

@@ -1,14 +1,12 @@
 define([
       "text!templates/dialog.export.html"
-    , "order!util/ui"
+    , "util/ui"
     , "util/dom"
     , "util/notification"
-    , "order!ui/jquery.ui.draggable"
-    , "order!ui/jquery.ui.position"
-    , "order!ui/jquery.ui.resizable"
-    , "order!ui/jquery.ui.dialog"
-    , "jlib/zclip/jquery.zclip"
-], function(tplDialog, ui, dom, notification) {
+    , "libs/jquery/ui/jquery.ui.dialog"
+],
+
+function(tplDialog, ui, dom, notification) {
     var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
         elDialog = $('body')
             .append(tplDialog)

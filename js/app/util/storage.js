@@ -1,6 +1,6 @@
 define([
-      "order!util/traverse"
-    , "order!jlib/jstorage/jstorage"
+      "util/traverse"
+    , "jlib/jstorage/jstorage"
 ],
 
 function(traverse) {

@@ -1,13 +1,5 @@
 define([
       "util/jsonmodel"
-    , "order!jquery"
-    , "order!ui/jquery.ui.sortable"
-    , "order!jlib/slickgrid/jquery.event.drag-2.0.min"
-    , "order!jlib/slickgrid/slick.core"
-    , "order!jlib/slickgrid/slick.grid"
-    , "order!jlib/slickgrid/slick.dataview"
-    , "order!jlib/slickgrid/slick.pager"
-    , "order!jlib/slickgrid/slick.columnpicker"
 ],
 
 function(jsonmodel) {
