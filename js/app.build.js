@@ -6,5 +6,5 @@
         'jquery' : 'empty:'
     }
     , name: "main"
-    , optimize: "none"
+//    , optimize: "none"
 })
