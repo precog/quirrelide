@@ -4,6 +4,26 @@ define('ISCLI', PHP_SAPI === 'cli');
 $GLOBALS['allowedformats'] = array("json", "csv", "zip");
 
 // UTILS
+function trace() {
+	$args = func_get_args();
+	foreach ($args as $key => $message) {
+		if(!is_string($message))
+			$args[$key] = json_encode($message);
+	}
+
+	error_log((ISCLI ? "CLI" : "SER").": ".implode(" ", $args)."\n", 3, "/tmp/ide-upload.log");
+}
+
+function handleShutdown() {
+	global $file;
+    $error = error_get_last();
+    if($error !== NULL) {
+        $info = "[SHUTDOWN] file:".$error['file']." | ln:".$error['line']." | msg:".$error['message'] .PHP_EOL;
+        trace($info, $error);
+        clierror($file, "The entry required too much memory.");
+    }
+}
+
 function get_request_headers() {
     $headers = array();
     foreach($_SERVER as $key => $value) {
@@ -24,6 +44,7 @@ function jsonmessage($msg) {
 }
 
 function error($msg) {
+	trace("ERROR:", $msg);
 	header('HTTP/1.1 500 Internal Server');
 	message(array('error' => $msg, 'code' => 500));
 }
@@ -45,8 +66,12 @@ function changestatuspermissions($file) {
 	chmod(statusfile($file), 0666);
 }
 
+function delete_file($file) {
+//    unlink($file);
+}
+
 function removestatus($file) {
-	unlink(statusfile($file));
+	delete_file(statusfile($file));
 }
 
 function tmpstatusfile($id) {
@@ -56,14 +81,14 @@ function tmpstatusfile($id) {
 }
 
 function cliterminate($file) {
-	unlink($file);
+	delete_file($file);
 	sleep(5);
 	removestatus($file);
 	die;
 }
 
 function clierror($file, $error) {
-	echo "$error\n";
+	trace("ERROR:", $error, "\nfor:", $file);
 	writestatus($file, array("error" => $error, "code" => 500 ));
 	cliterminate($file);
 }
@@ -91,8 +116,9 @@ function status($id) {
 
 function extractFiles($file, $destination, $formats) {
 	$zip = new ZipArchive();
-	if($zip->open($file) === false)
+	if($zip->open($file) === false) {
 		return null;
+	}
 	$entries = array();
 	$results = array('records' => array(), 'failures' => 0);
 	for($i = 0; $i < $zip->numFiles; $i++) {
@@ -104,9 +130,24 @@ function extractFiles($file, $destination, $formats) {
 				try {
 					copy('zip://'.$file.'#'.$entry, $destination.$entry);
 				} catch(Exception $e) {
+					trace("unable to extract the entry $entry", $e);
 					continue;
 				}
-				$content = file_get_contents($destination.$entry);
+				if(!file_exists($destination.$entry)) {
+					clierror($file, "unable to find the '$entry' entry");
+				}
+				try {
+					$content = file_get_contents($destination.$entry);
+				} catch(Exception $e) {
+					clierror($file, "unable to open '$entry'. " . $e);
+				}
+				if($content === FALSE) {
+					clierror($file, "unable to open '$entry', file is too big.");
+				}
+				if(!trim($content)) {
+					trace("skipping empty file $entry");
+					continue;
+				}
 				switch($format) {
 					case "csv":
 						$result = parsecsv($content);
@@ -128,7 +169,11 @@ function extractFiles($file, $destination, $formats) {
 }
 
 function parsezip($file) {
-    return extractFiles($file, sys_get_temp_dir(), array('json', 'csv'));
+	try {
+    	return extractFiles($file, sys_get_temp_dir(), array('json', 'csv'));
+	} catch(Exception $e) {
+		clierror($file, "unable to extract files from zip.", $e);
+	}
 }
 
 function parsejson($content) {
@@ -193,6 +238,11 @@ function parsecsv($content) {
 		return array("records" => $records, "failures" => 0);
 }
 
+function humanizeBytes($size) {
+    $unit=array('b','kb','mb','gb','tb','pb');
+    return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+}
+
 function track($file, $format, $path, $token, $service) {
 	require("php/Precog.php");
 	// open file
@@ -234,7 +284,7 @@ function track($file, $format, $path, $token, $service) {
 		clistatus($file, ++$current, $total, $result['failures']);
 	}
 	// delete $filename
-	unlink($file);
+	delete_file($file);
 	// write final status file
 	clistatus($file, $total, $total, $result['failures']);
 	die("stored $total events ({$result['failures']} failures)");
@@ -266,32 +316,33 @@ function execute($id, $upload, $path, $token, $service) {
 
 // APP
 if(ISCLI) {
+	register_shutdown_function('handleShutdown');
 	try {
 		// check arguments length
 		if(!isset($argv) || count($argv) != 6) {
 			// no filename ... no way to send a proper message
+			trace("invalid number of arguments");
 			die("invalid number of arguments\n");
 		}
 		array_shift($argv);
 		// get arguments
 		list($file, $format, $path, $token, $service) = $argv;
-
-		if(!is_file($file))
+		if(!is_file($file)) {
+			trace("no data file");
 			die("no data file");
+		}
 		if(!$format)  clierror($file, "invalid format argument");
 		if(!$path)    clierror($file, "invalid path argument");
 		if(!$token)   clierror($file, "invalid token argument");
 		if(!$service) clierror($file, "invalid service argument");
 		track($file, $format, $path, $token, $service);
 	} catch(Exception $e) {
-		$dir = dirname(__FILE__);
-		file_put_contents($dir."/clierror", $e);
+		trace($e);
 	}
 } elseif(isset($_GET['uuid'])) {
 	status($_GET['uuid']);
 } elseif (strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
-	if(@$_FILES["file"]["error"])
-	{
+	if(@$_FILES["file"]["error"]) {
 		error($_FILES["file"]["error"]);
 	}
 	$headers = get_request_headers();
@@ -312,11 +363,18 @@ if(ISCLI) {
 	$filename = $headers["X-File-Name"];
 
 
+	if(!isset($_FILES["file"])) {
+		error("uploaded file is too big for the IDE (max upload size is: ".ini_get('post_max_size').")");
+	}
 	$file = $_FILES["file"];
 
-	execute($id, $file, $path, $token, $service);
-	message(array("message" => "tracking service started: " . tmpstatusfile($id) . " $path $token $service"));
-	exit();
+	try {
+		execute($id, $file, $path, $token, $service);
+		message(array("message" => "tracking service started: " . tmpstatusfile($id) . " $path $token $service"));
+		exit();
+	} catch(Exception $e) {
+		error("unable to initialize the track queue:", $e);
+	}
 } else {
 	error("Invalid Call");
 }

@@ -340,6 +340,7 @@ define([
                     pollStatus(noty, id);
                 }
                 function errorHandler(e) {
+
                     var err = JSON.parse(e.responseText);
                     noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + err.error);
                 }
