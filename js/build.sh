@@ -1,4 +1,3 @@
-clear
 cp ace/css/editor.css ../build/js/ace/css/editor.css
 cp ace/theme/textmate.css ../build/js/ace/theme/textmate.css
 
