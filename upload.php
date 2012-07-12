@@ -2,7 +2,7 @@
 
 define('ISCLI', PHP_SAPI === 'cli');
 $GLOBALS['allowedformats'] = array("json", "csv", "zip");
-
+$errorReported = false;
 // UTILS
 function trace() {
 	$args = func_get_args();
@@ -16,8 +16,9 @@ function trace() {
 
 function handleShutdown() {
 	global $file;
+	global $errorReported;
     $error = error_get_last();
-    if($error !== NULL) {
+    if($error !== NULL && !$errorReported) {
         $info = "[SHUTDOWN] file:".$error['file']." | ln:".$error['line']." | msg:".$error['message'] .PHP_EOL;
         trace($info, $error);
         clierror($file, "The entry required too much memory.");
@@ -88,9 +89,11 @@ function cliterminate($file) {
 }
 
 function clierror($file, $error) {
+	global $errorReported;
 	trace("ERROR:", $error, "\nfor:", $file);
 	writestatus($file, array("error" => $error, "code" => 500 ));
 	cliterminate($file);
+	$errorReported = true;
 }
 
 function clistatus($file, $done, $total, $failures) {
