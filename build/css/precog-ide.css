@@ -335,6 +335,9 @@ html > body .ui-pnotify {
     padding: 7px;
     border-bottom-width: 1px;
 }
+.pg-ide .pg-support-tabs .ui-tabs-panel {
+    clear: left;
+}
 @keyframes progressbg
 {
     0%   {background-position: 0 0;}
