@@ -1,6 +1,6 @@
 define([
-      "util/traverse"
-    , "util/storage"
+      "app/util/traverse"
+    , "app/util/storage"
 ],
 
 function(traverse, buildStorage) {

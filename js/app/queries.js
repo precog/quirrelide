@@ -1,11 +1,11 @@
 define([
-      "util/precog"
-    , "util/storagemonitor"
-    , "util/ui"
-    , "util/utils"
-    , "config/demo-queries"
-    , "text!templates/toolbar.folders.html"
-    , "text!templates/menu.context.queries.query.html"
+      "app/util/precog"
+    , "app/util/storagemonitor"
+    , "app/util/ui"
+    , "app/util/utils"
+    , "app/config/demo-queries"
+    , "rtext!templates/toolbar.folders.html"
+    , "rtext!templates/menu.context.queries.query.html"
 ],
 function(precog, createStore, ui, utils, demo, tplToolbar, tplQueryContextMenut) {
     var list = [],

@@ -1,8 +1,8 @@
 define([
-      "util/jsonmodel"
-    , "util/ui"
-    , "util/notification"
-    , "text!templates/panel.options.chart-output.html"
+      "app/util/jsonmodel"
+    , "app/util/ui"
+    , "app/util/notification"
+    , "rtext!templates/panel.options.chart-output.html"
     , "https://api.reportgrid.com/js/reportgrid-core.js"
     , "https://api.reportgrid.com/js/reportgrid-charts.js"
 ],

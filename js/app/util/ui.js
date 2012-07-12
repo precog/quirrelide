@@ -1,5 +1,18 @@
 define([
-
+      'jquery'
+    , 'libs/jquery/ui/jquery.ui.core'
+    , 'libs/jquery/ui/jquery.ui.position'
+    , 'libs/jquery/ui/jquery.ui.widget'
+    , 'libs/jquery/ui/jquery.ui.mouse'
+    , 'libs/jquery/ui/jquery.ui.resizable'
+    , 'libs/jquery/ui/jquery.ui.button'
+//    , 'libs/jquery/ui/jquery.ui.sortable'
+//    , 'libs/jquery/ui/jquery.ui.draggable'
+//    , 'libs/jquery/ui/jquery.ui.dialog'
+//    , 'libs/jquery/ui/jquery.ui.position'
+    , 'libs/jquery/ui/jquery.ui.progressbar'
+    , 'libs/jquery/ui/jquery.ui.tabs'
+    , 'libs/jquery/ui/jquery.ui.menu'
 ],
 
 function() {

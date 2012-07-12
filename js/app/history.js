@@ -1,7 +1,7 @@
 define([
-      "util/precog"
-    , "util/storage"
-    , "util/md5"
+      "app/util/precog"
+    , "app/util/storage"
+    , "app/util/md5"
 ],
 function(precog, createStorage, md5) {
     var wrapper,

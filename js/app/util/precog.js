@@ -1,6 +1,6 @@
 define([
-      "util/querystring"
-    , "util/md5"
+      "app/util/querystring"
+    , "app/util/md5"
     , "https://api.reportgrid.com/js/precog.js"
 ],
 
@@ -10,7 +10,7 @@ function(qs, md5){
     var config   = window.Precog.$.Config,
         params   = ["tokenId", "analyticsService", "basePath"],
         contexts = [null],
-        reprecog = /(require|precog)[^.]*.js[?]/i;
+        reprecog = /(require|precog|quirrel)[^.]*.js[?]/i;
 
     $('script').each(function() {
         if(!this.src || !reprecog.test(this.src)) return;

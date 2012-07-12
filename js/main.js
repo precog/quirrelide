@@ -1,35 +1,40 @@
 requirejs.config({
-    waitSeconds : 4,
-    paths : {
-          'ui'     : 'libs/jquery/ui'
-        , 'util'   : 'app/util'
-        , 'jlib'   : 'libs/jquery'
-        , 'config' : 'app/config'
-        , 'editor' : 'libs/editor'
-        , 'ace'    : 'libs/editor/ace'
-    },
+    waitSeconds : 20,
+    baseUrl: "./js/",
     shim : {
-          'jlib/slickgrid/jquery.event.drag-2.0.min' : ['jquery']
-        , 'jlib/slickgrid/slick.core' : ['jlib/slickgrid/jquery.event.drag-2.0.min']
-        , 'jlib/slickgrid/slick.grid' : ['jlib/slickgrid/slick.core', 'ui/jquery.ui.sortable']
-        , 'jlib/slickgrid/slick.dataview' : ['jlib/slickgrid/slick.grid']
-        , 'jlib/slickgrid/slick.pager' : ['jlib/slickgrid/slick.dataview']
-        , 'jlib/slickgrid/slick.columnpicker' : ['jlib/slickgrid/slick.pager']
-        , 'util/output-table' : ['jlib/slickgrid/slick.columnpicker']
-        , 'ui/jquery.ui.core' : ['jquery']
-        , 'ui/jquery.ui.widget' : ['ui/jquery.ui.core']
-        , 'ui/jquery.ui.mouse' : ['ui/jquery.ui.widget']
-        , 'ui/jquery.ui.button' : ['ui/jquery.ui.mouse']
-        , 'ui/jquery.ui.sortable' : ['ui/jquery.ui.widget']
-        , 'ui/jquery.ui.dialog' : ['util/ui', 'ui/jquery.ui.draggable', 'ui/jquery.ui.position', 'ui/jquery.ui.resizable', 'ui/jquery.ui.dialog']
-        , 'ui/jquery.ui.progressbar' : ['ui/jquery.ui.widget']
-        , 'ui/jquery.ui.tabs' : ['ui/jquery.ui.button']
-        , 'ui/jquery.ui.menu' : ['ui/jquery.ui.button']
-        , 'util/ui' : ['ui/jquery.ui.menu', 'ui/jquery.ui.tabs', 'ui/jquery.ui.progressbar']
-        , 'jlib/layout/jquery.layout' : ['util/ui', 'ui/jquery.ui.core', 'ui/jquery.ui.widget', 'ui/jquery.ui.mouse', 'ui/jquery.ui.draggable', 'jlib/layout/jquery.layout']
-        , 'jlib/jstree/jstree' : ['jlib/jstree/vakata']
-        , 'jlib/jstree/jstree.themes' : ['jlib/jstree/jstree']
-        , 'app/folders' : ['jlib/jstree/jstree.themes']
+        // JQUERY UI
+          'libs/jquery/ui/jquery.ui.core'  : ['jquery']
+        , 'libs/jquery/ui/jquery.ui.position' : ['libs/jquery/ui/jquery.ui.core']
+        , 'libs/jquery/ui/jquery.ui.widget' : ['libs/jquery/ui/jquery.ui.core']
+        , 'libs/jquery/ui/jquery.ui.mouse' : ['libs/jquery/ui/jquery.ui.widget']
+        , 'libs/jquery/ui/jquery.ui.resizable' : ['libs/jquery/ui/jquery.ui.mouse']
+        , 'libs/jquery/ui/jquery.ui.button' : ['libs/jquery/ui/jquery.ui.widget']
+        , 'libs/jquery/ui/jquery.ui.sortable' : ['libs/jquery/ui/jquery.ui.widget']
+        , 'libs/jquery/ui/jquery.ui.draggable' : ['libs/jquery/ui/jquery.ui.mouse']
+        , 'libs/jquery/ui/jquery.ui.dialog' : [
+              'libs/jquery/ui/jquery.ui.widget'
+            , 'libs/jquery/ui/jquery.ui.draggable'
+            , 'libs/jquery/ui/jquery.ui.button'
+            , 'libs/jquery/ui/jquery.ui.position'
+            , 'libs/jquery/ui/jquery.ui.resizable'
+        ]
+        , 'libs/jquery/ui/jquery.ui.progressbar' : ['libs/jquery/ui/jquery.ui.widget']
+        , 'libs/jquery/ui/jquery.ui.tabs' : ['libs/jquery/ui/jquery.ui.widget']
+        , 'libs/jquery/ui/jquery.ui.menu' : ['libs/jquery/ui/jquery.ui.widget']
+
+        , 'libs/jquery/slickgrid/jquery.event.drag-2.0.min' : ['jquery']
+        , 'libs/jquery/slickgrid/slick.core' : ['libs/jquery/slickgrid/jquery.event.drag-2.0.min', 'libs/jquery/ui/jquery.ui.sortable']
+        , 'libs/jquery/slickgrid/slick.grid' : ['libs/jquery/slickgrid/slick.core']
+        , 'libs/jquery/slickgrid/slick.dataview' : ['libs/jquery/slickgrid/slick.grid']
+        , 'libs/jquery/slickgrid/slick.pager' : ['libs/jquery/slickgrid/slick.dataview']
+        , 'libs/jquery/slickgrid/slick.columnpicker' : ['libs/jquery/slickgrid/slick.pager']
+        , 'app/util/output-table' : ['libs/jquery/slickgrid/slick.columnpicker']
+
+        , 'app/util/ui' : ['libs/jquery/ui/jquery.ui.menu', 'libs/jquery/ui/jquery.ui.tabs', 'libs/jquery/ui/jquery.ui.progressbar']
+        , 'libs/jquery/layout/jquery.layout' : ['libs/jquery/ui/jquery.ui.draggable']
+        , 'libs/jquery/jstree/jstree' : ['libs/jquery/jstree/vakata']
+        , 'libs/jquery/jstree/jstree.themes' : ['libs/jquery/jstree/jstree']
+        , 'app/folders' : ['libs/jquery/jstree/jstree.themes']
     }
 });
 
@@ -42,15 +47,15 @@ require([
     , 'app/bar-editor'
     , 'app/bar-status'
     , 'app/theme'
-    , 'editor/editor.ace'
+    , 'app/editor/editor.ace'
     , 'app/editorsync'
     , 'app/output'
     , 'app/folders'
     , 'app/queries'
     , 'app/support'
     , 'app/startup-tips'
-    , 'util/precog'
-    , 'util/querystring'
+    , 'app/util/precog'
+    , 'app/util/querystring'
 ],
 
 function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {

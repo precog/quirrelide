@@ -1,9 +1,9 @@
 define([
-      "util/output-table"
-    , "util/output-json"
-    , "util/output-chart"
-    , "util/output-error"
-    , "util/output-message"
+      "app/util/output-table"
+    , "app/util/output-json"
+    , "app/util/output-chart"
+    , "app/util/output-error"
+    , "app/util/output-message"
 ],
 
 function() {
@@ -39,15 +39,18 @@ function() {
             }
         }];
 
-    $.each(formats, function(_, format) {
+    for(var i = 0; i < formats.length; i++) {
+        var format = formats[i];
+        if("function" === typeof format)
+            formats[i] = format = format();
+
         $.each(empties, function(_, empty) {
-            if("undefined" === typeof format[empty.name])
-            {
+            if("undefined" === typeof format[empty.name]) {
 //                console.log("assigning " + empty.name + " to " + format.name);
                 format[empty.name] = empty.f();
             }
         });
-    });
+    }
 
     return formats;
 });

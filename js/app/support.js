@@ -1,5 +1,5 @@
 define([
-    "util/ui"
+    "app/util/ui"
 ], function(ui) {
 
     return function(el) {

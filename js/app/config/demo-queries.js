@@ -1,5 +1,5 @@
 define([
-    "util/utils"
+    "app/util/utils"
 ],
 
 function(utils) {

@@ -1,13 +1,13 @@
 define([
-      "util/notification"
-    , "util/ui"
-    , "util/storage"
-    , "text!templates/content.tip.main.html"
-    , "text!templates/content.tip.codepane.html"
-    , "text!templates/content.tip.filesystem.html"
-    , "text!templates/content.tip.querybrowser.html"
-    , "text!templates/content.tip.resultspane.html"
-    , "text!templates/content.tip.supportpane.html"
+      "app/util/notification"
+    , "app/util/ui"
+    , "app/util/storage"
+    , "rtext!templates/content.tip.main.html"
+    , "rtext!templates/content.tip.codepane.html"
+    , "rtext!templates/content.tip.filesystem.html"
+    , "rtext!templates/content.tip.querybrowser.html"
+    , "rtext!templates/content.tip.resultspane.html"
+    , "rtext!templates/content.tip.supportpane.html"
 ],
 function(notification, ui, createStore, tplMain, tplCode, tplFileSystem, tplQueryBrowser, tplResultsPane, tplSupportPane) {
     var STORE_KEY = "pg-quirrel-tips",

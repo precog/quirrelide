@@ -1,10 +1,10 @@
 ({
-    appDir: "./",
-    baseUrl: "./",
-    dir: "../build/js",
-    modules: [
-        {
-            name: "main"
-        }
-    ]
+      baseUrl: "./"
+    , out: "../build/js/precog-ide.js"
+    , mainConfigFile: 'main.js'
+    , paths : {
+        'jquery' : 'empty:'
+    }
+    , name: "main"
+//    , optimize: "none"
 })

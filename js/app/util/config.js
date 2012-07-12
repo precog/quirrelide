@@ -1,5 +1,5 @@
 define([
-      "util/storagemonitor"
+      "app/util/storagemonitor"
 ],
 
 function(createStore) {
