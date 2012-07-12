@@ -19,7 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *      Fabian Jakobs <fabian AT ajax DOT org>
+ *      William Candillon <wcandillon AT gmail DOT com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,59 +34,53 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
+ 
 define(function(require, exports, module) {
 "use strict";
-
+    
 var oop = require("../lib/oop");
 var Mirror = require("../worker/mirror").Mirror;
-var coffee = require("../mode/coffee/coffee-script");
+var xquery = require("xquery/xquery");
+var Tokenizer = require("../tokenizer").Tokenizer;
+var XQueryHighlightRules = require("./xquery_highlight_rules").XQueryHighlightRules;
 
 window.addEventListener = function() {};
 
 
-var Worker = exports.Worker = function(sender) {
+var XQueryWorker = exports.XQueryWorker = function(sender) {
     Mirror.call(this, sender);
     this.setTimeout(200);
 };
 
-oop.inherits(Worker, Mirror);
+oop.inherits(XQueryWorker, Mirror);
 
 (function() {
-
-    this.onUpdate = function() {
-        var value = this.doc.getValue();
-
-        try {
-            coffee.parse(value);
-        } catch(e) {
-            var m = e.message.match(/Parse error on line (\d+): (.*)/);
-            if (m) {
-                this.sender.emit("error", {
-                    row: parseInt(m[1], 10) - 1,
-                    column: null,
-                    text: m[2],
-                    type: "error"
-                });
-                return;
-            }
-
-            if (e instanceof SyntaxError) {
-                var m = e.message.match(/ on line (\d+)/);
-                if (m) {
-                    this.sender.emit("error", {
-                        row: parseInt(m[1], 10) - 1,
-                        column: null,
-                        text: e.message.replace(m[0], ""),
-                        type: "error"
-                    });
-                }
-            }
-            return;
-        }
-        this.sender.emit("ok");
-    };
-
-}).call(Worker.prototype);
+    
+  this.onUpdate = function() {
+    this.sender.emit("start");
+    var value = this.doc.getValue();    
+    var parser = xquery.getParser(value);
+    var ast = parser.p_Module();
+    if(parser.hasErrors()) {
+		  var errors = parser.getErrors();
+	    var i = 0;
+      for(i in errors) {
+	      var error = errors[i];
+	      this.sender.emit("error", {
+	        row: error.line,
+          column: error.column,
+	        text: error.message,
+	        type: "error"
+       });
+      }	
+    } else {
+     this.sender.emit("ok");
+    }
+    parser.highlighter.tokenizer = new Tokenizer(new XQueryHighlightRules().getRules());
+    var tokens = parser.highlighter.getTokens();
+    this.sender.emit("highlight", tokens);
+  };
+    
+}).call(XQueryWorker.prototype);
 
 });

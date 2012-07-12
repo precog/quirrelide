@@ -42,27 +42,31 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 "use strict";
 
-var assert = require("../../test/assertions");
-var coffee = require("../coffee/coffee-script");
+var oop = require("oop");
+var EventEmitter = require("./event_emitter").EventEmitter;
+var assert = require("../test/assertions");
 
+var Emitter = function() {};
+
+oop.implement(Emitter.prototype, EventEmitter);
 
 module.exports = {
+    "test: dispatch event with no data" : function() {
+        var emitter = new Emitter();
 
-    "test parse valid coffee script": function() {
-        coffee.parse("square = (x) -> x * x");
-    },
-    
-    "test parse invalid coffee script": function() {
-        try {
-            coffee.parse("a = 12 f");
-        } catch (e) {
-            assert.ok((e + "").indexOf("Parse error on line 1: Unexpected 'IDENTIFIER'") >= 0);
-        }
+        var called = false;
+        emitter.addEventListener("juhu", function(e) {
+           called = true;
+           assert.equal(e.type, "juhu");
+        });
+
+        emitter._emit("juhu");
+        assert.ok(called);
     }
 };
 
 });
 
 if (typeof module !== "undefined" && module === require.main) {
-    require("asyncjs").test.testcase(module.exports).exec();
+    require("asyncjs").test.testcase(module.exports).exec()
 }

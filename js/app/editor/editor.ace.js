@@ -1,8 +1,8 @@
 define([
       "require"
-    , "ace/ace"
-    , "util/ui"
-    , "ace/mode/quirrel"
+    , "libs/editor/ace/ace"
+    , "app/util/ui"
+    , "libs/editor/ace/mode/quirrel"
 ],
 
 function(require, ace, ui) {
@@ -30,7 +30,7 @@ function(require, ace, ui) {
         editor.setShowPrintMargin(false);
         sess = editor.getSession();
         sess.setUseWrapMode(true);
-        sess.setMode(new (require("ace/mode/quirrel").Mode)());
+        sess.setMode(new (require("libs/editor/ace/mode/quirrel").Mode)());
         sess.getSelection().on("changeCursor", function() {
             $(wrapper).trigger("changeCursor", editor.getCursorPosition());
         });
@@ -118,7 +118,7 @@ function(require, ace, ui) {
                 return sess.getUseSoftTabs();
             },
             setTheme : function(theme) {
-                var path = "ace/theme/" + theme;
+                var path = "libs/editor/ace/theme/" + theme;
                 require([path], function() {
                     editor.setTheme(path);
                 });
