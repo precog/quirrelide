@@ -426,8 +426,9 @@ html > body .ui-pnotify {
 }
 .pg-logo {
     background-repeat: no-repeat;
-    width: 220px;
-    height: 28px;
+    width: 177px;
+    height: 21px;
+    padding-top: 4px;
     float: left;
 }
 .pg-precog {
