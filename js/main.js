@@ -229,9 +229,10 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 
     $(editors).on('activated', function(e, index) {
         editorbar.activateTab(index);
-        setTimeout(function() {
+        clearInterval(this.k);
+        this.k = setTimeout(function() {
             invalidationSuspended = false;
-        }, 2000);
+        }, 1000);
         if(editorbar.historyPanelIsOpen()) {
             refreshHistoryList();
         }
