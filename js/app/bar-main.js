@@ -1,5 +1,5 @@
 define([
-    "order!util/ui"
+      "util/ui"
     , "text!templates/toolbar.main.html"
     , "text!templates/menu.settings.html"
     , "util/fullscreen"

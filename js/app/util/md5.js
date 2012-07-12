@@ -1,4 +1,8 @@
-define([], function() {
+define([
+
+],
+
+function() {
     var Md5 = {
         bitOR: function(a,b) { var lsb = a & 1 | b & 1; var msb31 = a >>> 1 | b >>> 1; return msb31 << 1 | lsb; },
         bitXOR: function(a,b) { var lsb = a & 1 ^ b & 1; var msb31 = a >>> 1 ^ b >>> 1; return msb31 << 1 | lsb; },

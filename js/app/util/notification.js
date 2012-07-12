@@ -1,7 +1,9 @@
 define([
       "util/dom"
     , "jlib/pnotify/jquery.pnotify"
-], function(dom) {
+],
+
+function(dom) {
     var timeout = 5000,
         shorttimeout = 2500,
         longtimeout  = 10000;
@@ -9,23 +11,22 @@ define([
     function defaultHandler(v) { return v; };
 
     var map = [
-          { src : "text", dst : "pnotify_text", handler : defaultHandler }
-        , { src : "type", dst : "pnotify_type", handler : defaultHandler }
-        , { src : "icon", dst : "pnotify_notice_icon", handler : function(v) { return "ui-icon "+v; } }
-        , { src : "timeout", dst : "pnotify_delay", handler : defaultHandler }
-        , { src : "hide", dst : "pnotify_hide", handler : defaultHandler }
-        , { src : "before_open", dst : "pnotify_before_open", handler : defaultHandler }
-        , { src : "before_close", dst : "pnotify_before_close", handler : defaultHandler }
-        , { src : "after_open",  dst : "pnotify_after_open", handler : defaultHandler }
-        , { src : "after_close", dst : "pnotify_after_close", handler : defaultHandler }
-        , { src : "history", dst : "pnotify_history", handler : defaultHandler }
-        , { src : "sticker", dst : "pnotify_sticker", handler : defaultHandler }
-        , { src : "width", dst : "pnotify_width", handler : defaultHandler }
-        , { src : "min_height", dst : "pnotify_min_height", handler : defaultHandler }
-        , { src : "opacity", dst : "pnotify_opacity", handler : defaultHandler }
-        , { src : "stack", dst : "pnotify_stack", handler : defaultHandler }
-        , { src : "shadow", dst : "pnotify_shadow", handler : defaultHandler }
-//        , { src : "", dst : "pnotify_", handler : defaultHandler }
+          { src : "text", dst : "text", handler : defaultHandler }
+        , { src : "type", dst : "type", handler : defaultHandler }
+        , { src : "icon", dst : "notice_icon", handler : function(v) { return "ui-icon "+v; } }
+        , { src : "timeout", dst : "delay", handler : defaultHandler }
+        , { src : "hide", dst : "hide", handler : defaultHandler }
+        , { src : "before_open", dst : "before_open", handler : defaultHandler }
+        , { src : "before_close", dst : "before_close", handler : defaultHandler }
+        , { src : "after_open",  dst : "after_open", handler : defaultHandler }
+        , { src : "after_close", dst : "after_close", handler : defaultHandler }
+        , { src : "history", dst : "history", handler : defaultHandler }
+        , { src : "sticker", dst : "sticker", handler : defaultHandler }
+        , { src : "width", dst : "width", handler : defaultHandler }
+        , { src : "min_height", dst : "min_height", handler : defaultHandler }
+        , { src : "opacity", dst : "opacity", handler : defaultHandler }
+        , { src : "stack", dst : "stack", handler : defaultHandler }
+        , { src : "shadow", dst : "shadow", handler : defaultHandler }
     ];
 
     function applyOptions(src, dst, map) {
@@ -41,13 +42,20 @@ define([
             o = o || {};
 
             var options = {
-                  pnotify_title : title
-                , pnotify_shadow : true
-                , pnotify_delay : timeout
-                , pnotify_sticker : false
+                  title : title
+                , shadow : true
+                , delay : timeout
+                , sticker : false
+                , insert_brs : false
+                , styling : "jqueryui"
+                , title_escape : false
+                , text_escape : false
             };
 
             applyOptions(o, options, map);
+
+            if(!options.text) options.text = "";
+            options.text += '\n<div class="pg-clear"></div>';
 
             return $.pnotify(options);
         },
@@ -148,6 +156,14 @@ define([
             o.shadow = true;
             o.type = "info";
             o.opacity = 0.95;
+
+            var old = o.before_close;
+            o.before_close = function(e) {
+                if(old)
+                    old.apply(this, e);
+                remove_resize(this, e);
+            };
+
             var n = this.success(title, o);
 
             function center() {
@@ -166,14 +182,6 @@ define([
             function remove_resize() {
                 $(window).off("resize", center);
             }
-
-            var old = o.before_close;
-            o.before_close = function(e) {
-                console.log(old);
-                if(old)
-                    old.apply(this, e);
-                remove_resize(this, e);
-            };
 
             setTimeout(center, 0);
             return n;

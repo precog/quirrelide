@@ -2,7 +2,7 @@ define([
       "util/ui"
     , "config/output-results"
     , "config/output-formats"
-    , "order!util/dialog-export"
+    , "util/dialog-export"
     , "text!templates/toolbar.output.html"
 ],
 
@@ -26,7 +26,8 @@ function(ui, formats, exportLanguages, openDialog, tplToolbar) {
             elToolbarTypeContext = el.find('.pg-toolbar-context .pg-toolbar-result-type'),
             elToolbarMainContext = el.find('.pg-toolbar-context .pg-toolbar-result-general'),
             elOutputs = elToolbar.find('.pg-output-formats'),
-            elResult  = el.find('.pg-result');
+            elResult  = el.find('.pg-result'),
+            lastOptions;
 
         ui.button(elToolbarMainContext, {
             icon : "ui-icon-arrowthickstop-1-s",
@@ -51,7 +52,7 @@ function(ui, formats, exportLanguages, openDialog, tplToolbar) {
                         last.current = format.type;
                         return;
                     }
-                    wrapper.set(last.result, format.type);
+                    wrapper.setOutput(last.result, format.type, lastOptions);
                 });
             }
 
@@ -63,7 +64,7 @@ function(ui, formats, exportLanguages, openDialog, tplToolbar) {
             $(format.toolbar).hide();
             $(format.panel).hide();
             $(format).on("update", function() {
-                wrapper.set();
+                wrapper.setOutput(null, null, lastOptions);
             });
             $(format).on("optionsChanged", function(_, options) {
                 $(wrapper).trigger("optionsChanged", options);
@@ -106,10 +107,14 @@ function(ui, formats, exportLanguages, openDialog, tplToolbar) {
         }
 
         return wrapper = {
-            set : function(result, type, options) {
+            setOutput : function(result, type, options) {
                 if("undefined" === typeof result)
                     result = result || last.result || null;
                 type = type || last.current || 'table';
+                if(!options) {
+                    options = {};
+                }
+                lastOptions = options;
 
                 if(result == null) {
                     activatePanel({ message : "please, type and execute a query" }, type = "message", options);

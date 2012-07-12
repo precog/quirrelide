@@ -1,12 +1,12 @@
 define([
-      "order!util/ui"
+      "util/ui"
     , "app/editors"
     , "util/notification"
     , "util/querystring"
     , "util/converters"
     , "util/utils"
-    , "order!util/dialog-export"
-    , "order!util/dialog-lineinput"
+    , "util/dialog-export"
+    , "util/dialog-lineinput"
     , "config/output-languages"
     , "text!templates/toolbar.editor.html"
 
@@ -14,7 +14,6 @@ define([
 ],
 
 // TODO remove editors dependency
-// TODO remove queries dependency
 // TODO add invalidate tab content
 
 function(ui, editors, notification, qs, conv, utils, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
@@ -50,6 +49,23 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
                 editors.activate(index);
             }
         }, 'li a');
+
+        function getIndexByName(name) {
+            var len = tabs.find("li a").length;
+            for(var i = 0; i < len; i++) {
+                if(getTabName(i) === name)
+                    return i;
+            }
+            return -1;
+        }
+
+        function getTabName(index) {
+            var el = getTabLabelElement(index),
+                name = el.text();
+            if(name.substr(0, 1) === "*")
+                name = name.substr(1);
+            return name;
+        }
 
         function getTabLabelElement(index) {
             return tabs.find("li:nth("+index+") a");
@@ -182,12 +198,15 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
             ;
         }
 
+
+        var historypanel;
+
         return wrapper = {
             addTab : function(name, dirty) {
                 tabs.tabs("add", "#pg-editor-tab-" + (++index), utils.truncate(name));
-                if(dirty)
+                if(dirty) {
                     this.invalidateTab(index-1);
-
+                }
 
                 var closers = tabs.find(".pg-tab-close");
                 if(closers.length == 1) {
@@ -198,17 +217,23 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
             },
             removeTab : function(index) {
                 tabs.tabs("remove", index);
-
                 var closers = tabs.find(".pg-tab-close");
-                if(closers.length == 1) {
+                if(closers.length === 1) {
                     closers.hide();
                 }
+            },
+            removeTabByName : function(name) {
+                var index = getIndexByName(name);
+                if(index >= 0)
+                    this.removeTab(index);
             },
             activateTab : function(index) {
                 tabs.tabs("select", index);
             },
             changeTabName : function(index, name) {
+                var old = getTabName(index);
                 changeTabName(index, name);
+                $(wrapper).trigger("tabrenamed", { oldname : old, newname : name });
             },
             invalidateTab : function(index) {
                 invalidateTab(index);
@@ -217,28 +242,48 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
                 revalidateTab(index);
             },
             displayHistoryList : function(data) {
+                if(historypanel) {
+                    historypanel.remove();
+                }
                 var text;
-                data.shift(); // remove current elements
                 if(data.length == 0) {
                     text = "No queries have been performed yet in this editor context.";
                 } else {
                     text = '<div class="pg-history"><ul><li>'+data.map(formatHistoryItem).join('</li><li>')+'</li></ul></div>';
                 }
-                var n = notification.context("History", {
+                historypanel = notification.context("History", {
                     target: history,
                     text : text
                 });
-                n.find(".pg-toolbar").each(function(index) {
+                historypanel.find(".pg-toolbar").each(function(index) {
                     var item = data[index];
                     $(this).append("open in ")
+                    if(index !== 0) {
+                        ui.button(this, {
+                            label : "current tab",
+                            handler : function() {
+                                historypanel.remove();
+                                $(wrapper).trigger("requestopenrevision", {
+                                    usenewtab : false,
+                                    index : index
+                                });
+                            }
+                        });
+                    }
                     ui.button(this, {
-                        label : "current tab"
-                    });
-                    ui.button(this, {
-                        label : "new tab"
+                        label : "new tab",
+                        handler : function() {
+                            historypanel.remove();
+                            $(wrapper).trigger("requestopenrevision", {
+                                usenewtab : true,
+                                index : index
+                            });
+                        }
                     });
                 });
-                console.log("displayHistoryList", JSON.stringify(data));
+            },
+            historyPanelIsOpen : function() {
+                return historypanel && historypanel.is(":visible");
             }
         }
     }

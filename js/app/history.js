@@ -10,6 +10,8 @@ function(precog, createStorage, md5) {
         store = createStorage(STORAGE_KEY);
 
     function encode(name) {
+//        if(name.substr(0,1) === "*")
+//            name = name.substr(1);
         var map = this.map || (this.map = {});
         if(!map[name]) {
             map[name] = md5(name);
@@ -27,7 +29,7 @@ function(precog, createStorage, md5) {
             var id = encode(name),
                 history = store.get("history."+id, []);
             code = code.trim();
-            if(code === history[0] && history[0].code) return;
+            if(code === (history[0] && history[0].code)) return;
             var value  = (data && "undefined" !== typeof data[0]) ? data[0] : null,
                 length = (data && data.length) || 0,
                 timestamp = +new Date();
@@ -48,7 +50,7 @@ function(precog, createStorage, md5) {
             store.set("history."+id, history, true);
         },
         load : function(name, index) {
-            var history = this.revisions(),
+            var history = this.revisions(name),
                 rev = history[index];
             if(!rev) return null;
 
@@ -68,17 +70,17 @@ function(precog, createStorage, md5) {
         },
         remove : function(name) {
             var id = encode(name);
-            store.remove("history."+id);
-            store.remove("result."+id, true);
         },
         rename : function(oldname, newname) {
             var oldid = encode(oldname),
                 newid = encode(newname),
                 history = store.get("history."+oldid),
                 results = store.get("result."+oldid);
-            remove(oldname);
-            store.set("history."+newid);
-            store.set("result."+newid, true);
+
+            store.remove("history."+oldid);
+            store.remove("result."+oldid);
+            store.set("history."+newid, history);
+            store.set("result."+newid, results, true);
         }
     };
 });

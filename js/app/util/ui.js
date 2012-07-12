@@ -1,16 +1,29 @@
 define([
-      "order!ui/jquery.ui.core"
-    , "order!ui/jquery.ui.widget"
-    , "order!ui/jquery.ui.mouse"
-    , "order!ui/jquery.ui.button"
-    , "order!ui/jquery.ui.tabs"
-    , "order!ui/jquery.ui.menu"
-    , "order!ui/jquery.ui.progressbar"
+
 ],
 
 function() {
     var uid = 0;
     return {
+        clickOrDoubleClick : function(el, clickHandler, dblClickHandler) {
+            var sequence = 0;
+            el.click(function(e) {
+                sequence++;
+                if(sequence === 1) {
+                    setTimeout(function() {
+                        if(sequence !== 1) {
+                            sequence = 0;
+                            return;
+                        }
+                        sequence = 0;
+                        clickHandler.call(this, e);
+                    }, 200);
+                } else {
+                    sequence = 0;
+                    dblClickHandler.call(this, e);
+                }
+            });
+        },
         button : function(el, o) {
             el = $(el);
             o = $.extend({
@@ -113,6 +126,9 @@ function() {
         progressbar : function(el) {
             el = $(el);
             return el.progressbar();
+        },
+        select : function(el) {
+
         }
     };
 });

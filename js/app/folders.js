@@ -8,9 +8,6 @@ define([
     , "text!templates/toolbar.folders.html"
     , "text!templates/menu.context.system.node.html"
     , "text!templates/menu.context.system.root.html"
-    , "order!jlib/jstree/vakata"
-    , "order!jlib/jstree/jstree"
-    , "order!jlib/jstree/jstree.themes"
 ],
     function(precog, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
         var UPLOAD_SERVICE = "upload.php",
@@ -197,25 +194,22 @@ define([
                     }
                     , "last"
                     , function(el) {
-                        $(el).find("a:first")
-                            .click(function(e) {
-                                var pos = $(e.currentTarget).offset(),
-                                    h = $(e.currentTarget).outerHeight();
-                                menu.css({
-                                    position : "absolute",
-                                    top : (pos.top + h) + "px",
-                                    left : (pos.left) + "px",
-                                    zIndex : e.currentTarget.style.zIndex + 100
-                                }).show();
-                                menuselected = e.currentTarget;
-                                e.preventDefault(); return false;
-                            })
-                            .dblclick(function(e) {
-                                var path = $(e.currentTarget).closest("li").attr("data");
-                                triggerQuery(path);
-                                menu.hide();
-                                e.preventDefault(); return false;
-                            });
+                        ui.clickOrDoubleClick($(el).find("a:first"), function(e) {
+                            menuselected = e.currentTarget;
+                            var pos = $(e.currentTarget).offset(),
+                                h = $(e.currentTarget).outerHeight();
+                            menu.css({
+                                position : "absolute",
+                                top : (pos.top + h) + "px",
+                                left : (pos.left) + "px",
+                                zIndex : e.currentTarget.style.zIndex + 100
+                            }).show();
+                            e.preventDefault(); return false;
+                        }, function(e) {
+                            menuselected = e.currentTarget;
+                            tree.jstree("toggle_node", menuselected);
+                            e.preventDefault(); return false;
+                        });
                         wireFileUpload(el, path);
                         if(callback)
                             callback.apply(el, [path]);

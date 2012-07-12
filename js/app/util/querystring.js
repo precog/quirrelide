@@ -1,4 +1,8 @@
-define([], function() {
+define([
+
+],
+
+function() {
     var params = {};
 
     function getCtx(ctx) {

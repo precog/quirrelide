@@ -1,5 +1,5 @@
 define([
-    "order!util/ui"
+      "util/ui"
     , "text!templates/toolbar.status.html"
     , "text!templates/menu.editor.status.html"
 ],

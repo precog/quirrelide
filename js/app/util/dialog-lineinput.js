@@ -1,12 +1,11 @@
 define([
       "text!templates/dialog.lineinput.html"
-    , "order!util/ui"
+    , "util/ui"
     , "util/dom"
-    , "order!ui/jquery.ui.draggable"
-    , "order!ui/jquery.ui.position"
-    , "order!ui/jquery.ui.resizable"
-    , "order!ui/jquery.ui.dialog"
-], function(tplDialog, ui, dom) {
+    , "libs/jquery/ui/jquery.ui.dialog"
+],
+
+function(tplDialog, ui, dom) {
 
     function ok(e) {
         elDialog.find(".pg-error").hide()

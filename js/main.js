@@ -1,81 +1,102 @@
 requirejs.config({
-    paths: {
-          "ui"     : "libs/jquery/ui"
-        , "util"   : "app/util"
-        , "jlib"   : "libs/jquery"
-        , "config" : "app/config"
-        , "editor" : "libs/editor"
-        , "ace"    : "libs/editor/ace"
+    waitSeconds : 4,
+    paths : {
+          'ui'     : 'libs/jquery/ui'
+        , 'util'   : 'app/util'
+        , 'jlib'   : 'libs/jquery'
+        , 'config' : 'app/config'
+        , 'editor' : 'libs/editor'
+        , 'ace'    : 'libs/editor/ace'
+    },
+    shim : {
+          'jlib/slickgrid/jquery.event.drag-2.0.min' : ['jquery']
+        , 'jlib/slickgrid/slick.core' : ['jlib/slickgrid/jquery.event.drag-2.0.min']
+        , 'jlib/slickgrid/slick.grid' : ['jlib/slickgrid/slick.core', 'ui/jquery.ui.sortable']
+        , 'jlib/slickgrid/slick.dataview' : ['jlib/slickgrid/slick.grid']
+        , 'jlib/slickgrid/slick.pager' : ['jlib/slickgrid/slick.dataview']
+        , 'jlib/slickgrid/slick.columnpicker' : ['jlib/slickgrid/slick.pager']
+        , 'util/output-table' : ['jlib/slickgrid/slick.columnpicker']
+        , 'ui/jquery.ui.core' : ['jquery']
+        , 'ui/jquery.ui.widget' : ['ui/jquery.ui.core']
+        , 'ui/jquery.ui.mouse' : ['ui/jquery.ui.widget']
+        , 'ui/jquery.ui.button' : ['ui/jquery.ui.mouse']
+        , 'ui/jquery.ui.sortable' : ['ui/jquery.ui.widget']
+        , 'ui/jquery.ui.dialog' : ['util/ui', 'ui/jquery.ui.draggable', 'ui/jquery.ui.position', 'ui/jquery.ui.resizable', 'ui/jquery.ui.dialog']
+        , 'ui/jquery.ui.progressbar' : ['ui/jquery.ui.widget']
+        , 'ui/jquery.ui.tabs' : ['ui/jquery.ui.button']
+        , 'ui/jquery.ui.menu' : ['ui/jquery.ui.button']
+        , 'util/ui' : ['ui/jquery.ui.menu', 'ui/jquery.ui.tabs', 'ui/jquery.ui.progressbar']
+        , 'jlib/layout/jquery.layout' : ['util/ui', 'ui/jquery.ui.core', 'ui/jquery.ui.widget', 'ui/jquery.ui.mouse', 'ui/jquery.ui.draggable', 'jlib/layout/jquery.layout']
+        , 'jlib/jstree/jstree' : ['jlib/jstree/vakata']
+        , 'jlib/jstree/jstree.themes' : ['jlib/jstree/jstree']
+        , 'app/folders' : ['jlib/jstree/jstree.themes']
     }
 });
 
 require([
-      "app/util/config"
-    , "app/layout"
-    , "app/editors"
-    , "app/history"
-    , "app/bar-main"
-    , "app/bar-editor"
-    , "app/bar-status"
-    , "app/theme"
-    , "editor/editor.ace"
-    , "app/editorsync"
-    , "app/output"
-    , "app/folders"
-    , "app/queries"
-    , "app/support"
-    , "app/startup-tips"
-    , "util/precog"
-    , "util/querystring"
+      'app/util/config'
+    , 'app/layout'
+    , 'app/editors'
+    , 'app/history'
+    , 'app/bar-main'
+    , 'app/bar-editor'
+    , 'app/bar-status'
+    , 'app/theme'
+    , 'editor/editor.ace'
+    , 'app/editorsync'
+    , 'app/output'
+    , 'app/folders'
+    , 'app/queries'
+    , 'app/support'
+    , 'app/startup-tips'
+    , 'util/precog'
+    , 'util/querystring'
 ],
 
 function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {
     precog.cache.disable();
 
     var queries,
-        layout = createLayout(config.get("ioPanesVertical"));
+        layout = createLayout(config.get('ioPanesVertical'));
 
     layout.container.hide();
 
     buildBarMain(layout.getBarMain());
 
-    $(theme).on("changed", function() {
+    $(theme).on('changed', function() {
         // refreshes the panes layout after theme changing
-//        setTimeout(function(){
-//            $(document.window).trigger("refresh");
-            layout.refresh();
-//        }, 1000);
+        layout.refresh();
     });
 
-    $(theme).on("change", function(e, name) {
-        config.set("theme", name);
+    $(theme).on('change', function(e, name) {
+        config.set('theme', name);
     });
 
-    var editor = buildEditor(layout.getCodeEditor(), config.get("ioPanesVertical"));
-    editor.setTabSize(config.get("tabSize"));
-    editor.setUseSoftTabs(config.get("softTabs"));
+    var editor = buildEditor(layout.getCodeEditor(), config.get('ioPanesVertical'));
+    editor.setTabSize(config.get('tabSize'));
+    editor.setUseSoftTabs(config.get('softTabs'));
 
-    $(layout).on("resizeCodeEditor", function() {
+    $(layout).on('resizeCodeEditor', function() {
         editor.resize();
     });
 
-    $(layout).on("ioOrientationChanged", function(_, vertical) {
-        config.set("ioPanesVertical", vertical);
+    $(layout).on('ioOrientationChanged', function(_, vertical) {
+        config.set('ioPanesVertical', vertical);
         editor.orientButton(vertical);
     });
 
-    $(theme).on("change", function(e, name) {
+    $(theme).on('change', function(e, name) {
         editor.setTheme(theme.getEditorTheme(name, editor.engine()));
     });
 
-    $(editor).on("useSoftTabsChanged", function(_, value) {
-//console.log("useSoftTabsChanged " + value);
-        config.set("softTabs", value);
+    $(editor).on('useSoftTabsChanged', function(_, value) {
+//console.log('useSoftTabsChanged ' + value);
+        config.set('softTabs', value);
     });
 
-    $(editor).on("tabSizeChanged", function(_, value) {
-//console.log("tabSizeChanged " + value);
-        config.set("tabSize", value);
+    $(editor).on('tabSizeChanged', function(_, value) {
+//console.log('tabSizeChanged ' + value);
+        config.set('tabSize', value);
     });
 
     var status = buildBarStatus(layout.getStatusBar(), editor, layout);
@@ -84,65 +105,67 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 
     var support = buildSupport(layout.getSupport());
 
-    support.addPanel("tutorial", "https://quirrel.precog.com/tutorial.html");
-    support.addPanel("reference", "https://quirrel.precog.com/reference.html");
-    support.addPanel("IRC channel", "https://api.precog.com:9090/?channels=#quirrel");
+    support.addPanel('tutorial', 'https://quirrel.precog.com/tutorial.html');
+    support.addPanel('reference', 'https://quirrel.precog.com/reference.html');
+    support.addPanel('IRC channel', 'https://api.precog.com:9090/?channels=#quirrel');
 
-//    support.addPanel("live support", "http://widget.mibbit.com/?settings=3e7a9e32a26494b80748cfe11f66e956&server=irc.mibbit.net&channel=%23precog_test_channel");
-//    support.addPanel("wsirc", "http://wsirc.mobi/mobileChat.aspx?username=u_******&server=binary.ipocalypse.net%3A6667&channel=%23quirrel&autojoin=true&color=%23eeeeee&dark=false");
-//    support.addPanel("freenode", "http://webchat.freenode.net?randomnick=1&channels=quirrel&uio=Mz1mYWxzZSY5PXRydWU32");
+//    support.addPanel('live support', 'http://widget.mibbit.com/?settings=3e7a9e32a26494b80748cfe11f66e956&server=irc.mibbit.net&channel=%23precog_test_channel');
+//    support.addPanel('wsirc', 'http://wsirc.mobi/mobileChat.aspx?username=u_******&server=binary.ipocalypse.net%3A6667&channel=%23quirrel&autojoin=true&color=%23eeeeee&dark=false');
+//    support.addPanel('freenode', 'http://webchat.freenode.net?randomnick=1&channels=quirrel&uio=Mz1mYWxzZSY5PXRydWU32');
 
-    $(layout).on("resizeCodeEditor", function() {
+    $(layout).on('resizeCodeEditor', function() {
         output.resize();
         support.resize();
     });
 
-    $(output).on("syntaxError", function(_, pos) {
-        editor.highlightSyntax(pos.line - 1, pos.column - 1, pos.text, "error");
+    $(output).on('syntaxError', function(_, pos) {
+        editor.highlightSyntax(pos.line - 1, pos.column - 1, pos.text, 'error');
     });
 
-    $(output).on("requestCursorChange", function(_, pos) {
+    $(output).on('requestCursorChange', function(_, pos) {
         editor.setCursorPosition(pos.line - 1, pos.column - 1);
     });
 
-    $(output).on("typeChanged", function(_, type) {
+    $(output).on('typeChanged', function(_, type) {
         editors.setOutputType(type);
     });
 
     var queue = [];
-    $(precog).on("execute", function(_, query, lastExecution) {
+    $(precog).on('execute', function(_, query, lastExecution) {
         queue.push({ query : query, name : editors.getName() });
         status.startRequest();
     });
 
-    $(precog).on("completed", function(_, data) {
+    $(precog).on('completed', function(_, data) {
         var exec = queue.shift();
         history.save(exec.name, exec.query, data);
 
         status.endRequest(true);
-        output.set(data);
-
+        output.setOutput(data, null, editors.getOutputOptions());
         editors.setOutputResult(data);
+
+        if(editorbar.historyPanelIsOpen()) {
+            refreshHistoryList();
+        }
     });
-    $(precog).on("failed", function(_, data) {
+    $(precog).on('failed', function(_, data) {
         queue.shift(); // cleanup the queue
         status.endRequest(false);
-        output.set(data, "error");
+        output.setOutput(data, 'error', editors.getOutputOptions());
         editors.setOutputResult(data);
     });
-    $(editor).on("execute", function(_, code) {
+    $(editor).on('execute', function(_, code) {
         precog.query(code);
     });
 
-    $(editors).on("activated", function(_, index) {
+    $(editors).on('activated', function(_, index) {
         var result  = editors.getOutputResult(),
             type    = editors.getOutputType(),
             options = editors.getOutputOptions();
-//console.log("LOADED OPTIONS " + JSON.stringify(options));
-        output.set(result, type, options);
+        output.setOutput(result, type, options);
     });
 
-    $(editors).on("saved", function(_, data) {
+    $(editors).on('saved', function(_, data) {
         queries.save(data.name, data.code);
     });
 
@@ -150,9 +173,9 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 
     var folders = buildFolders(layout.getSystem());
 
-    $(folders).on("querypath", function(e, path) {
-        var q = "/" + path;
-        if(editors.getCode().trim() == "") {
+    $(folders).on('querypath', function(e, path) {
+        var q = '/' + path;
+        if(editors.getCode().trim() == '') {
             editor.set(q);
         } else {
             editors.add({ code : q });
@@ -163,56 +186,85 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 
     queries = buildQueries(layout.getQueries());
 
-    $(queries).on("requestopenquery", function(_, data) {
+    $(queries).on('requestopenquery', function(_, data) {
         editors.open(data.name, data.code);
     });
 
-    $(queries).on("removed", function(_, name) {
+    $(queries).on('removed', function(_, name) {
         var index = editors.getIndexByName(name);
-        if(index >= 0)
+        if(index >= 0) {
             editorbar.invalidateTab(index);
+        }
     });
 
     var editorbar = buildBarEditor(layout.getBarEditor(), queries, editor);
 
-    $(editors).on("saved", function(e, editor){
+    $(editors).on('saved', function(e, editor){
         var index = editors.getIndexById(editor.id);
         if(index < 0) return;
         editorbar.changeTabName(index, editor.name);
     });
 
-    $(editors).on("added", function(e, editor) {
+    $(editors).on('added', function(e, editor) {
         editorbar.addTab(editor.name, !editor.notdirty);
     });
 
-    $(editors).on("removed", function(e, index) {
-        editorbar.removeTab(index);
+    $(editors).on('removed', function(e, name) {
+        editorbar.removeTabByName(name);
     });
 
+    var invalidationSuspended = true;
     function currentTabInvalidator() {
+        if(invalidationSuspended) return;
+        editors.setDirty();
         editorbar.invalidateTab(editors.current());
     }
 
-    $(editors).on("activated", function(e, index) {
+    $(editor).on('change', currentTabInvalidator);
+
+    $(editors).on('activated', function(e, index) {
         editorbar.activateTab(index);
         setTimeout(function() {
-            editors.setDirty();
-            $(editor).on("change", currentTabInvalidator);
-        }, 1000);
+            invalidationSuspended = false;
+        }, 2000);
+        if(editorbar.historyPanelIsOpen()) {
+            refreshHistoryList();
+        }
     });
 
-    $(editors).on("deactivated", function(e, index) {
-        $(editor).off("change", currentTabInvalidator);
+    function refreshHistoryList() {
+        var data = history.revisions(editors.getName());
+        editorbar.displayHistoryList(data);
+    }
+
+    $(editors).on('deactivated', function(e, index) {
+        invalidationSuspended = true;
     });
 
-    $(editors).on("removed", function(e, name) {
+    $(editors).on('removed', function(e, name) {
         if(!queries.exist(name))
             history.remove(name);
     });
 
-    $(editorbar).on("requesthistorylist", function() {
-        var data = history.revisions(editors.getName());
-        editorbar.displayHistoryList(data);
+    $(editorbar).on('requesthistorylist', refreshHistoryList);
+
+    $(editorbar).on('requestopenrevision', function(e, info) {
+        var name = editors.getName(),
+            data = history.load(name, info.index);
+        if(info.usenewtab) {
+            editors.add({ code : data.code, output : { result : data.data } });
+            editors.activate(editors.count()-1);
+        } else {
+            editor.set(data.code);
+        }
+        output.setOutput(data.data, null, editors.getOutputOptions());
+    });
+
+    $(editorbar).on('tabrenamed', function(e, data) {
+        history.rename(data.oldname, data.newname);
+        if(editorbar.historyPanelIsOpen()) {
+            refreshHistoryList();
+        }
     });
 
     var tips = buildTips(layout);
@@ -220,7 +272,7 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
     editors.load();
 
 
-    var query = qs.get("q");
+    var query = qs.get('q');
 
     function editorcontains(q) {
         for(var i = 0; i < editors.count(); i++) {
@@ -236,24 +288,23 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
     setTimeout(function() {
         editors.activate(editors.count()-1); // prevents bug in safari
 
-        $(output).on("optionsChanged", function(_, options) {
-//console.log("SAVING OPTIONS " + JSON.stringify(options));
+        $(output).on('optionsChanged', function(_, options) {
             editors.setOutputOptions(options);
         });
 
-        theme.set(config.get("theme", "franco"));
+        theme.set(config.get('theme', 'franco'));
 
-        config.monitor.bind("theme", function(e, name) {
+        config.monitor.bind('theme', function(e, name) {
             theme.set(name);
         });
 
-        config.monitor.bind("softTabs", function(_, value) {
-//console.log("from config softTabs " + value);
+        config.monitor.bind('softTabs', function(_, value) {
+//console.log('from config softTabs ' + value);
             editor.setUseSoftTabs(value);
         });
 
-        config.monitor.bind("tabSize", function(_, value) {
-//console.log("from config tabSize " + value);
+        config.monitor.bind('tabSize', function(_, value) {
+//console.log('from config tabSize ' + value);
             editor.setTabSize(value);
         });
     }, 15)

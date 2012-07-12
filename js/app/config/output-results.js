@@ -1,6 +1,7 @@
 define([
       "util/output-table"
     , "util/output-json"
+    , "util/output-chart"
     , "util/output-error"
     , "util/output-message"
 ],

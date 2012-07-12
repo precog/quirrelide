@@ -67,7 +67,7 @@
       $status = $("<span class='slick-pager-status' />").appendTo($container);
 
       $settings
-          .append("<span class='slick-pager-settings-expanded' style='display:none'>Show: <a data=0>All</a><a data='-1'>Auto</a><a data=10>10</a><a data=20>20</a><a data=50>50</a><a data=100>100</a></span>");
+          .append("<span class='slick-pager-settings-expanded' style='display:none'>Show: <a data=0>All</a><a data='-1'>Auto</a><a data=25>25</a><a data=50>50</a><a data=100>100</a></span>");
 
       $settings.find("a[data]").click(function (e) {
         var pagesize = $(e.target).attr("data");
@@ -131,10 +131,11 @@
       if (!state.canGotoPrev) {
         $container.find(".ui-icon-seek-prev").addClass("ui-state-disabled");
       }
+
       if (pagingInfo.pageSize == 0) {
-        $status.text("all " + pagingInfo.totalRows + " rows");
+        $status.text("Showing all " + pagingInfo.totalRows + " rows");
       } else {
-        $status.text("page " + (pagingInfo.pageNum + 1) + " of " + pagingInfo.totalPages + " ("+pagingInfo.totalRows+" rows)");
+        $status.text("Showing page " + (pagingInfo.pageNum + 1) + " of " + pagingInfo.totalPages);
       }
     }
 

@@ -319,6 +319,15 @@
     padding: .2em 0.5em .2em 2.1em;
 }
 
+.ui-pnotify > .ui-widget.ui-pnotify-shadow {
+    position: relative;
+}
+
+.ui-pnotify h4, .ui-pnotify h5, .ui-pnotify h6 {
+    margin: 0;
+    margin-bottom: 4px;
+}
+
 .ui-pnotify .pg-actions {
     position: absolute;
     bottom: 3px;
@@ -400,13 +409,71 @@
     padding-top: 8px;
     clear: left;
 }
-
-.pg-ide .pg-clear {
-    clear: left;
+.ui-pnotify .pg-clear, .pg-ide .pg-clear {
+    clear: both;
 }
 
 .ui-pnotify .pg-history .pg-toolbar {
     position: absolute;
     right: 3px;
     bottom: 2px;
+}
+
+.ui-pnotify span.pg-label {
+    display: block;
+    float: left;
+    width: 100px;
+}
+
+.ui-pnotify .pg-selection input[type="number"] {
+    width: 5em;
+}
+
+.ui-pnotify .pg-selection.ui-content {
+    margin-bottom: 4px;
+    width: 240px;
+    line-height: 2em;
+    padding: 0 0.2em;
+}
+
+.ui-pnotify .pg-selection.ui-content select {
+    width: 138px;
+}
+
+.ui-pnotify .pg-selection.ui-content:last-child {
+    margin-bottom: 0;
+}
+
+.pg-ide button.pg-rg-logo {
+    overflow: hidden;
+    width: 170px;
+}
+
+.pg-ide button.pg-rg-logo img {
+    display: block;
+    top: -4px;
+    left: -12px;
+    position: absolute;
+}
+
+.pg-ide .ui-widget.ui-content.pg-overflow-hidden {
+    overflow: hidden;
+}
+
+.pg-ide .pg-toolbar-result-type button {
+    display: block;
+    float: right;
+}
+
+.pg-ide .pg-current-options {
+    font-weight: normal;
+    margin-right: 0.5em;
+    font-size: 93%;
+    line-height: 1.2em;
+    text-align: right;
+    display: inline-block;
+}
+
+.pg-ide .pg-toolbar-context .pg-toolbar-result-type button {
+    padding: 0;
 }

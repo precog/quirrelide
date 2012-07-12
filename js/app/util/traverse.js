@@ -1,4 +1,8 @@
-define([], function() {
+define([
+
+],
+
+function() {
     function splitPath(key) {
         return key.split(/\./g);
     }

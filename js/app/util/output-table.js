@@ -1,15 +1,8 @@
 define([
-      "order!jquery"
-    , "order!ui/jquery.ui.sortable"
-    , "order!jlib/slickgrid/jquery.event.drag-2.0.min"
-    , "order!jlib/slickgrid/slick.core"
-    , "order!jlib/slickgrid/slick.grid"
-    , "order!jlib/slickgrid/slick.dataview"
-    , "order!jlib/slickgrid/slick.pager"
-    , "order!jlib/slickgrid/slick.columnpicker"
+      "util/jsonmodel"
 ],
 
-function() {
+function(jsonmodel) {
     var elPanel = $('<div class="ui-widget"><div class="pg-table" style="height:100%;width:100%"></div></div>'),
         elOutput = elPanel.find('.pg-table'),
         dataView = new Slick.Data.DataView(),
@@ -41,64 +34,6 @@ function() {
         grid.render();
     });
 
-    function formatValue(row, cell, value, columnDef, dataContext, subordinate) {
-        if("undefined" === typeof value) {
-            return "[undefined]";
-        } else if(value === null) {
-            return "[null]";
-        } else if(value instanceof Array) {
-            var result = [];
-            for(var i = 0; i < value.length; i++)
-            {
-                result.push(formatValue(row, cell, value[i], columnDef, dataContext, true));
-            }
-            return result.join("; ");
-        } else if("object" === typeof value) {
-            var result = [];
-            for(var key in value) {
-                if(value.hasOwnProperty(key)) {
-                    var pair = key + ": " + formatValue(row, cell, value[key], columnDef, dataContext, true);
-                    result.push(pair);
-                }
-            }
-            return result.join(", ");
-        } else if(value === "") {
-            return "[empty]";
-        } else if(isNaN(value)) {
-            value = value.toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-            return '"' + value.replace(/"/g, '\\"') + '"';
-        } else {
-            return value;
-        }
-    }
-    function createModel(value) {
-        var columns = [];
-        if("object" === typeof value) {
-            for(var key in value) {
-                if(value.hasOwnProperty(key) && key !== "#id") {
-                    columns.push({
-                          id : key
-                        , name : key
-                        , field : key
-                        , sortable: true
-                        , formatter : formatValue
-
-                        , pgvalue : false
-                    });
-                }
-            }
-        } else {
-            columns.push({
-                  id : "value"
-                , name : "Value"
-                , field : "value"
-                , pgvalue : true
-                , sortable: true
-            });
-        }
-        return columns;
-    }
-
     function transformData(model, data) {
         var result = [];
         if(model.length != 1 || !model[0].pgvalue) {
@@ -117,19 +52,19 @@ function() {
     function updateDataView(data, options) {
         dataView.setItems([], "#id"); // forces correct refreshes of data
 
-        if(options && options.sort)
-            sortData(data, options.sort);
+        if(options && options.table.sort)
+            sortData(data, options.table.sort);
 
         dataView.beginUpdate();
         dataView.setItems(data, "#id");
         dataView.endUpdate();
-        if(options && options.pager && (("undefined" !== typeof options.pager.size) || ("undefined" !== typeof options.pager.pageNum)))
+        if(options && options.table.pager && (("undefined" !== typeof options.table.pager.size) || ("undefined" !== typeof options.table.pager.pageNum)))
         {
             var pager = {};
-            if(options.pager.size)
-                pager.pageSize = options.pager.size;
-            if(options.pager.page)
-                pager.pageNum = options.pager.page;
+            if(options.table.pager.size)
+                pager.pageSize = options.table.pager.size;
+            if(options.table.pager.page)
+                pager.pageNum = options.table.pager.page;
             dataView.setPagingOptions(pager);
         }
     }
@@ -165,7 +100,11 @@ function() {
             return $('<div></div>');
         },
         update : function(data, options) {
-            if(!options) options = {};
+            if("undefined" === typeof options.table) {
+                options.table = {
+                    pager : {}
+                };
+            }
             if(changePagerHandler)
                 dataView.onPagingInfoChanged.unsubscribe(changePagerHandler);
             try {
@@ -176,7 +115,7 @@ function() {
                 id : "empty",
                 name : "No Records Match Your Query",
                 field : "empty"
-            }] : createModel(data[0]);
+            }] : jsonmodel.create(data);
             data = transformData(model, data);
 
             try {
@@ -184,12 +123,12 @@ function() {
             } catch(e) {}
 
             changePagerHandler = function(e, args) {
-                options.pager = { size : args.pageSize, page : args.pageNum };
+                options.table.pager = { size : args.pageSize, page : args.pageNum };
                 $(wrapper).trigger("optionsChanged", options);
             }
 
-            if(options.sort) {
-                grid.setSortColumns(options.sort.map(function(col){
+            if(options.table.sort) {
+                grid.setSortColumns(options.table.sort.map(function(col){
                     return {
                         columnId : col.field,
                         sortAsc : col.asc
@@ -198,7 +137,7 @@ function() {
             }
 
             grid.onSort.subscribe(function (e, args) {
-                options.sort = args.sortCols.map(function(def) {
+                options.table.sort = args.sortCols.map(function(def) {
                     return {
                         asc : def.sortAsc,
                         field : def.sortCol.field

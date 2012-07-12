@@ -1,6 +1,8 @@
-define([],
+define([
 
- function() {
+],
+
+function() {
     var isfullscreen,
         requestFullScreen,
         exitFullScreen;
