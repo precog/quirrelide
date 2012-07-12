@@ -2,10 +2,22 @@ define([
       "rtext!templates/dialog.lineinput.html"
     , "app/util/ui"
     , "app/util/dom"
+
+
+    // FORCE INCLUSION?
+    , 'libs/jquery/ui/jquery.ui.core'
+    , 'libs/jquery/ui/jquery.ui.position'
+    , 'libs/jquery/ui/jquery.ui.widget'
+    , 'libs/jquery/ui/jquery.ui.mouse'
+    , 'libs/jquery/ui/jquery.ui.resizable'
+    , 'libs/jquery/ui/jquery.ui.button'
+    , 'libs/jquery/ui/jquery.ui.sortable'
+    , 'libs/jquery/ui/jquery.ui.draggable'
     , "libs/jquery/ui/jquery.ui.dialog"
 ],
 
 function(tplDialog, ui, dom) {
+    var elDialog, currentHandler, currentValidator;
 
     function ok(e) {
         elDialog.find(".pg-error").hide()
@@ -24,13 +36,16 @@ function(tplDialog, ui, dom) {
         elDialog.dialog("close");
     }
 
-    var currentHandler,
-        currentValidator,
+    function reposition() {
+        elDialog.dialog("option", "position", "center");
+    }
+
+    function init() {
         elDialog = $('body')
             .append(tplDialog)
             .find('.pg-dialog-lineinput:last')
             .dialog({
-                  modal : true
+                modal : true
                 , autoOpen : false
                 , resizable : false
                 , dialogClass : "pg-el"
@@ -47,14 +62,18 @@ function(tplDialog, ui, dom) {
                     click : ok
                 }]
             })
-    ;
-    function reposition() {
-        elDialog.dialog("option", "position", "center");
+        ;
+
+        elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
+        elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
     }
 
-    elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
-    elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
+    var inited = false;
     return function(title, message, label, defaultInput, validator, handler) {
+        if(!inited) {
+            init();
+            inited = true;
+        }
         currentValidator = validator;
         currentHandler = handler;
         elDialog.find(".pg-message").html(message || "");

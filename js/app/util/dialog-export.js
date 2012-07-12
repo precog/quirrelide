@@ -16,10 +16,21 @@ define([
     , 'libs/jquery/ui/jquery.ui.sortable'
     , 'libs/jquery/ui/jquery.ui.draggable'
     , "libs/jquery/ui/jquery.ui.dialog"
+    , "libs/jquery/zclip/jquery.zclip"
 ],
 
 function(tplDialog, ui, dom, notification) {
     var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
+        elText, elDialog, elActions, elForm, clip;
+
+    function selectCode() {
+        setTimeout(function() { dom.selectText(elText.get(0)); }, 100);
+    }
+
+    function reposition() {
+        elDialog.dialog("option", "position", "center");
+    }
+    function init() {
         elDialog = $('body')
             .append(tplDialog)
             .find('.pg-dialog-export')
@@ -50,26 +61,22 @@ function(tplDialog, ui, dom, notification) {
         elText = elDialog.find(".pg-export textarea"),
         elForm = elDialog.find("form");
 
-    elForm.attr("action", downloadQueryService);
+        elForm.attr("action", downloadQueryService);
 
-    var clip;
+        elText.click(function() {
+            selectCode();
+        });
 
-    function selectCode() {
-        setTimeout(function() { dom.selectText(elText.get(0)); }, 100);
+        elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
+        elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
     }
 
-    elText.click(function() {
-        selectCode();
-    });
-
-    function reposition() {
-        elDialog.dialog("option", "position", "center");
-    }
-
-    elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
-    elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
-
+    var inited = false;
     return function(title, actions, code) {
+        if(!inited) {
+            init();
+            inited = true;
+        }
         elActions.find("*").remove();
 
         function execute(action) {
