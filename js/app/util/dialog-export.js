@@ -1,8 +1,20 @@
 define([
-      "text!templates/dialog.export.html"
-    , "util/ui"
-    , "util/dom"
-    , "util/notification"
+      "rtext!templates/dialog.export.html"
+    , "app/util/ui"
+    , "app/util/dom"
+    , "app/util/notification"
+
+
+
+    // FORCE INCLUSION?
+    , 'libs/jquery/ui/jquery.ui.core'
+    , 'libs/jquery/ui/jquery.ui.position'
+    , 'libs/jquery/ui/jquery.ui.widget'
+    , 'libs/jquery/ui/jquery.ui.mouse'
+    , 'libs/jquery/ui/jquery.ui.resizable'
+    , 'libs/jquery/ui/jquery.ui.button'
+    , 'libs/jquery/ui/jquery.ui.sortable'
+    , 'libs/jquery/ui/jquery.ui.draggable'
     , "libs/jquery/ui/jquery.ui.dialog"
 ],
 

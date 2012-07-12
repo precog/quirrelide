@@ -1,5 +1,5 @@
 define([
-    "util/converters"
+    "app/util/converters"
 ],
 
 function(convert) {

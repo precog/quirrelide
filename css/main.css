@@ -1,3 +1,9 @@
+@import "jquery/slickgrid/slick.grid.css";
+@import "jquery/slickgrid/slick.columnpicker.css";
+@import "jquery/slickgrid/slick.pager.css";
+@import "jquery/pnotify/jquery.pnotify.default.css";
+@import "https://api.reportgrid.com/css/rg-charts.css";
+
 .pg-ide, .pg-el, .pg-el.ui-widget, .ui-pnotify, .ui-pnotify-history-container {
     font-size: 73%;
     font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";

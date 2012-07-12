@@ -1,7 +1,7 @@
 define([
-      "text!templates/dialog.lineinput.html"
-    , "util/ui"
-    , "util/dom"
+      "rtext!templates/dialog.lineinput.html"
+    , "app/util/ui"
+    , "app/util/dom"
     , "libs/jquery/ui/jquery.ui.dialog"
 ],
 

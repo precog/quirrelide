@@ -1,8 +1,8 @@
 define([
-      "util/precog"
-    , "util/md5"
-    , "util/storagemonitor"
-    , "util/utils"
+      "app/util/precog"
+    , "app/util/md5"
+    , "app/util/storagemonitor"
+    , "app/util/utils"
 ],
 
 function(precog, md5, createStore, utils) {

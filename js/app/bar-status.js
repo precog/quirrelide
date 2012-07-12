@@ -1,7 +1,7 @@
 define([
-      "util/ui"
-    , "text!templates/toolbar.status.html"
-    , "text!templates/menu.editor.status.html"
+      "app/util/ui"
+    , "rtext!templates/toolbar.status.html"
+    , "rtext!templates/menu.editor.status.html"
 ],
 
     function(ui, tplToolbar, tplMenu) {

@@ -1,13 +1,17 @@
 define([
-      "util/precog"
-    , "util/storagemonitor"
-    , "util/ui"
-    , "util/utils"
-    , "util/notification"
-    , "util/dialog-lineinput"
-    , "text!templates/toolbar.folders.html"
-    , "text!templates/menu.context.system.node.html"
-    , "text!templates/menu.context.system.root.html"
+      "app/util/precog"
+    , "app/util/storagemonitor"
+    , "app/util/ui"
+    , "app/util/utils"
+    , "app/util/notification"
+    , "app/util/dialog-lineinput"
+    , "rtext!templates/toolbar.folders.html"
+    , "rtext!templates/menu.context.system.node.html"
+    , "rtext!templates/menu.context.system.root.html"
+
+    , 'libs/jquery/jstree/vakata'
+    , 'libs/jquery/jstree/jstree'
+    , 'libs/jquery/jstree/jstree.themes'
 ],
     function(precog, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
         var UPLOAD_SERVICE = "upload.php",

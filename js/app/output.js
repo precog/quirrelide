@@ -1,9 +1,9 @@
 define([
-      "util/ui"
-    , "config/output-results"
-    , "config/output-formats"
-    , "util/dialog-export"
-    , "text!templates/toolbar.output.html"
+      "app/util/ui"
+    , "app/config/output-results"
+    , "app/config/output-formats"
+    , "app/util/dialog-export"
+    , "rtext!templates/toolbar.output.html"
 ],
 
 function(ui, formats, exportLanguages, openDialog, tplToolbar) {

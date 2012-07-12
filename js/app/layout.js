@@ -1,5 +1,6 @@
 define([
-      "text!templates/layout.full.html"
+      "rtext!templates/layout.full.html"
+
     , "libs/jquery/layout/jquery.layout"
 ],
 

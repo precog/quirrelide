@@ -1,6 +1,6 @@
 define([
-      "util/converters"
-    , "util/precog"
+      "app/util/converters"
+    , "app/util/precog"
 ],
 
 function(convert, precog) {

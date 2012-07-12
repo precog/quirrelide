@@ -54,7 +54,7 @@ var CursorLayer = require("./layer/cursor").Cursor;
 var ScrollBar = require("./scrollbar").ScrollBar;
 var RenderLoop = require("./renderloop").RenderLoop;
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
-var editorCss = require("text!./css/editor.css");
+var editorCss = require("ace/requirejs/text!./css/editor.css");
 
 dom.importCssString(editorCss, "ace_editor");
 

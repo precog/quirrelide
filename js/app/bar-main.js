@@ -1,8 +1,8 @@
 define([
-      "util/ui"
-    , "text!templates/toolbar.main.html"
-    , "text!templates/menu.settings.html"
-    , "util/fullscreen"
+      "app/util/ui"
+    , "rtext!templates/toolbar.main.html"
+    , "rtext!templates/menu.settings.html"
+    , "app/util/fullscreen"
     , "app/theme"
 ], function(ui, tplToolbar, tplMenu, fullscreen, theme) {
     function buildItems(menu, groups) {

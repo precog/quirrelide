@@ -1,14 +1,14 @@
 define([
-      "util/ui"
+      "app/util/ui"
     , "app/editors"
-    , "util/notification"
-    , "util/querystring"
-    , "util/converters"
-    , "util/utils"
-    , "util/dialog-export"
-    , "util/dialog-lineinput"
-    , "config/output-languages"
-    , "text!templates/toolbar.editor.html"
+    , "app/util/notification"
+    , "app/util/querystring"
+    , "app/util/converters"
+    , "app/util/utils"
+    , "app/util/dialog-export"
+    , "app/util/dialog-lineinput"
+    , "app/config/output-languages"
+    , "rtext!templates/toolbar.editor.html"
 
     , "libs/moment/moment"
 ],
