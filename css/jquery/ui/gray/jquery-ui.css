@@ -21,6 +21,7 @@
 
 /* Interaction Cues
 ----------------------------------*/
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #E0E7F0; background: #F6F6F6 url(images/ui-bg_highlight-soft_25_ffef8f_1x100.png) 50% top repeat-x; color: #363636; }
 .ui-state-disabled { cursor: default !important; }
 
 
