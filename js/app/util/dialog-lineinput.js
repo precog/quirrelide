@@ -17,11 +17,11 @@ define([
 ],
 
 function(tplDialog, ui, dom) {
-    var elDialog, currentHandler, currentValidator;
+    var elDialog, currentHandler, currentValidator, currentType, curreantPayload;
 
     function ok(e) {
         elDialog.find(".pg-error").hide()
-        var value = elDialog.find(".pg-lineinput input[type=text]").val();
+        var value = elDialog.find(".pg-lineinput input[type="+currentType+"]").val();
         if(currentValidator) {
             var message = currentValidator(value);
             if(message) {
@@ -32,7 +32,7 @@ function(tplDialog, ui, dom) {
             }
         }
         if(currentHandler)
-            currentHandler(value);
+            currentHandler(value, curreantPayload);
         elDialog.dialog("close");
     }
 
@@ -69,19 +69,28 @@ function(tplDialog, ui, dom) {
     }
 
     var inited = false;
-    return function(title, message, label, defaultInput, validator, handler) {
+    return function(title, message, label, defaultInput, validator, handler, type) {
+        if(!type) type = "text";
+        currentType = type;
         if(!inited) {
             init();
             inited = true;
         }
+
+        var html = elDialog.find("input").outerHTML().replace(/type=["'][^"']*["']/, 'type="'+type+'"');
+        elDialog.find("input").replaceWith(html);
+
         currentValidator = validator;
         currentHandler = handler;
         elDialog.find(".pg-message").html(message || "");
-        elDialog.find(".pg-lineinput input[type=text]")
+        elDialog.find(".pg-lineinput input[type="+currentType+"]")
             .val(defaultInput || "")
             .keyup(function(e) {
                 if(e.keyCode == 13) // enter
                     ok();
+            })
+            .change(function(e) {
+                curreantPayload = e.target.files;
             });
         elDialog.find(".pg-error").hide();
         elDialog.find("label").html((label && (label + ":")) || "");

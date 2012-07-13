@@ -130,6 +130,24 @@ define([
                 });
             }
 
+            function uploadDialog(path) {
+                var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
+                    title   = "Upload Data",
+                    message = "Upload data at: <i>"+path+"</i><br>You can use a JSON file (one array of values/objects), a text file containing one JSON object per line, a CSV file (headers are mandatory) or a zip file containing any combination of the previous formats.";
+                // open dialog
+                openRequestInputDialog(title, message, "file to upload", "", function(name) {
+                    if(name)
+                        return null; // OK
+                    else
+                        return "select a file";
+                }, function(_, files) {
+                    for(var i = 0; i < files.length; i++) {
+                        uploadFile(files[i], path);
+                    }
+//                    createNodeAt(path, name);
+                }, "file");
+            }
+
             function downloadUrl(path) {
 //                var p = basePath.substr(0, basePath.length - 1) + path;
                 return DOWNLOAD_SERVICE
@@ -155,13 +173,17 @@ define([
                 requestNodeCreationAt(path);
                 e.preventDefault(); return false;
             });
+            menu.find(".pg-upload").click(function(e) {
+                var path = pathFromSelectedNode();
+                uploadDialog(path);
+                e.preventDefault(); return false;
+            });
             menu.find(".pg-download").click(function(e) {
                 var path = pathFromSelectedNode();
                 window.location.href = downloadUrl(path);
 //                console.log(downloadUrl(path));
                 e.preventDefault(); return false;
             });
-
             menuRoot.find(".pg-create").click(function(e) {
                 var path = pathFromSelectedNode();
                 requestNodeCreationAt(path);
