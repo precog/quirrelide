@@ -6,7 +6,7 @@
 .ui-helper-clearfix:after { clear: both; }
 .ui-helper-clearfix { zoom: 1; }
 .ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }
-.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #E0E7F0; background: #F6F6F6 url(images/ui-bg_highlight-soft_25_ffef8f_1x100.png) 50% top repeat-x; color: #363636; }
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #E0E7F0; background: #F6F6F6 url(images/ui-bg_highlight-soft_75_e3e3e3_1x100.png) 50% top repeat-x; color: #363636; }
 .ui-state-disabled { cursor: default !important; }
 .ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
 .ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
