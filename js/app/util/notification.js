@@ -68,8 +68,21 @@ function(dom) {
             var n = this.tip(title, o);
 
             n.mouseenter(function() {
+                var selectOpened = false;
+                $('select').click(function(e) {
+                    selectOpened = !selectOpened;
+                    e.stopPropagation();
+                });
+                $('body').click(function() {
+                    if(selectOpened) {
+                        selectOpened = false;
+                    }
+                });
+
                 n.mouseleave(function() {
-                    n.remove();
+                    if(!selectOpened) {
+                        n.remove();
+                    }
                 });
             });
 
