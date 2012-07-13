@@ -415,7 +415,8 @@ html > body .ui-pnotify {
     background-repeat: no-repeat;
     width: 177px;
     height: 21px;
-    padding-top: 4px;
+    margin-top: 4px;
+    marign-left: 4px;
     float: left;
 }
 .pg-precog {
