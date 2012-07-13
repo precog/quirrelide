@@ -2,7 +2,6 @@
 @import "jquery/slickgrid/slick.columnpicker.css";
 @import "jquery/slickgrid/slick.pager.css";
 @import "jquery/pnotify/jquery.pnotify.default.css";
-@import "https://api.reportgrid.com/css/rg-charts.css";
 
 .pg-ide, .pg-el, .pg-el.ui-widget, .ui-pnotify, .ui-pnotify-history-container {
     font-size: 73%;
@@ -116,22 +115,8 @@
     border-bottom-width: 1px;
 }
 
-@keyframes progressbg
-{
-    0%   {background-position: 0 0;}
-    100% {background-position: 20px 0;}
-}
-
-@-moz-keyframes progressbg /* Firefox */
-{
-    0%   {background-position: 0 0;}
-    100% {background-position: 20px 0;}
-}
-
-@-webkit-keyframes progressbg /* Safari and Chrome */
-{
-    0%   {background-position: 0 0;}
-    100% {background-position: 20px 0;}
+.pg-ide .pg-support-tabs .ui-tabs-panel {
+    clear: left;
 }
 
 .pg-statusbar .ui-progressbar-value {
@@ -484,4 +469,22 @@
 
 .pg-ide .pg-toolbar-context .pg-toolbar-result-type button {
     padding: 0;
+}
+
+@keyframes progressbg
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
+}
+
+@-moz-keyframes progressbg /* Firefox */
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
+}
+
+@-webkit-keyframes progressbg /* Safari and Chrome */
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
 }

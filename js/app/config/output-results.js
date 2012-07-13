@@ -37,20 +37,25 @@ function() {
             f : function() {
                 return function() {  };
             }
-        }];
+        }],
+        inited = false;
 
-    for(var i = 0; i < formats.length; i++) {
-        var format = formats[i];
-        if("function" === typeof format)
-            formats[i] = format = format();
+    return function() {
+        if(!inited) {
+            for(var i = 0; i < formats.length; i++) {
+                var format = formats[i];
+                if("function" === typeof format)
+                    formats[i] = format = format();
 
-        $.each(empties, function(_, empty) {
-            if("undefined" === typeof format[empty.name]) {
+                $.each(empties, function(_, empty) {
+                    if("undefined" === typeof format[empty.name]) {
 //                console.log("assigning " + empty.name + " to " + format.name);
-                format[empty.name] = empty.f();
+                        format[empty.name] = empty.f();
+                    }
+                });
             }
-        });
-    }
-
-    return formats;
+            inited = true;
+        }
+        return formats;
+    };
 });

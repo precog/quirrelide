@@ -250,7 +250,6 @@ html > body .ui-pnotify {
 	display: block;
 	margin: 0 auto;
 }
-@import "https://api.reportgrid.com/css/rg-charts.css";
 .pg-ide, .pg-el, .pg-el.ui-widget, .ui-pnotify, .ui-pnotify-history-container {
     font-size: 73%;
     font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
@@ -335,20 +334,8 @@ html > body .ui-pnotify {
     padding: 7px;
     border-bottom-width: 1px;
 }
-@keyframes progressbg
-{
-    0%   {background-position: 0 0;}
-    100% {background-position: 20px 0;}
-}
-@-moz-keyframes progressbg 
-{
-    0%   {background-position: 0 0;}
-    100% {background-position: 20px 0;}
-}
-@-webkit-keyframes progressbg 
-{
-    0%   {background-position: 0 0;}
-    100% {background-position: 20px 0;}
+.pg-ide .pg-support-tabs .ui-tabs-panel {
+    clear: left;
 }
 .pg-statusbar .ui-progressbar-value {
     background-image: url(images/progress-background.png);
@@ -426,8 +413,9 @@ html > body .ui-pnotify {
 }
 .pg-logo {
     background-repeat: no-repeat;
-    width: 220px;
-    height: 28px;
+    width: 177px;
+    height: 21px;
+    padding-top: 4px;
     float: left;
 }
 .pg-precog {
@@ -626,4 +614,19 @@ html > body .ui-pnotify {
 }
 .pg-ide .pg-toolbar-context .pg-toolbar-result-type button {
     padding: 0;
+}
+@keyframes progressbg
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
+}
+@-moz-keyframes progressbg 
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
+}
+@-webkit-keyframes progressbg 
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
 }

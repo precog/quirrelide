@@ -6,16 +6,16 @@ define([
     , "rtext!templates/toolbar.output.html"
 ],
 
-function(ui, formats, exportLanguages, openDialog, tplToolbar) {
-    var map = {};
-
-    $.each(formats, function(_, format) {
-        map[format.type] = format;
-    });
-
-    var radioIndex = this.radioIndex = ("undefined" !== typeof this.radioIndex && this.radioIndex || 0) + 1;
-
+function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
     return function(el, editors) {
+        var map = {},
+            formats = loadFormats();
+        $.each(formats, function(_, format) {
+            map[format.type] = format;
+        });
+
+        var radioIndex = this.radioIndex = ("undefined" !== typeof this.radioIndex && this.radioIndex || 0) + 1;
+
         var wrapper,
             last = {
                 result : null,

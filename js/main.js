@@ -59,6 +59,8 @@ require([
 ],
 
 function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {
+$(function() {
+
     precog.cache.disable();
 
     var queries,
@@ -229,9 +231,10 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 
     $(editors).on('activated', function(e, index) {
         editorbar.activateTab(index);
-        setTimeout(function() {
+        clearInterval(this.k);
+        this.k = setTimeout(function() {
             invalidationSuspended = false;
-        }, 2000);
+        }, 1000);
         if(editorbar.historyPanelIsOpen()) {
             refreshHistoryList();
         }
@@ -312,7 +315,8 @@ function(config, createLayout, editors, history, buildBarMain, buildBarEditor, b
 //console.log('from config tabSize ' + value);
             editor.setTabSize(value);
         });
-    }, 15)
+    }, 150);
 
     layout.container.show();
+});
 });
