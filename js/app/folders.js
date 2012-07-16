@@ -5,6 +5,7 @@ define([
     , "app/util/utils"
     , "app/util/notification"
     , "app/util/dialog-lineinput"
+    , "app/util/dialog-confirm"
     , "rtext!templates/toolbar.folders.html"
     , "rtext!templates/menu.context.system.node.html"
     , "rtext!templates/menu.context.system.root.html"
@@ -13,7 +14,7 @@ define([
     , 'libs/jquery/jstree/jstree'
     , 'libs/jquery/jstree/jstree.themes'
 ],
-    function(precog, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
+    function(precog, createStore, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
         var UPLOAD_SERVICE = "upload.php",
             DOWNLOAD_SERVICE = "download.php",
             STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
@@ -94,25 +95,34 @@ define([
                 // create path in config
                 setVirtualPath(path, name);
                 // traverse the tree from the root to path
-                var parent;
-                if(path == basePath) {
-                    parent = -1;
-                } else {
-                    var list = tree.find("li"),
-                        len  = list.length;
-                    for(var i = 0; i < len; i++) {
-                        if($(list.get(i)).attr("data") === path) {
-                            parent = list.get(i);
-                            break;
-                        }
-                    }
-                }
+                var parent = path === basePath ? -1 : findNode(path);
                 if(!parent) return;
                 // create visual node
                 var p = ("/" === path ? "/" : path + "/") + name;
                 if(map[p]) return; // node already exists in the tree
                 map[p] = true;
                 addFolder(name, p, null, parent);
+            }
+
+            function findNode(path) {
+                var list = tree.find("li"),
+                    len  = list.length;
+                for(var i = 0; i < len; i++) {
+                    if($(list.get(i)).attr("data") === path) {
+                        return list.get(i);
+                    }
+                }
+                return null;
+            }
+
+            function removeNode(path) {
+                if(!path && (path = path.trim()) === "/" ) {
+                    return;
+                }
+                $(wrapper).trigger("requestPathDeletion", path);
+                // TODO: WIRE HERE PRECOG CALL
+                delete map[path];
+                removeFolder(path);
             }
 
             function requestNodeCreationAt(path) {
@@ -127,6 +137,16 @@ define([
                         return "path name cannot be empty and it can only be composed of alpha-numeric characters";
                 }, function(name) {
                     createNodeAt(path, name);
+                });
+            }
+
+            function requestNodeRemovalAt(path) {
+                var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
+                    title   = "Delete Folder",
+                    message = "Are you sure you want to delete the folder at: <i>"+path+"</i> and all of its content?<br>This operation cannot be undone!";
+                // open dialog
+                openConfirmDialog(title, message, function() {
+                    removeNode(path);
                 });
             }
 
@@ -182,6 +202,11 @@ define([
                 var path = pathFromSelectedNode();
                 window.location.href = downloadUrl(path);
 //                console.log(downloadUrl(path));
+                e.preventDefault(); return false;
+            });
+            menu.find(".pg-remove").click(function(e) {
+                var path = pathFromSelectedNode();
+                requestNodeRemovalAt(path);
                 e.preventDefault(); return false;
             });
             menuRoot.find(".pg-create").click(function(e) {
@@ -242,6 +267,13 @@ define([
                         return false;
                     }
                 );
+            }
+
+            function removeFolder(path) {
+                var node = findNode(path);
+                if(node === null)
+                    return;
+                tree.jstree("delete_node", node);
             }
 
             function loadAtPath(path, levels, parent) {
