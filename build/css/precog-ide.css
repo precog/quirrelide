@@ -616,6 +616,11 @@ html > body .ui-pnotify {
 .pg-ide .pg-toolbar-context .pg-toolbar-result-type button {
     padding: 0;
 }
+.pg-ide .pg-table .ui-state-default {
+    border-left: 0;
+    border-top: 0;
+    border-bottom: 0;
+}
 @keyframes progressbg
 {
     0%   {background-position: 0 0;}
