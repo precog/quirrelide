@@ -72,7 +72,7 @@ function(tplDialog, ui, dom, notification) {
     }
 
     var inited = false;
-    return function(title, actions, code) {
+    return function(title, actions, code, selected) {
         if(!inited) {
             init();
             inited = true;
@@ -85,15 +85,20 @@ function(tplDialog, ui, dom, notification) {
             selectCode();
         }
 
+        var selectedIndex = -1;
         ui.radios(elActions, $(actions).map(function(i, action) {
+            if(action.token === selected)
+                selectedIndex = i;
             return {
                   label : action.name
                 , handler : function() { execute(action); }
                 , group : "actions"
+                , checked : selectedIndex === i
             };
         }));
 
-        execute(actions[0]);
+        if(selectedIndex === -1) selectedIndex = 0;
+        execute(actions[selectedIndex]);
 
         elActions.find(".ui-button:first").click();
 

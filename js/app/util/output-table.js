@@ -165,6 +165,9 @@ function(jsonmodel) {
 
                 reducedResize();
             },
+            preferredDownloadFormat : function() {
+                return 'csv';
+            },
             resize : reducedResize
         };
     };

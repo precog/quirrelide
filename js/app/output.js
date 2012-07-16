@@ -7,6 +7,7 @@ define([
 ],
 
 function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
+    var radioIndex = 0;
     return function(el, editors) {
         var map = {},
             formats = loadFormats();
@@ -14,7 +15,7 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
             map[format.type] = format;
         });
 
-        var radioIndex = this.radioIndex = ("undefined" !== typeof this.radioIndex && this.radioIndex || 0) + 1;
+        radioIndex++;
 
         var wrapper,
             last = {
@@ -32,7 +33,8 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
         ui.button(elToolbarMainContext, {
             icon : "ui-icon-arrowthickstop-1-s",
             handler : function() {
-                openDialog("Download Query", exportLanguages, editors.getOutputResult());
+                var format = last && map[last.current].preferredDownloadFormat(lastOptions);
+                openDialog("Download Results", exportLanguages, editors.getOutputResult(), format);
             }
         });
 

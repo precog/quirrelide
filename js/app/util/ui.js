@@ -113,31 +113,47 @@ function() {
         radios : function(el, actions) { /* group, label, handler */
             el = $(el);
             if(actions) {
-                this.uid = ++uid;
                 el.find("*").remove();
+                uid++;
+                var current;
                 $(actions).each(function(i, action) {
                     var name = action.group,
-                        id = "pg-buttonset-" + this.uid + "-" + i,
+                        id = "pg-buttonset-" + uid + "-" + i,
                         label = action.label;
-                    var btn = el.append('<input type="radio" id="'+id+'" name="'+name+'" /><label for="'+id+'">'+label+'</label>').find("#"+id);
+                    var btn = el.append('<input type="radio" id="'+id+'" name="'+name+'" '+(action.checked ? 'checked="checked" ' : '')+'/><label for="'+id+'">'+label+'</label>').find("#"+id);
                     btn.click(function() {
-                        action.handler(action);
+                        if(action.checked !== !!btn.attr("checked")) {
+                            action.checked = !!btn.attr("checked");
+                            if(action.handler) {
+                                action.handler(action);
+                            }
+                        }
                     });
+                    if(action.checked)
+                        current = btn;
                 });
             }
-            return el.buttonset();
+            var buttons = el.buttonset();
+            // this should not be necessary, bug in buttonset?
+            if(actions && current) {
+                setTimeout(function() {
+//                    el.buttonset("refresh");
+                    current.change();
+                }, 100);
+            }
+            return buttons;
         },
         checks : function(el, actions) { /* group, label, handler */
             el = $(el);
             if(actions) {
-                this.uid = ++uid;
                 el.find("*").remove();
+                uid++;
                 $(actions).each(function(i, action) {
                     var name = action.name || "",
                         checked = action.checked || false,
-                        id = "pg-buttonset-" + this.uid + "-" + i,
+                        id = "pg-buttonset-" + uid + "-" + i,
                         label = action.label;
-                    var btn = el.append('<input type="checkbox" id="'+id+'" name="'+name+'" '+(checked ? "checked " : "")+'/><label for="'+id+'">'+label+'</label>').find("#"+id);
+                    var btn = el.append('<input type="checkbox" id="'+id+'" name="'+name+'" '+(checked ? 'checked="checked" ' : "")+'/><label for="'+id+'">'+label+'</label>').find("#"+id);
                     btn.click(function() {
                         action.checked = !!btn.attr("checked");
                         if(action.handler)

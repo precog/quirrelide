@@ -37,6 +37,11 @@ function() {
             f : function() {
                 return function() {  };
             }
+        }, {
+            name : "preferredDownloadFormat",
+            f : function() {
+                return function() { return null; }
+            }
         }],
         inited = false;
 

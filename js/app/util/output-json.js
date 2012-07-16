@@ -44,6 +44,9 @@ function(ui) {
         },
         deactivate : function() {
             toolbar.hide();
+        },
+        preferredDownloadFormat : function(options) {
+            return options && options.json && options.json.compact ? 'json' : 'jsonf';
         }
     };
 });
