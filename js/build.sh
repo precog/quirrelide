@@ -30,6 +30,7 @@ cp -f libs/jquery/zclip/ZeroClipboard.swf ../build/js/libs/jquery/zclip/ZeroClip
 
 # MINIFY CSS
 node r.js -o cssIn=../css/main.css out=../build/css/precog-ide.css
+node r.js -o cssIn=../css/generator.css out=../build/css/precog-link.css
 node r.js -o cssIn=ace/css/editor.css out=../build/js/ace/css/editor.css
 node r.js -o cssIn=../css/jquery/ui/black/jquery-ui.css out=../build/css/jquery/ui/black/jquery-ui.css
 node r.js -o cssIn=../css/jquery/ui/blue/jquery-ui.css out=../build/css/jquery/ui/blue/jquery-ui.css
@@ -39,3 +40,4 @@ node r.js -o cssIn=../css/jquery/ui/gray/jquery-ui.css out=../build/css/jquery/u
 # MINIFY JS
 ~/bin/uglifyjs -o ../build/js/require-jquery.js require-jquery.js
 node r.js -o app.build.js
+node r.js -o gen.build.js
