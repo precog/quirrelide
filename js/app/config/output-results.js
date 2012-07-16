@@ -4,6 +4,7 @@ define([
     , "app/util/output-chart"
     , "app/util/output-error"
     , "app/util/output-message"
+
 ],
 
 function() {

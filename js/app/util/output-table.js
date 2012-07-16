@@ -14,6 +14,7 @@ define([
 
 function(jsonmodel) {
     return function() {
+
         var elPanel = $('<div class="ui-widget"><div class="pg-table" style="height:100%;width:100%"></div></div>'),
             elOutput = elPanel.find('.pg-table'),
             dataView = new Slick.Data.DataView(),
@@ -26,9 +27,6 @@ function(jsonmodel) {
                 , multiColumnSort: true
             },
             wrapper;
-
-        grid = new Slick.Grid(elOutput, dataView, [], gridOptions);
-
         dataView.setPagingOptions({
             pageSize: 20
         });
@@ -83,8 +81,9 @@ function(jsonmodel) {
         function reducedResize() {
             clearInterval(this.killReducedResize);
             this.killReducedResize = setTimeout(function() {
-                if(grid) grid.resizeCanvas();
-            }, 0);
+                if(grid)
+                    grid.resizeCanvas();
+            }, 20);
         }
 
         function sortData(data, cols) {
