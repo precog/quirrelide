@@ -22,7 +22,11 @@ function(utils) {
 
     var map = {};
     for(var i = 0; i < values.length; i++) {
-        map["examples/"+utils.normalizeQueryName(values[i].name)] = values[i];
+//        map["examples/"+utils.normalizeQueryName(values[i].name)] = values[i];
+        map["a/b/c/"+utils.normalizeQueryName(values[i].name)] = values[i];
+        map["a/b/d/"+utils.normalizeQueryName(values[i].name)] = values[i];
+        map[""+utils.normalizeQueryName(values[i].name)] = values[i];
+        map["a/"+utils.normalizeQueryName(values[i].name)] = values[i];
     }
     return map;
 });

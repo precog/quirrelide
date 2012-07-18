@@ -33,6 +33,8 @@ requirejs.config({
         , 'app/util/ui' : ['libs/jquery/ui/jquery.ui.menu', 'libs/jquery/ui/jquery.ui.tabs', 'libs/jquery/ui/jquery.ui.progressbar']
         , 'libs/jquery/layout/jquery.layout' : ['libs/jquery/ui/jquery.ui.draggable']
         , 'libs/jquery/jstree/jstree' : ['libs/jquery/jstree/vakata']
+        , 'libs/jquery/jstree/jstree.sort' : ['libs/jquery/jstree/jstree']
+        , 'libs/jquery/jstree/jstree.types' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.themes' : ['libs/jquery/jstree/jstree']
         , 'app/folders' : ['libs/jquery/jstree/jstree.themes']
     }

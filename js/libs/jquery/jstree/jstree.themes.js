@@ -99,10 +99,10 @@ Controls the looks of jstree, without this plugin you will get a functional tree
 				obj = this.get_node(obj);
 				if(!obj || obj === -1 || !obj.length) { return false; }
 				obj = obj.find("> a > .jstree-themeicon");
-				if(icon === false) { 
+				if(icon === false) {
 					this.hide_icon(obj);
 				}
-				else if(icon.indexOf("/") === -1) { 
+				else if(icon.indexOf("/") === -1) {
 					obj.addClass(icon).attr("rel",icon);
 				}
 				else { 

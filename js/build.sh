@@ -24,6 +24,7 @@ cp -r -f ../css/jquery/ui/black/images ../build/css/jquery/ui/black
 
 cp -f ../css/images/progress-background.png ../build/css/images/progress-background.png
 cp -f ../css/images/logo-precog.svg ../build/css/images/logo-precog.svg
+cp -f ../css/images/file.png ../build/css/images/file.png
 cp -r -f libs/jquery/jstree/themes/default ../build/themes
 
 cp -f libs/jquery/zclip/ZeroClipboard.swf ../build/js/libs/jquery/zclip/ZeroClipboard.swf

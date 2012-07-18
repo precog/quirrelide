@@ -12,6 +12,7 @@ define([
 
     , 'libs/jquery/jstree/vakata'
     , 'libs/jquery/jstree/jstree'
+    , 'libs/jquery/jstree/jstree.sort'
     , 'libs/jquery/jstree/jstree.themes'
 ],
 
@@ -19,8 +20,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
     var list = [],
         DEMO_TOKEN = "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2",
         STORE_KEY = "pg-quirrel-queries-"+precog.hash,
-        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {})}),
-        foldersmap = {};
+        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {})});
 
 
     store.monitor.start(500);
@@ -48,15 +48,29 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         var elActions = el.find(".pg-toolbar-actions"),
             elContext = el.find(".pg-toolbar-context"),
             elMain    = el.find(".pg-queries"),
-            elList    = elMain.append('<ul class="pg-query-list"></ul><div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find("ul"),
-            elTree    = elMain.find(".pg-tree"),
+//            elList    = elMain.append('<ul class="pg-query-list"></ul>').find("ul"),
+            elTree    = elMain.append('<div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find(".pg-tree"),
             elRoot    = elTree.append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure");
         elActions.html("query manager");
         var tree = elFolders.jstree({
             plugins : [
-                "themes"
-            ]
+                "themes", "sort"
+            ],
+            sort : function (a, b) {
+                if($(a).attr("rel") > $(b).attr("rel")) {
+                    return 1;
+                }
+                return $(a).attr("data") > $(b).attr("data") ? 1 : -1;
+            },
+            types : {
+                query : {
+                    valid_children : "none"
+                },
+                folder : {
+                    valid_children : ["folder", "query"]
+                }
+            }
         });
         elRoot.html('<div class="jstree jstree-default"><a href="#" data="/"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
 
@@ -80,30 +94,30 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         });
 
         function hideMessage() {
-            elList.show();
+//            elList.show();
             elTree.show();
             elMain.find(".pg-message").hide();
         }
 
         function showMessage() {
-            elList.hide();
+//            elList.hide();
             elTree.hide();
             elMain.find(".pg-message").show();
         }
 
         function pathFromId(id) {
+            if(id.substr(0, 1) === '/') id = id.substr(1);
             var t = id.split("/");
             t.pop(); // discard query name
-            if(t.length == 0) {
-                return null;
-            } else {
-                return t.join("/");
-            }
+            if(t.length === 0)
+                return "/";
+            else
+                return "/" + t.join("/");
         }
 
         function getFolderByPath(path) {
-            if(path === null || path === "/") return -1;
-            var list = tree.find("li"),
+            if(!path || path === "/") return -1;
+            var list = tree.find("li[rel=folder]"),
                 len  = list.length;
             for(var i = 0; i < len; i++) {
                 if($(list.get(i)).attr("data") === path) {
@@ -113,84 +127,83 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             return null;
         }
 
-        function addQueryToFolder(folder, name) {
-
+        function createNodeCreatedHandler(path, callback) {
+            var f = function(e, data) {
+                var r = data.rslt, el = $(r.obj[0]);
+                if(el.attr("data") !== path) return;
+                tree.unbind("create_node.jstree", f);
+                if(callback)
+                    callback(el);
+            }
+            return f;
         }
 
-        function addFolderPath(folder) {
-            var parentpath = folder,
-                parent;
-console.log(())
-            // walk back until a valid node is found
-            while((parent = getFolderByPath(parentpath)) !== null) {
-                var parts = parentpath.split("/");
-                parts.pop();
-                parentpath = parts.join("/");
-            }
-console.log(parent);
-            if(parentpath.length === folder.length) return parent; // folder already exists in the tree
-            // walk forward adding new sub-folders
-            var segments = folder.substr(0, parentpath.length + 1).split("/");
-            for(var i = 0; i < segments.length; i++) {
-                parent = addChildFolder(parent, segments[i]);
-            }
-            return parent;
+        function addQueryToFolder(folder, name, callback) {
+            var path = (folder === -1 ? "" : $(folder).attr("data")) + "/" + name;
+            tree.bind("create_node.jstree", createNodeCreatedHandler(path, function(el) {
+                tree.jstree("set_icon", el, 'pg-tree-leaf');
+                if(callback) callback(el);
+            }));
+            return tree.jstree(
+                  "create_node"
+                , folder
+                , {
+                     "title" : name
+                    , "li_attr" : {
+                        data : path,
+                        rel : "query"
+                    }
+                }
+                , "last"
+            );
         }
 
         function addChildFolder(parent, name, callback) {
             if(!parent) parent = -1;
+            var path = (parent === -1 ? "" : $(parent).attr("data")) + "/" + name;
+            tree.bind("create_node.jstree", createNodeCreatedHandler(path, callback));
+
             return tree.jstree(
-                "create_node"
+                  "create_node"
                 , parent
                 , {
                       "title" : name
-                    , data : name
                     , "li_attr" : {
-                        data : name
+                        data : path,
+                        rel : "folder"
                     }
                 }
                 , "last"
-                , function(el) {
-                    /*
-                    ui.clickOrDoubleClick($(el).find("a:first"), function(e) {
-                        menuselected = e.currentTarget;
-                        var pos = $(e.currentTarget).offset(),
-                            h = $(e.currentTarget).outerHeight();
-                        menu.css({
-                            position : "absolute",
-                            top : (pos.top + h) + "px",
-                            left : (pos.left) + "px",
-                            zIndex : e.currentTarget.style.zIndex + 100
-                        }).show();
-                        e.preventDefault(); return false;
-                    }, function(e) {
-                        menuselected = e.currentTarget;
-                        tree.jstree("toggle_node", menuselected);
-                        e.preventDefault(); return false;
-                    });
-                    wireFileUpload(el, path);
-                    if(callback)
-                        callback.apply(el, [path]);
-                    */
-                    e.preventDefault(); return false;
-                }
             );
         }
 
-        function addQuery(id, name) {
-            var path = pathFromId(id),
-                npath = "/" + (path === null ? "" : path);
-            if(!foldersmap[npath]) {
-                foldersmap[npath] = [name];
-                if(npath != "/")
-                    addFolderPath(path);
-            } else {
-                foldersmap[npath].push(name);
+        function whenPathExists(path, handler) {
+            handler = handler || function() {};
+            var fpath = path, parent;
+            while(null === (parent = getFolderByPath(fpath))) {
+                var parts = fpath.substr(1).split("/");
+                parts.pop();
+                fpath = "/" + parts.join("/");
             }
-            var folder = getFolderByPath(path);
-            addQueryToFolder(folder, name);
+            if(fpath === path) {
+                handler(parent);
+                return;
+            }
+            var segment = path.substr(fpath.length).split("/").filter(function(v) { return !!v; }).shift();
+            addChildFolder(parent, segment, function(el) {
+                whenPathExists(path, handler);
+            });
+        }
+
+        function addQuery(id, name) {
+            var path = pathFromId(id);
+            whenPathExists(path, function(el) {
+                addQueryToFolder(el, name);
+                hideMessage();
+            });
 
             // OLD
+            /*
             var li = elList.append('<li class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" data-name="'+id+'"><span class="ui-button-icon-primary ui-icon ui-icon-script"></span><span class="ui-button-text">'+name+'</span></li>').find("li:last");
             ui.clickOrDoubleClick(li, function(e) {
                 var pos = $(e.currentTarget).offset(),
@@ -220,9 +233,12 @@ console.log(parent);
             if(list.length === 1) {
                 hideMessage();
             }
+            */
         }
 
         function removeQuery(id) {
+            // OLD
+            /*
             elList.find('[data-name="'+id+'"]').remove();
             var pos = list.indexOf(id);
             if(pos >= 0)
@@ -230,6 +246,7 @@ console.log(parent);
             if(list.length === 0) {
                 showMessage();
             }
+            */
         }
 
         var queries = store.get("queries");
