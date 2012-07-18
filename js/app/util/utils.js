@@ -30,7 +30,9 @@ function() {
        },
        normalizeQueryName : function (value) {
             value = value.trim().toLowerCase();
-            value.replace(/[ \-]+/g, "_");
+           if(value.substr(0, 1) === "/")
+            value = value.substr(1);
+            value.replace(/[ \-.]+/g, "_");
             return value;
        }
    }

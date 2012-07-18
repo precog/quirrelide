@@ -25,12 +25,8 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
 
     store.monitor.start(500);
 
-// path map
-// collect paths from existing queries
-// display path nodes
-// display queries for each node
-// display script icon for queries
-// activate folder toggle
+// activate folder toggle on dblclick
+// folder menu
 // activate query dbl click
 // folder create
 // folder remove
@@ -81,14 +77,14 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         var menuselected, menu = ui.contextmenu(tplQueryContextMenut);
 
         menu.find(".pg-open").click(function(e) {
-            var id = $(menuselected).attr("data-name");
+            var id = $(menuselected).attr("data");
             openQuery(id);
             menu.hide();
             e.preventDefault(); return false;
         });
         menu.find(".pg-remove").click(function(e) {
-            var id = $(menuselected).attr("data-name");
-            wrapper.remove(id);
+            var id = $(menuselected).attr("data");
+            wrapper.queryRemove(id);
             menu.hide();
             e.preventDefault(); return false;
         });
@@ -115,9 +111,21 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 return "/" + t.join("/");
         }
 
-        function getFolderByPath(path) {
+        function getFolderNodeByPath(path) {
             if(!path || path === "/") return -1;
             var list = tree.find("li[rel=folder]"),
+                len  = list.length;
+            for(var i = 0; i < len; i++) {
+                if($(list.get(i)).attr("data") === path) {
+                    return list.get(i);
+                }
+            }
+            return null;
+        }
+
+        function getQueryNodeByPath(path) {
+            if(!path || path === "/") return -1;
+            var list = tree.find("li[rel=query]"),
                 len  = list.length;
             for(var i = 0; i < len; i++) {
                 if($(list.get(i)).attr("data") === path) {
@@ -142,6 +150,27 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             var path = (folder === -1 ? "" : $(folder).attr("data")) + "/" + name;
             tree.bind("create_node.jstree", createNodeCreatedHandler(path, function(el) {
                 tree.jstree("set_icon", el, 'pg-tree-leaf');
+                ui.clickOrDoubleClick(el, function(e) {
+                    var pos = $(e.currentTarget).offset(),
+                        h = $(e.currentTarget).outerHeight(),
+                        w = $(e.currentTarget).outerWidth();
+                    menu.css({
+                        position : "absolute",
+                        top : (pos.top + h) + "px",
+                        left : (pos.left) + "px",
+                        width : w + "px",
+                        zIndex : e.currentTarget.style.zIndex + 100
+                    }).show().find("ul").outerWidth(w);
+                    menuselected = e.currentTarget;
+                    e.preventDefault(); return false;
+                }, function(e) {
+                    var id = $(e.currentTarget).attr("data");
+                    openQuery(id);
+                    menu.hide();
+                    e.preventDefault(); return false;
+                });
+                el.mouseenter(function() { $(this).addClass("ui-state-hover"); })
+                    .mouseleave(function() { $(this).removeClass("ui-state-hover"); });
                 if(callback) callback(el);
             }));
             return tree.jstree(
@@ -180,7 +209,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         function whenPathExists(path, handler) {
             handler = handler || function() {};
             var fpath = path, parent;
-            while(null === (parent = getFolderByPath(fpath))) {
+            while(null === (parent = getFolderNodeByPath(fpath))) {
                 var parts = fpath.substr(1).split("/");
                 parts.pop();
                 fpath = "/" + parts.join("/");
@@ -236,7 +265,12 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             */
         }
 
-        function removeQuery(id) {
+        function removeQuery(path) {
+            console.log(path);
+            var node = getQueryNodeByPath(path);
+            console.log(node);
+            if(!node) return;
+            tree.jstree("delete_node", node);
             // OLD
             /*
             elList.find('[data-name="'+id+'"]').remove();
@@ -277,17 +311,17 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         });
 
         return wrapper = {
-            exist : function(name) {
+            queryExist : function(name) {
                 var id = utils.normalizeQueryName(name);
                 return !!store.get("queries."+id);
             },
-            save : function(name, code) {
-                if(this.exist(name))
-                    return this.update(name, code);
+            querySave : function(name, code) {
+                if(this.queryExist(name))
+                    return this.queryUpdate(name, code);
                 else
-                    return this.create(name, code);
+                    return this.queryCreate(name, code);
             },
-            create : function(name, code) {
+            queryCreate : function(name, code) {
                 var id = utils.normalizeQueryName(name);
                 var query = store.get("queries."+id);
                 if(query) return false;
@@ -299,7 +333,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 $(wrapper).trigger("created", query);
                 return true;
             },
-            update : function(name, code) {
+            queryUpdate : function(name, code) {
                 var id = utils.normalizeQueryName(name);
                 var query = store.get("queries."+id);
                 if(!query) return false;
@@ -308,14 +342,17 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 $(wrapper).trigger("updated", query);
                 return true;
             },
-            remove : function(name) {
+            queryRemove : function(name) {
                 var id = utils.normalizeQueryName(name);
                 var query = store.get("queries."+id);
                 if(!query) return false;
                 store.remove("queries."+id);
-                removeQuery(id);
+                removeQuery(name);
                 $(wrapper).trigger("removed", query.name);
                 return true;
+            },
+            nameAtPath : function(name) {
+                return name;
             }
         };
     }

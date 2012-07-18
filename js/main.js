@@ -175,7 +175,7 @@ $(function() {
     });
 
     $(editors).on('saved', function(_, data) {
-        queries.save(data.name, data.code);
+        queries.querySave(data.name, data.code);
     });
 
     sync(editor, editors, config);
@@ -194,11 +194,10 @@ $(function() {
     });
 
     queries = buildQueries(layout.getQueries());
-
     $(queries).on('requestopenquery', function(_, data) {
+        console.log(data);
         editors.open(data.name, data.code);
     });
-
     $(queries).on('removed', function(_, name) {
         var index = editors.getIndexByName(name);
         if(index >= 0) {
@@ -252,7 +251,7 @@ $(function() {
     });
 
     $(editors).on('removed', function(e, name) {
-        if(!queries.exist(name))
+        if(!queries.queryExist(name))
             history.remove(name);
     });
 

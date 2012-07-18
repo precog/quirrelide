@@ -106,14 +106,14 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
                     openInputDialog("Save Query", "Select a unique identification name for your query", null, "",
                     function(value) {
                         if(value.match(/^[a-z0-9][a-z0-9 ]*[a-z0-9]$/i)) {
-                            if(queries.exist(value))
+                            if(queries.queryExist(value))
                                 return "a query with this identifier already exists";
                             else
                                 return null;
                         } else
                             return "the name can only include alpha-numeric characters, white spaces (but not in the beginning and at the end) and must be at least 2 characters long.";
                     }, function(value) {
-                        editor.name = value;
+                        editor.name = queries.nameAtPath(value);
                         editor.hasname = true;
                         editors.save(editor);
                     });
