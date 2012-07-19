@@ -26,13 +26,15 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
     store.monitor.start(500);
 
 // activate folder toggle on dblclick
+// pass query path to tabs
+// display full path in tab title
+// query drag drop
+//   prompt overwrite if same name exists
 // folder menu
-// activate query dbl click
 // folder create
 // folder remove
 // folder drag/drop
-// query remove
-// query drag drop
+//   prompt overwrite if same name exists
 // keep everything in sync
 // session sync
 // remove old system
