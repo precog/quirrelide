@@ -99,12 +99,10 @@ $(function() {
     });
 
     $(editor).on('useSoftTabsChanged', function(_, value) {
-//console.log('useSoftTabsChanged ' + value);
         config.set('softTabs', value);
     });
 
     $(editor).on('tabSizeChanged', function(_, value) {
-//console.log('tabSizeChanged ' + value);
         config.set('tabSize', value);
     });
 
@@ -117,10 +115,6 @@ $(function() {
     support.addPanel('tutorial', 'https://quirrel.precog.com/tutorial.html');
     support.addPanel('reference', 'https://quirrel.precog.com/reference.html');
     support.addPanel('IRC channel', 'https://api.precog.com:9090/?channels=#quirrel');
-
-//    support.addPanel('live support', 'http://widget.mibbit.com/?settings=3e7a9e32a26494b80748cfe11f66e956&server=irc.mibbit.net&channel=%23precog_test_channel');
-//    support.addPanel('wsirc', 'http://wsirc.mobi/mobileChat.aspx?username=u_******&server=binary.ipocalypse.net%3A6667&channel=%23quirrel&autojoin=true&color=%23eeeeee&dark=false');
-//    support.addPanel('freenode', 'http://webchat.freenode.net?randomnick=1&channels=quirrel&uio=Mz1mYWxzZSY5PXRydWU32');
 
     $(layout).on('resizeCodeEditor', function() {
         output.resize();
@@ -307,12 +301,10 @@ $(function() {
         });
 
         config.monitor.bind('softTabs', function(_, value) {
-//console.log('from config softTabs ' + value);
             editor.setUseSoftTabs(value);
         });
 
         config.monitor.bind('tabSize', function(_, value) {
-//console.log('from config tabSize ' + value);
             editor.setTabSize(value);
         });
     }, 150);

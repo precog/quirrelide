@@ -14,7 +14,6 @@ define([
 ],
 
 // TODO remove editors dependency
-// TODO add invalidate tab content
 
 function(ui, editors, notification, qs, conv, utils, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
 
@@ -61,13 +60,6 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
 
         function getTabName(index) {
             return getTabLabelElement(index).attr("data");
-            /*
-            var el = getTabLabelElement(index),
-                name = el.text();
-            if(name.substr(0, 1) === "*")
-                name = name.substr(1);
-            return name;
-            */
         }
 
         function getTabLabelElement(index) {
@@ -125,11 +117,6 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
                         editors.save(editor);
                     });
                 }
-                //if anonymous
-                //  dialog request name
-                //  trigger create query request
-                //else
-                //  trigger update query request
             }
         });
 
@@ -151,7 +138,7 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
                 var base = document.location.origin + document.location.pathname;
                 // strip q if it exists
                 var params = qs.all();
-                params.q = editors.getCode(); // conv.quirrelToOneLine(editors.getCode());
+                params.q = editors.getCode();
                 if(copier) copier.remove();
                 copier = notification.copier("Create Query Link", {
                     text : "Copy this link to pass the current query to someone else.<br>Don't forget that the URL contains your token!",
@@ -178,10 +165,6 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
         });
 
         function formatHistoryItem(item) {
-            // item.timestamp
-            // item.code
-            // item.sample.first
-            // item.sample.length
             var numlines = 3,
                 tlen = 40;
             var execution = moment(new Date(item.timestamp)).fromNow();
