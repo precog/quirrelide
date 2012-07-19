@@ -195,7 +195,6 @@ $(function() {
 
     queries = buildQueries(layout.getQueries());
     $(queries).on('requestopenquery', function(_, data) {
-        console.log(data);
         editors.open(data.name, data.code);
     });
     $(queries).on('removed', function(_, name) {
@@ -214,7 +213,7 @@ $(function() {
     });
 
     $(editors).on('added', function(e, editor) {
-        editorbar.addTab(editor.name, !editor.notdirty);
+        editorbar.addTab(editor.name, !!editor.dirty);
     });
 
     $(editors).on('removed', function(e, name) {

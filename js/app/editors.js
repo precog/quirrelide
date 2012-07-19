@@ -52,7 +52,7 @@ function(precog, md5, createStore, utils) {
         o = $.extend({
             name : null,
             hasname : false,
-            notdirty : false
+            dirty : false
         }, o);
         if(!o.name)
             o.name = anonymousName();
@@ -79,7 +79,7 @@ function(precog, md5, createStore, utils) {
     var currentIndex = null,
         wrapper = {
             save : function(editor) {
-                editor.notdirty = true;
+                editor.dirty = false;
                 store.set(editorKey(editor.id), editor, true);
                 $(wrapper).trigger("saved", editor);
                 return editor;
@@ -187,7 +187,7 @@ function(precog, md5, createStore, utils) {
                 this.setField("code", code, index);
             },
             setDirty : function(index) {
-                this.setField("notdirty", false, index);
+                this.setField("dirty", true, index);
             },
             getOutputResult : function(index) {
                 return this.getField("output.result", null, index);

@@ -25,9 +25,8 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
 
     store.monitor.start(500);
 
+// modifications to code are not stored on reload
 // activate folder toggle on dblclick
-// pass query path to tabs
-// display full path in tab title
 // query drag drop
 //   prompt overwrite if same name exists
 // folder menu
@@ -149,8 +148,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         }
 
         function addQueryToFolder(folder, name, callback) {
-            var path = (folder === -1 ? "" : $(folder).attr("data")) + "/" + name;
-            tree.bind("create_node.jstree", createNodeCreatedHandler(path, function(el) {
+            tree.bind("create_node.jstree", createNodeCreatedHandler(name, function(el) {
                 tree.jstree("set_icon", el, 'pg-tree-leaf');
                 ui.clickOrDoubleClick(el, function(e) {
                     var pos = $(e.currentTarget).offset(),
@@ -179,9 +177,9 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                   "create_node"
                 , folder
                 , {
-                     "title" : name
+                     "title" : name.split("/").pop()
                     , "li_attr" : {
-                        data : path,
+                        data : name,
                         rel : "query"
                     }
                 }
@@ -340,7 +338,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 var query = store.get("queries."+id);
                 if(!query) return false;
                 query.code = code;
-                store.set("queries."+id, query);
+                store.set("queries."+id, query, true);
                 $(wrapper).trigger("updated", query);
                 return true;
             },

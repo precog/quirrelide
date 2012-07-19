@@ -60,19 +60,26 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
         }
 
         function getTabName(index) {
+            return getTabLabelElement(index).attr("data");
+            /*
             var el = getTabLabelElement(index),
                 name = el.text();
             if(name.substr(0, 1) === "*")
                 name = name.substr(1);
             return name;
+            */
         }
 
         function getTabLabelElement(index) {
             return tabs.find("li:nth("+index+") a");
         }
 
-        function changeTabName(index, value) {
-            getTabLabelElement(index).html(utils.truncate(value));
+        function changeTabName(index, value, dirty) {
+            var el = getTabLabelElement(index);
+            el.attr("data", value).attr("title", value).html(utils.truncate(value.split("/").pop()));
+            if(dirty) {
+                wrapper.invalidateTab(index);
+            }
         }
 
         function invalidateTab(index) {
@@ -203,11 +210,8 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
 
         return wrapper = {
             addTab : function(name, dirty) {
-                tabs.tabs("add", "#pg-editor-tab-" + (++index), utils.truncate(name));
-                if(dirty) {
-                    this.invalidateTab(index-1);
-                }
-
+                var a = tabs.tabs("add", "#pg-editor-tab-" + (++index), "");
+                changeTabName(tabs.tabs("length")-1, name, dirty);
                 var closers = tabs.find(".pg-tab-close");
                 if(closers.length == 1) {
                     closers.hide();

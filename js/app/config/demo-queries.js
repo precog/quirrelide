@@ -20,13 +20,13 @@ function(utils) {
         code : '-- This query takes movie ratings, creates an overall rating and returns the top x results\n\ndata := //movie_ratings -- assigns the movie_ratings data to a variable called \"data\"\nnumberOfRecommendations := 10 -- creates a variable that determines how many rankings are returned\nhighestRating := max(data.rating) -- the rating of the highest rated movie, for use below \n\nrecommendation := forall \'movie -- will apply the following code  to each movie\n{movie: \'movie, overallRating: (mean(data.rating where data.movie = \'movie)- stdDev(data.rating where data.movie = \'movie))+ (min(data.rating where data.movie = \'movie)/highestRating)}\n-- The ratings are composed by taking the average rating, subtracting the standard deviation (to reward consistent movies) and adding the ratio of the minimum rating over the highest possible rating (to reward movies that are not disliked by anyone)\n\nrank := std::stats::rank(recommendation.overallRating) -- ranks the overall movie ratings and stores it in \'rank\'\nmaxRank := max(rank) -- the highest rank (higher ranks are higher numbers, i.e. 1st is the lowest rank)\n\nrecommendation where rank > maxRank - numberOfRecommendations'
     }];
 
-    var map = {};
+    var map = {}, prefix = "examples/";
     for(var i = 0; i < values.length; i++) {
-//        map["examples/"+utils.normalizeQueryName(values[i].name)] = values[i];
-        map["a/b/c/"+utils.normalizeQueryName(values[i].name)] = values[i];
-        map["a/b/d/"+utils.normalizeQueryName(values[i].name)] = values[i];
-        map[""+utils.normalizeQueryName(values[i].name)] = values[i];
-        map["a/"+utils.normalizeQueryName(values[i].name)] = values[i];
+        var name = prefix+values[i].name;
+        map[utils.normalizeQueryName(name)] = {
+            name : name,
+            code : values[i].code
+        };
     }
     return map;
 });
