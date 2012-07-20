@@ -22,6 +22,8 @@ cp -r -f ../css/jquery/ui/blue/images ../build/css/jquery/ui/blue
 cp -r -f ../css/jquery/ui/dark/images ../build/css/jquery/ui/dark
 cp -r -f ../css/jquery/ui/black/images ../build/css/jquery/ui/black
 
+cp -r -f ../css/jquery/slickgrid/images ../build/css/jquery/slickgrid
+
 cp -f ../css/images/progress-background.png ../build/css/images/progress-background.png
 cp -f ../css/images/logo-precog.svg ../build/css/images/logo-precog.svg
 cp -f ../css/images/file.png ../build/css/images/file.png
