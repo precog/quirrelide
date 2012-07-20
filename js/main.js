@@ -36,6 +36,7 @@ requirejs.config({
         , 'libs/jquery/jstree/jstree.sort' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.types' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.themes' : ['libs/jquery/jstree/jstree']
+        , 'libs/jquery/jstree/jstree.ui' : ['libs/jquery/jstree/jstree']
         , 'app/folders' : ['libs/jquery/jstree/jstree.themes']
     }
 });

@@ -13,6 +13,7 @@ define([
     , 'libs/jquery/jstree/vakata'
     , 'libs/jquery/jstree/jstree'
     , 'libs/jquery/jstree/jstree.sort'
+    , 'libs/jquery/jstree/jstree.ui'
     , 'libs/jquery/jstree/jstree.themes'
 ],
 
@@ -38,7 +39,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         elActions.html("query manager");
         var tree = elFolders.jstree({
             plugins : [
-                "themes", "sort"
+                "themes", "sort", "ui"
             ],
             sort : function (a, b) {
                 if($(a).attr("rel") > $(b).attr("rel")) {
@@ -53,6 +54,12 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 folder : {
                     valid_children : ["folder", "query"]
                 }
+            },
+            ui : {
+                  select_limit : 1
+                , selected_parent_close : "deselect"
+                , select_multiple_modifier : false
+                , select_range_modifier : false
             }
         });
         elRoot.html('<div class="jstree jstree-default"><a href="#" data="/"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
@@ -153,8 +160,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                     menu.hide();
                     e.preventDefault(); return false;
                 });
-                el.mouseenter(function() { $(this).addClass("ui-state-hover"); })
-                    .mouseleave(function() { $(this).removeClass("ui-state-hover"); });
                 if(callback) callback(el);
             }));
             return tree.jstree(
