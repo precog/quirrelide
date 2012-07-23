@@ -8,7 +8,6 @@ define([
     , "app/util/dialog-confirm"
 
     , "rtext!templates/toolbar.folders.html"
-    , "rtext!templates/menu.context.queries.query.html"
 
     , 'libs/jquery/jstree/vakata'
     , 'libs/jquery/jstree/jstree'
@@ -17,7 +16,7 @@ define([
     , 'libs/jquery/jstree/jstree.themes'
 ],
 
-function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfirmDialog, tplToolbar, tplQueryContextMenut) {
+function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfirmDialog, tplToolbar) {
     var list = [],
         DEMO_TOKEN = "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2",
         STORE_KEY = "pg-quirrel-queries-"+precog.hash,
@@ -39,14 +38,13 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure"),
             contextButtonsRoot = [],
             contextButtonsFolder = [],
-            contextButtonsQuery = [],
-//            btnCreateFolder = ui.button(elContext, {
-//                disabled : true,
-//                label : "create folder",
-//                text : false,
-//                handler : function() {},
-//                icons : null
-//            }),
+            contextButtonsQuery = [
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-minus",
+                    handler : function() { wrapper.queryRemove($(selectedNode).attr("data")); }
+                })
+            ],
             selectedNode;
         elDescription.html("query manager");
 
@@ -140,21 +138,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             $(wrapper).trigger("requestopenquery", store.get("queries."+utils.normalizeQueryName(id)));
         }
 
-        var menuselected, menu = ui.contextmenu(tplQueryContextMenut);
-
-        menu.find(".pg-open").click(function(e) {
-            var id = $(menuselected).attr("data");
-            openQuery(id);
-            menu.hide();
-            e.preventDefault(); return false;
-        });
-        menu.find(".pg-remove").click(function(e) {
-            var id = $(menuselected).attr("data");
-            wrapper.queryRemove(id);
-            menu.hide();
-            e.preventDefault(); return false;
-        });
-
         function hideMessage() {
             elTree.show();
             elMain.find(".pg-message").hide();
@@ -213,24 +196,9 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         function addQueryToFolder(folder, name, callback) {
             tree.bind("create_node.jstree", createNodeCreatedHandler(name, function(el) {
                 tree.jstree("set_icon", el, 'pg-tree-leaf');
-                ui.clickOrDoubleClick(el, function(e) {
-                    var pos = $(e.currentTarget).offset(),
-                        h = $(e.currentTarget).outerHeight(),
-                        w = $(e.currentTarget).outerWidth();
-                    menu.css({
-                        position : "absolute",
-                        top : (pos.top + h) + "px",
-                        left : (pos.left) + "px",
-                        width : w + "px",
-                        zIndex : e.currentTarget.style.zIndex + 100
-                    }).show().find("ul").outerWidth(w);
-                    menuselected = e.currentTarget;
-                    e.preventDefault(); return false;
-                }, function(e) {
-                    var id = $(e.currentTarget).attr("data");
-                    openQuery(id);
-                    menu.hide();
-                    e.preventDefault(); return false;
+                $(el).dblclick(function() {
+                    var path = $(this).attr("data");
+                    openQuery(path);
                 });
                 if(callback) callback(el);
             }));
@@ -251,7 +219,13 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         function addChildFolder(parent, name, callback) {
             if(!parent) parent = -1;
             var path = (parent === -1 ? "" : $(parent).attr("data")) + "/" + name;
-            tree.bind("create_node.jstree", createNodeCreatedHandler(path, callback));
+            tree.bind("create_node.jstree", createNodeCreatedHandler(path, function(el) {
+                $(el).find("a:first").dblclick(function(e) {
+                    tree.jstree("toggle_node", selectedNode);
+                    e.preventDefault(); return false;
+                });
+                if(callback) callback(el);
+            }));
 
             return tree.jstree(
                   "create_node"
