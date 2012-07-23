@@ -40,7 +40,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 ui.button(elContext, {
                     text : false,
                     icon : "ui-icon-plus",
-                    handler : function() { requestFolderCreationAt($(selectedNode).attr("data")); }
+                    handler : function() { requestFolderCreationAt(""); }
                 })
             ],
             contextButtonsFolder = [
@@ -103,7 +103,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
 
         function requestFolderCreationAt(path) {
             var title   = "Create Folder",
-                message = "Create a sub folder at: <i>"+path+"</i>";
+                message = "Create a sub folder at: <i>"+(path || "/")+"</i>";
             openRequestInputDialog(title, message, "folder name", "", function(name) {
                 if(null != name && name.match(/^[a-z0-9]+$/i))
                     return null; // OK
