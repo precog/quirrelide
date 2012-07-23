@@ -7,7 +7,7 @@ define([
  function(template) {
     var toolbarMainHeight = 38,
         toolbarHeight = 36,
-        doubleBar = 62,
+        doubleBar = 58,
         statusbarHeight = 24;
     return function(container, isvertical) {
         var layout, layouts = [];

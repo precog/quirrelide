@@ -84,6 +84,11 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                     text : false,
                     icon : "ui-icon-plus",
                     handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
+                }),
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-lightbulb",
+                    handler : function() { triggerQuery($(selectedNode).attr("data")); }
                 })
             ],
             selectedNode;
@@ -263,15 +268,15 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             tree.jstree("toggle_node", menuselected);
             e.preventDefault(); return false;
         });
-        menu.find(".pg-query").click(function(e) {
-            triggerQuery(pathFromSelectedNode());
-            e.preventDefault(); return false;
-        });
-        menu.find(".pg-create").click(function(e) {
-            var path = pathFromSelectedNode();
-            requestNodeCreationAt(path);
-            e.preventDefault(); return false;
-        });
+//        menu.find(".pg-query").click(function(e) {
+//            triggerQuery(pathFromSelectedNode());
+//            e.preventDefault(); return false;
+//        });
+//        menu.find(".pg-create").click(function(e) {
+//            var path = pathFromSelectedNode();
+//            requestNodeCreationAt(path);
+//            e.preventDefault(); return false;
+//        });
         menu.find(".pg-upload").click(function(e) {
             var path = pathFromSelectedNode();
             uploadDialog(path);

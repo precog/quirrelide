@@ -64,7 +64,7 @@
 .pg-queries .pg-toolbar-actions
 {
     margin: 5px;
-    line-height: 24px;
+    line-height: 20px;
 }
 
 .pg-folders .pg-toolbar-context,
@@ -72,6 +72,7 @@
 {
     margin: 0px;
     line-height: 18px;
+    text-align: center;
 /*    margin: 5px;
     line-height: 24px;
     */
