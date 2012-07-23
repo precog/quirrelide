@@ -37,6 +37,9 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             elTree    = elMain.append('<div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find(".pg-tree"),
             elRoot    = elTree.append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure"),
+            contextButtonsRoot = [],
+            contextButtonsFolder = [],
+            contextButtonsQuery = [],
 //            btnCreateFolder = ui.button(elContext, {
 //                disabled : true,
 //                label : "create folder",
@@ -48,8 +51,47 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         elDescription.html("query manager");
 
         function refreshActions() {
+            var path = selectedNode && $(selectedNode).attr("data");
+            console.log("SELECTED PATH: " + path);
+            if(!path || path !== "/") {
+                $.each(contextButtonsRoot, function() {
+                    this.hide();
+                });
+            }
+            if(!path || (path.length > 1 && path.substr(0, 1) !== "/")) {
+                $.each(contextButtonsQuery, function() {
+                    this.hide();
+                });
+            }
+            if(!path || path === "/") {
+                $.each(contextButtonsFolder, function() {
+                    this.hide();
+                });
+            }
+            if(!path || path === "/") {
+                $.each(contextButtonsQuery, function() {
+                    this.hide();
+                });
+            }
+            if(path) {
+                if(path === "/") {
+                    $.each(contextButtonsRoot, function() {
+                        this.show();
+                    });
+                } else if(path.substr(0, 1) === '/') {
+                    $.each(contextButtonsFolder, function() {
+                        this.show();
+                    });
+                } else {
+                    $.each(contextButtonsQuery, function() {
+                        this.show();
+                    });
+                }
+            }
             console.log("SELECTED NODE", selectedNode);
         }
+
+        refreshActions();
 
         var tree = elFolders.jstree({
             plugins : [

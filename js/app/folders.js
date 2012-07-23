@@ -72,11 +72,52 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
 //                handler : function() {},
 //                icons : null
 //            }),
+            contextButtonsRoot = [
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-plus"
+                })
+            ],
+            contextButtonsNode = [
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-plus"
+                }),
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-plus"
+                })
+            ],
             selectedNode;
 
         function refreshActions() {
+            var path = selectedNode && $(selectedNode).attr("data");
+            console.log(path);
+            if(!path || path !== "/") {
+                $.each(contextButtonsRoot, function() {
+                    this.hide();
+                });
+            }
+            if(!path || path === "/") {
+                $.each(contextButtonsNode, function() {
+                    this.hide();
+                });
+            }
+            if(path) {
+                if(path === "/") {
+                    $.each(contextButtonsRoot, function() {
+                        this.show();
+                    });
+                } else {
+                    $.each(contextButtonsNode, function() {
+                        this.show();
+                    });
+                }
+            }
             console.log("SELECTED NODE", selectedNode);
         }
+
+        refreshActions();
 
         elDescription.html("virtual file system");
         var tree = elFolders.jstree({
