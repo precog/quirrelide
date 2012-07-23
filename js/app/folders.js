@@ -76,11 +76,11 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                     icon : "ui-icon-plus",
                     handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
                 }),
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-minus",
-                    handler : function() { requestNodeRemovalAt($(selectedNode).attr("data")); }
-                }),
+//                ui.button(elContext, {
+//                    text : false,
+//                    icon : "ui-icon-minus",
+//                    handler : function() { requestNodeRemovalAt($(selectedNode).attr("data")); }
+//                }),
                 ui.button(elContext, {
                     text : false,
                     icon : "ui-icon-lightbulb",
