@@ -62,8 +62,14 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         var elActions = el.find(".pg-toolbar-actions"),
             elContext = el.find(".pg-toolbar-context"),
             elRoot = el.find(".pg-tree").append('<div class="pg-root"></div>').find(".pg-root"),
-            elFolders = el.find(".pg-tree").append('<div class="pg-structure"></div>').find(".pg-structure");
-            elUploader = el.append('<div style="display: none"><input name="files" type="file" multiple></div>').find('input[type=file]');
+            elFolders = el.find(".pg-tree").append('<div class="pg-structure"></div>').find(".pg-structure"),
+            elUploader = el.append('<div style="display: none"><input name="files" type="file" multiple></div>').find('input[type=file]'),
+            selectedNode;
+
+        function refreshActions() {
+            console.log("SELECTED NODE", selectedNode);
+        }
+
         elActions.html("virtual file system");
         var tree = elFolders.jstree({
             plugins : [
@@ -77,6 +83,24 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             }
         });
         elRoot.html('<div class="jstree jstree-default"><a href="#" data="'+basePath+'"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
+        elRoot.find('a')
+            .mouseenter(function(){
+                $(this).addClass("jstree-hovered");
+            })
+            .mouseleave(function() {
+                $(this).removeClass("jstree-hovered");
+            })
+            .click(function() {
+                tree.jstree("deselect_all");
+                $(this).addClass("jstree-clicked");
+                selectedNode = this;
+                refreshActions();
+            });
+        tree.bind("click.jstree", function() {
+            elRoot.find('a').removeClass("jstree-clicked");
+            selectedNode = tree.jstree("get_selected");
+            refreshActions();
+        });
 
         tree.bind("open_node.jstree", function(e, data) {
             var paths = $(data.rslt.obj).find("li");

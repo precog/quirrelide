@@ -35,8 +35,15 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             elMain    = el.find(".pg-queries"),
             elTree    = elMain.append('<div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find(".pg-tree"),
             elRoot    = elTree.append('<div class="pg-root"></div>').find(".pg-root"),
-            elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure");
+            elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure"),
+            selectedNode;
         elActions.html("query manager");
+
+
+        function refreshActions() {
+            console.log("SELECTED NODE", selectedNode);
+        }
+
         var tree = elFolders.jstree({
             plugins : [
                 "themes", "sort", "ui"
@@ -63,6 +70,24 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             }
         });
         elRoot.html('<div class="jstree jstree-default"><a href="#" data="/"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
+        elRoot.find('a')
+            .mouseenter(function(){
+                $(this).addClass("jstree-hovered");
+            })
+            .mouseleave(function() {
+                $(this).removeClass("jstree-hovered");
+            })
+            .click(function() {
+                tree.jstree("deselect_all");
+                $(this).addClass("jstree-clicked");
+                selectedNode = this;
+                refreshActions();
+            });
+        tree.bind("click.jstree", function() {
+            elRoot.find('a').removeClass("jstree-clicked");
+            selectedNode = tree.jstree("get_selected");
+            refreshActions();
+        });
 
         function openQuery(id) {
             $(wrapper).trigger("requestopenquery", store.get("queries."+utils.normalizeQueryName(id)));
