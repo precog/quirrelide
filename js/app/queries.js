@@ -62,26 +62,15 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");
-            if(!path || path !== "/") {
-                $.each(contextButtonsRoot, function() {
-                    this.hide();
-                });
-            }
-            if(!path || (path.length > 1 && path.substr(0, 1) !== "/")) {
-                $.each(contextButtonsQuery, function() {
-                    this.hide();
-                });
-            }
-            if(!path || path === "/") {
-                $.each(contextButtonsFolder, function() {
-                    this.hide();
-                });
-            }
-            if(!path || path === "/") {
-                $.each(contextButtonsQuery, function() {
-                    this.hide();
-                });
-            }
+            $.each(contextButtonsRoot, function() {
+                this.hide();
+            });
+            $.each(contextButtonsFolder, function() {
+                this.hide();
+            });
+            $.each(contextButtonsQuery, function() {
+                this.hide();
+            });
             if(path) {
                 if(path === "/") {
                     $.each(contextButtonsRoot, function() {

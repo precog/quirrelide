@@ -101,16 +101,12 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");
-            if(!path || path !== "/") {
-                $.each(contextButtonsRoot, function() {
-                    this.hide();
-                });
-            }
-            if(!path || path === "/") {
-                $.each(contextButtonsNode, function() {
-                    this.hide();
-                });
-            }
+            $.each(contextButtonsRoot, function() {
+                this.hide();
+            });
+            $.each(contextButtonsNode, function() {
+                this.hide();
+            });
             if(path) {
                 if(path === "/") {
                     $.each(contextButtonsRoot, function() {
