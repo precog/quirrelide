@@ -52,7 +52,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");
-            console.log("SELECTED PATH: " + path);
             if(!path || path !== "/") {
                 $.each(contextButtonsRoot, function() {
                     this.hide();
@@ -88,7 +87,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                     });
                 }
             }
-            console.log("SELECTED NODE", selectedNode);
         }
 
         refreshActions();

@@ -7,8 +7,6 @@ define([
     , "app/util/dialog-lineinput"
     , "app/util/dialog-confirm"
     , "rtext!templates/toolbar.folders.html"
-    , "rtext!templates/menu.context.system.node.html"
-    , "rtext!templates/menu.context.system.root.html"
 
     , 'libs/jquery/jstree/vakata'
     , 'libs/jquery/jstree/jstree'
@@ -17,7 +15,7 @@ define([
     , 'libs/jquery/jstree/jstree.themes'
 ],
 
-function(precog, createStore, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
+function(precog, createStore, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, tplToolbar){
     var UPLOAD_SERVICE = "upload.php",
         DOWNLOAD_SERVICE = "download.php",
         STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
@@ -65,13 +63,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             elRoot = el.find(".pg-tree").append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = el.find(".pg-tree").append('<div class="pg-structure"></div>').find(".pg-structure"),
             elUploader = el.append('<div style="display: none"><input name="files" type="file" multiple></div>').find('input[type=file]'),
-//            btnCreateFolder = ui.button(elContext, {
-//                disabled : false,
-//                label : "create folder",
-//                text : false,
-//                handler : function() {},
-//                icons : null
-//            }),
             contextButtonsRoot = [
                 ui.button(elContext, {
                     text : false,
@@ -87,15 +78,29 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 }),
                 ui.button(elContext, {
                     text : false,
+                    icon : "ui-icon-minus",
+                    handler : function() { requestNodeRemovalAt($(selectedNode).attr("data")); }
+                }),
+                ui.button(elContext, {
+                    text : false,
                     icon : "ui-icon-lightbulb",
                     handler : function() { triggerQuery($(selectedNode).attr("data")); }
+                }),
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-arrowthickstop-1-s",
+                    handler : function() { window.location.href = downloadUrl($(selectedNode).attr("data")); }
+                }),
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-arrowthickstop-1-n",
+                    handler : function() { uploadDialog($(selectedNode).attr("data")); }
                 })
             ],
             selectedNode;
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");
-            console.log(path);
             if(!path || path !== "/") {
                 $.each(contextButtonsRoot, function() {
                     this.hide();
@@ -117,7 +122,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                     });
                 }
             }
-            console.log("SELECTED NODE", selectedNode);
         }
 
         refreshActions();
@@ -168,10 +172,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             $(wrapper).trigger("querypath", path);
         }
 
-        function pathFromSelectedNode() {
-            return $(menuselected).closest("li").attr("data") || $(menuselected).attr("data");
-        }
-
         function createNodeAt(path, name) {
             if(!(name && path)) {
                 return;
@@ -213,7 +213,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
                 title   = "Create Folder",
                 message = "Create a sub folder at: <i>"+path+"</i>";
-            // open dialog
             openRequestInputDialog(title, message, "folder name", "", function(name) {
                 if(null != name && name.match(/^[a-z0-9]+$/i))
                     return null; // OK
@@ -228,7 +227,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
                 title   = "Delete Folder",
                 message = "Are you sure you want to delete the folder at: <i>"+path+"</i> and all of its content?<br>This operation cannot be undone!";
-            // open dialog
             openConfirmDialog(title, message, function() {
                 removeNode(path);
             });
@@ -238,7 +236,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
                 title   = "Upload Data",
                 message = "Upload data at: <i>"+path+"</i><br>You can use a JSON file (one array of values/objects), a text file containing one JSON object per line, a CSV file (headers are mandatory) or a zip file containing any combination of the previous formats.";
-            // open dialog
             openRequestInputDialog(title, message, "file to upload", "", function(name) {
                 if(name)
                     return null; // OK
@@ -248,72 +245,15 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 for(var i = 0; i < files.length; i++) {
                     uploadFile(files[i], path);
                 }
-//                    createNodeAt(path, name);
             }, "file");
         }
 
         function downloadUrl(path) {
-//                var p = basePath.substr(0, basePath.length - 1) + path;
             return DOWNLOAD_SERVICE
                 + "?tokenId=" + encodeURIComponent(precog.config.tokenId)
                 + "&analyticsService=" + encodeURIComponent(precog.config.analyticsService)
                 + "&path=" + encodeURIComponent(path);
         }
-
-        var menuselected,
-            menu = ui.contextmenu(tplNodeContextMenut),
-            menuRoot = ui.contextmenu(tplRootContextMenut);
-
-        menu.find(".pg-toggle").click(function(e) {
-            tree.jstree("toggle_node", menuselected);
-            e.preventDefault(); return false;
-        });
-//        menu.find(".pg-query").click(function(e) {
-//            triggerQuery(pathFromSelectedNode());
-//            e.preventDefault(); return false;
-//        });
-//        menu.find(".pg-create").click(function(e) {
-//            var path = pathFromSelectedNode();
-//            requestNodeCreationAt(path);
-//            e.preventDefault(); return false;
-//        });
-        menu.find(".pg-upload").click(function(e) {
-            var path = pathFromSelectedNode();
-            uploadDialog(path);
-            e.preventDefault(); return false;
-        });
-        menu.find(".pg-download").click(function(e) {
-            var path = pathFromSelectedNode();
-            window.location.href = downloadUrl(path);
-//                console.log(downloadUrl(path));
-            e.preventDefault(); return false;
-        });
-        menu.find(".pg-remove").click(function(e) {
-            var path = pathFromSelectedNode();
-            requestNodeRemovalAt(path);
-            e.preventDefault(); return false;
-        });
-        menuRoot.find(".pg-create").click(function(e) {
-            var path = pathFromSelectedNode();
-            requestNodeCreationAt(path);
-            e.preventDefault(); return false;
-        });
-
-        elRoot.find("a").click(function(e) {
-            var left = e.pageX - menuRoot.outerWidth() / 2;
-            if(left < 0) left = 0;
-            var pos = $(e.currentTarget).offset(),
-                h = $(e.currentTarget).outerHeight();
-            menuRoot.css({
-                position : "absolute",
-                top : (pos.top + h) + "px",
-                left : (pos.left) + "px",
-                zIndex : e.currentTarget.style.zIndex + 100
-            }).show();
-            menuselected = e.currentTarget;
-            e.preventDefault(); return false;
-        });
-        wireFileUpload(elRoot.get(0), "/");
 
         function addFolder(name, path, callback, parent) {
             if(!parent) parent = -1;
@@ -329,20 +269,8 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 }
                 , "last"
                 , function(el) {
-                    ui.clickOrDoubleClick($(el).find("a:first"), function(e) {
-                        menuselected = e.currentTarget;
-                        var pos = $(e.currentTarget).offset(),
-                            h = $(e.currentTarget).outerHeight();
-                        menu.css({
-                            position : "absolute",
-                            top : (pos.top + h) + "px",
-                            left : (pos.left) + "px",
-                            zIndex : e.currentTarget.style.zIndex + 100
-                        }).show();
-                        e.preventDefault(); return false;
-                    }, function(e) {
-                        menuselected = e.currentTarget;
-                        tree.jstree("toggle_node", menuselected);
+                    $(el).find("a:first").dblclick(function(e) {
+                        tree.jstree("toggle_node", selectedNode);
                         e.preventDefault(); return false;
                     });
                     wireFileUpload(el, path);
@@ -580,22 +508,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 removeDragNotification();
                 e.preventDefault(); return false;
             });
-/*
-console.log(window.FileReader);
-            if (!!window.FileReader) {
-                console.log(el);
-                $(el).find("a").on('dragstart', function(e) {
-                    console.log("DRAG START");
-                    if (this.dataset) {
-                        e.dataTransfer.setData('DownloadURL', downloadUrl(
-                            precog.config.tokenId,
-                            precog.config.analyticsService,
-                            path
-                        ));
-                    }
-                }, false);
-            }
-*/
         }
         wrapper.refresh();
 
