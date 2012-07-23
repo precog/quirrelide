@@ -22,18 +22,24 @@ function() {
            });
        },
        truncate : function(value, maxlen, ellipsis) {
-            maxlen = maxlen || 25;
-            ellipsis = ellipsis || "...";
-            if(value.length >= maxlen)
-                value = value.substr(0, maxlen-ellipsis.length)+ellipsis;
-            return value;
+           maxlen = maxlen || 25;
+           ellipsis = ellipsis || "...";
+           if(value.length >= maxlen)
+               value = value.substr(0, maxlen-ellipsis.length)+ellipsis;
+           return value;
        },
        normalizeQueryName : function (value) {
-            value = value.trim().toLowerCase();
+           value = value.trim().toLowerCase();
            if(value.substr(0, 1) === "/")
-            value = value.substr(1);
-            value.replace(/[ \-.]+/g, "_");
-            return value;
+           value = value.substr(1);
+           value.replace(/[ \-.]+/g, "_");
+           return value;
+       },
+       arrayRemove : function(arr, el) {
+           var index = arr.indexOf(el);
+           if(index < 0) return arr;
+           arr.splice(index, 1);
+           return arr;
        }
    }
 });

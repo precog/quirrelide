@@ -20,7 +20,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
     var list = [],
         DEMO_TOKEN = "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2",
         STORE_KEY = "pg-quirrel-queries-"+precog.hash,
-        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {}), folders : ["/a", "/b/c"] });
+        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {}), folders : [] });
 
 
     store.monitor.start(500);
@@ -99,7 +99,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             var title   = "Remove Folder",
                 message = "Are you sure you want to remove the folder <i>"+(path || "/")+"</i> and all if its content? The operation cannot be undone!";
             openConfirmDialog(title, message, function() {
-                console.log("REMOVE FOLDER " + path);
                 // collect all queries at path and in the subfolders
                 var queries = store.get("queries", {}),
                     subqueries = [],
@@ -111,22 +110,26 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                             subqueries.push(key);
                     }
                 }
-                console.log(subqueries);
                 // collect all of subfolders from "folders"
-                var subfolders = [];
+                var subfolders = [path];
                 parent = path + "/";
                 len = parent.length;
                 for(var i = 0; i < folders.length; i++) {
                     if(folders[i].substr(0, len) === parent)
                         subfolders.push(folders[i]);
                 }
-                console.log(subfolders);
 
                 // remove all collected queries
+                for(var i = 0; i < subqueries.length; i++) {
+                    wrapper.queryRemove(subqueries[i]);
+                }
 
                 // remove all collected folders
-
+                for(var i = 0; i < subfolders.length; i++) {
+                    utils.arrayRemove(folders, subfolders[i]);
+                }
                 // save folders
+                store.set("folders", folders, true);
 
                 // remove node
                 var node = getFolderNodeByPath(path);
