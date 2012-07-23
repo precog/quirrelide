@@ -7,6 +7,7 @@ define([
  function(template) {
     var toolbarMainHeight = 38,
         toolbarHeight = 36,
+        doubleBar = 62,
         statusbarHeight = 24;
     return function(container, isvertical) {
         var layout, layouts = [];
@@ -28,10 +29,18 @@ define([
                 , slidable : true
             },
             toolbar = {
-                  resizable : false
+                resizable : false
                 , closable : false
                 , slidable : false
                 , size: toolbarHeight
+                , spacing_open: 0
+                , spacing_closed: 0
+            },
+            toolbarDouble = {
+                resizable : false
+                , closable : false
+                , slidable : false
+                , size: doubleBar
                 , spacing_open: 0
                 , spacing_closed: 0
             },
@@ -66,13 +75,13 @@ define([
         // folder-toolbar separation
         layouts.push(container.find('.pg-folders').layout({
             defaults : defaults,
-            north : toolbar
+            north : toolbarDouble
         }));
 
         // queries-toolbar separation
         layouts.push(container.find('.pg-queries').layout({
             defaults : defaults,
-            north : toolbar
+            north : toolbarDouble
         }));
 
         // console separation

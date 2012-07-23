@@ -30,15 +30,22 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         var wrapper;
 
         el.find(".pg-toolbar").append(tplToolbar);
-        var elActions = el.find(".pg-toolbar-actions"),
+        var elDescription = el.find(".pg-toolbar-description"),
+            elActions = el.find(".pg-toolbar-actions"),
             elContext = el.find(".pg-toolbar-context"),
             elMain    = el.find(".pg-queries"),
             elTree    = elMain.append('<div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find(".pg-tree"),
             elRoot    = elTree.append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure"),
+//            btnCreateFolder = ui.button(elContext, {
+//                disabled : true,
+//                label : "create folder",
+//                text : false,
+//                handler : function() {},
+//                icons : null
+//            }),
             selectedNode;
-        elActions.html("query manager");
-
+        elDescription.html("query manager");
 
         function refreshActions() {
             console.log("SELECTED NODE", selectedNode);

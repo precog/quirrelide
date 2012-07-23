@@ -59,18 +59,26 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         var wrapper, map;
 
         el.find(".pg-toolbar").append(tplToolbar);
-        var elActions = el.find(".pg-toolbar-actions"),
+        var elDescription = el.find(".pg-toolbar-description"),
+            elActions = el.find(".pg-toolbar-actions"),
             elContext = el.find(".pg-toolbar-context"),
             elRoot = el.find(".pg-tree").append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = el.find(".pg-tree").append('<div class="pg-structure"></div>').find(".pg-structure"),
             elUploader = el.append('<div style="display: none"><input name="files" type="file" multiple></div>').find('input[type=file]'),
+//            btnCreateFolder = ui.button(elContext, {
+//                disabled : false,
+//                label : "create folder",
+//                text : false,
+//                handler : function() {},
+//                icons : null
+//            }),
             selectedNode;
 
         function refreshActions() {
             console.log("SELECTED NODE", selectedNode);
         }
 
-        elActions.html("virtual file system");
+        elDescription.html("virtual file system");
         var tree = elFolders.jstree({
             plugins : [
                 "themes", "sort", "ui"
@@ -332,7 +340,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             });
         }
 
-        ui.button(elContext, {
+        ui.button(elActions, {
             icon   : "ui-icon-refresh",
             handler : function() { wrapper.refresh(); }
         });
