@@ -75,17 +75,15 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             contextButtonsRoot = [
                 ui.button(elContext, {
                     text : false,
-                    icon : "ui-icon-plus"
+                    icon : "ui-icon-plus",
+                    handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
                 })
             ],
             contextButtonsNode = [
                 ui.button(elContext, {
                     text : false,
-                    icon : "ui-icon-plus"
-                }),
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-plus"
+                    icon : "ui-icon-plus",
+                    handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
                 })
             ],
             selectedNode;
