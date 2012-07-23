@@ -291,6 +291,43 @@ html > body .ui-pnotify {
 .pg-statusbar .pg-toolbar-context {
     margin: 0 5px 0 0;
 }
+.pg-folders .pg-toolbar-description,
+.pg-folders .pg-toolbar-actions,
+.pg-queries .pg-toolbar-description,
+.pg-queries .pg-toolbar-actions
+{
+    margin: 5px;
+    line-height: 20px;
+}
+.pg-folders .pg-toolbar-context,
+.pg-queries .pg-toolbar-context
+{
+    margin: 0px;
+    line-height: 18px;
+    text-align: center;
+}
+.pg-folders .pg-toolbar-actions,
+.pg-queries .pg-toolbar-actions
+{
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.pg-folders .pg-toolbar-context,
+.pg-queries .pg-toolbar-context
+{
+    position: relative;
+}
+.pg-folders .pg-toolbar-context .pg-toolbar-result-type,
+.pg-queries .pg-toolbar-context .pg-toolbar-result-type
+{
+    line-height: 16px;
+}
+.pg-folders pg-folders .pg-statusbar .pg-toolbar-context,
+.pg-queries pg-folders .pg-statusbar .pg-toolbar-context
+{
+    margin: 0 5px 0 0;
+}
 .ui-layout-resizer-dragging {
 }
 .pg-mainbar .pg-toolbar-actions, .pg-mainbar .pg-toolbar-context {
