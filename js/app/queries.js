@@ -48,6 +48,11 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                     text : false,
                     icon : "ui-icon-plus",
                     handler : function() { requestFolderCreationAt($(selectedNode).attr("data")); }
+                }),
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-minus",
+                    handler : function() { requestFolderRemovalAt($(selectedNode).attr("data")); }
                 })
             ],
             contextButtonsQuery = [
@@ -89,6 +94,45 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         }
 
         refreshActions();
+
+        function requestFolderRemovalAt(path) {
+            var title   = "Remove Folder",
+                message = "Are you sure you want to remove the folder <i>"+(path || "/")+"</i> and all if its content? The operation cannot be undone!";
+            openConfirmDialog(title, message, function() {
+                console.log("REMOVE FOLDER " + path);
+                // collect all queries at path and in the subfolders
+                var queries = store.get("queries", {}),
+                    subqueries = [],
+                    parent = path.substr(1) + "/",
+                    len = parent.length;
+                for(var key in queries) {
+                    if(queries.hasOwnProperty(key)) {
+                        if(key.substr(0, len) === parent)
+                            subqueries.push(key);
+                    }
+                }
+                console.log(subqueries);
+                // collect all of subfolders from "folders"
+                var subfolders = [];
+                parent = path + "/";
+                len = parent.length;
+                for(var i = 0; i < folders.length; i++) {
+                    if(folders[i].substr(0, len) === parent)
+                        subfolders.push(folders[i]);
+                }
+                console.log(subfolders);
+
+                // remove all collected queries
+
+                // remove all collected folders
+
+                // save folders
+
+                // remove node
+                var node = getFolderNodeByPath(path);
+                tree.jstree("delete_node", node);
+            });
+        }
 
         function requestFolderCreationAt(path) {
             var title   = "Create Folder",
