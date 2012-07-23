@@ -20,7 +20,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
     var list = [],
         DEMO_TOKEN = "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2",
         STORE_KEY = "pg-quirrel-queries-"+precog.hash,
-        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {})});
+        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {}), folders : ["/a", "/b/c"] });
 
 
     store.monitor.start(500);
@@ -36,8 +36,20 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             elTree    = elMain.append('<div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find(".pg-tree"),
             elRoot    = elTree.append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure"),
-            contextButtonsRoot = [],
-            contextButtonsFolder = [],
+            contextButtonsRoot = [
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-plus",
+                    handler : function() { requestFolderCreationAt($(selectedNode).attr("data")); }
+                })
+            ],
+            contextButtonsFolder = [
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-plus",
+                    handler : function() { requestFolderCreationAt($(selectedNode).attr("data")); }
+                })
+            ],
             contextButtonsQuery = [
                 ui.button(elContext, {
                     text : false,
@@ -88,6 +100,22 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         }
 
         refreshActions();
+
+        function requestFolderCreationAt(path) {
+            var title   = "Create Folder",
+                message = "Create a sub folder at: <i>"+path+"</i>";
+            openRequestInputDialog(title, message, "folder name", "", function(name) {
+                if(null != name && name.match(/^[a-z0-9]+$/i))
+                    return null; // OK
+                else
+                    return "path name cannot be empty and it can only be composed of alpha-numeric characters";
+            }, function(name) {
+                var p = path +"/"+ name;
+                folders.push(p);
+                store.set("folders", folders, true);
+                whenPathExists(p);
+            });
+        }
 
         var tree = elFolders.jstree({
             plugins : [
@@ -280,6 +308,11 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             }
         }
 
+        var folders = store.get("folders", []);
+        for(var i = 0; i < folders.length; i++) {
+            var path = folders[i];
+            whenPathExists(path);
+        }
         store.monitor.bind("queries", function(_, q) {
             var names = [];
             for(var query in q) {
@@ -298,6 +331,15 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 addQuery(utils.normalizeQueryName(added[i]), added[i]);
             }
             list = names;
+        });
+        store.monitor.bind("folders", function(_, names) {
+            var added   = utils.arrayDiff(names, folders);
+
+            store.load();
+            for(var i = 0; i < added.length; i++) {
+                whenPathExists(added[i]);
+            }
+            folders = names;
         });
 
         return wrapper = {
@@ -342,7 +384,12 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 return true;
             },
             nameAtPath : function(name) {
-                return name;
+                if(!selectedNode)
+                    return name;
+                var path = $(selectedNode).attr("data");
+                if(!path || path === "/")
+                    return name;
+                return path.substr(1) + "/" + name;
             }
         };
     }
