@@ -36,60 +36,50 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             elTree    = elMain.append('<div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find(".pg-tree"),
             elRoot    = elTree.append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure"),
-            contextButtonsRoot = [
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-plus",
-                    handler : function() { requestFolderCreationAt(""); }
-                })
-            ],
-            contextButtonsFolder = [
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-plus",
-                    handler : function() { requestFolderCreationAt($(selectedNode).attr("data")); }
-                }),
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-minus",
-                    handler : function() { requestFolderRemovalAt($(selectedNode).attr("data")); }
-                })
-            ],
-            contextButtonsQuery = [
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-minus",
-                    handler : function() { wrapper.queryRemove($(selectedNode).attr("data")); }
-                })
+            contextButtons = [
+                {
+                    el : ui.button(elContext, {
+                        text : false,
+                        icon : "ui-icon-plus",
+                        handler : function() {
+                            var path = $(selectedNode).attr("data");
+                            if(path === "/") path = "";
+                            requestFolderCreationAt(path);
+                        }
+                    }),
+                    groups : ["root", "folder"]
+                }, {
+                    el : ui.button(elContext, {
+                        text : false,
+                        icon : "ui-icon-minus",
+                        handler : function() {
+                            var path = $(selectedNode).attr("data");
+                            if(path.substr(0, 1) === "/")
+                                requestFolderRemovalAt(path);
+                            else
+                                wrapper.queryRemove(path);
+                        }
+                    }),
+                    groups : ["folder", "query"]
+                }/*, {
+                    el : ,
+                    groups : []
+                }*/
             ],
             selectedNode;
         elDescription.html("query manager");
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");
-            $.each(contextButtonsRoot, function() {
-                this.hide();
-            });
-            $.each(contextButtonsFolder, function() {
-                this.hide();
-            });
-            $.each(contextButtonsQuery, function() {
-                this.hide();
+            $.each(contextButtons, function() {
+                $(this.el).button("disable");
             });
             if(path) {
-                if(path === "/") {
-                    $.each(contextButtonsRoot, function() {
-                        this.show();
-                    });
-                } else if(path.substr(0, 1) === '/') {
-                    $.each(contextButtonsFolder, function() {
-                        this.show();
-                    });
-                } else {
-                    $.each(contextButtonsQuery, function() {
-                        this.show();
-                    });
-                }
+                var type = path === "/" ? "root" : (path.substr(0, 1) === "/" ? "folder" : "query");
+                $.each(contextButtons, function() {
+                    if(this.groups.indexOf(type) >= 0)
+                        $(this.el).button("enable");
+                });
             }
         }
 
