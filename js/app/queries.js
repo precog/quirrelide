@@ -61,13 +61,37 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                         }
                     }),
                     groups : ["folder", "query"]
-                }/*, {
-                    el : ,
-                    groups : []
-                }*/
+                }, {
+                    el : ui.button(elContext, {
+                        text : false,
+                        icon : "ui-icon-tag",
+                        handler : function() {
+                            var path    = $(selectedNode).attr("data"),
+                                title   = "Rename Query";;
+                            path = path.split("/");
+                            var name = path.pop(),
+                                message = "please pick a new name for the query '"+name+"'";
+                            path = path.length === 0 ? "" : path.join("/")+"/";
+
+                            openRequestInputDialog(title, message, "new query name", name, function(name) {
+                                return utils.validateQueryName(name, path + name, wrapper);
+                            }, function(newname) {
+                                renameQuery(path + name, path + newname);
+                            });
+                            // ADD RENAME LOGIC HERE
+                        }
+                    }),
+                    groups : ["query"]
+                }
             ],
             selectedNode;
         elDescription.html("query manager");
+
+        function renameQuery(oldname, newname) {
+            var code = store.get("queries."+utils.normalizeQueryName(oldname)).code;
+            wrapper.queryCreate(newname, code);
+            wrapper.queryRemove(oldname);
+        }
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");
@@ -415,7 +439,11 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 var path = $(selectedNode).attr("data");
                 if(!path || path === "/")
                     return name;
-                return path.substr(1) + "/" + name;
+                if(path.substr(0, 1) === "/")
+                    return path.substr(1) + "/" + name;
+                path = path.split("/");
+                path.pop();
+                return path.join("/")+"/"+name;
             }
         };
     }

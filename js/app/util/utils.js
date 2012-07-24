@@ -40,6 +40,16 @@ function() {
            if(index < 0) return arr;
            arr.splice(index, 1);
            return arr;
+       },
+       // return null if it is valid, an error message if it is not
+       validateQueryName : function(query, path, queries) {
+           if(query.match(/^[a-z0-9][a-z0-9 ]*[a-z0-9]$/i)) {
+               if(queries.queryExist(path))
+                   return "a query with this identifier already exists";
+               else
+                   return null;
+           } else
+               return "the name can only include alpha-numeric characters, white spaces (but not in the beginning and at the end) and must be at least 2 characters long.";
        }
    }
 });
