@@ -276,6 +276,9 @@ html > body .ui-pnotify {
 }
 .pg-statusbar {
 }
+.pg-ide .ui-widget-header {
+    line-hwight: 17px;
+}
 .pg-toolbar {
     border-top: 0 !important;
     border-bottom: 0 !important;
@@ -297,21 +300,19 @@ html > body .ui-pnotify {
 .pg-queries .pg-toolbar-actions
 {
     margin: 5px;
-    line-height: 20px;
+    line-height: 12px;
 }
 .pg-folders .pg-toolbar-context,
 .pg-queries .pg-toolbar-context
 {
-    margin: 0px;
-    line-height: 18px;
-    text-align: center;
+    margin-top: 0px;
+    float:right;
 }
 .pg-folders .pg-toolbar-actions,
 .pg-queries .pg-toolbar-actions
 {
-    position: absolute;
-    right: 0;
-    top: 0;
+    float: left;
+    margin-top: 0;
 }
 .pg-folders .pg-toolbar-context,
 .pg-queries .pg-toolbar-context
