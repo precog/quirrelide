@@ -4,7 +4,7 @@ define([
     , "app/util/notification"
     , "rtext!templates/panel.options.chart-output.html"
     , "https://api.reportgrid.com/js/reportgrid-core.js"
-    , "https://api.reportgrid.com/js/reportgrid-charts.js?auth=WUfNPIu3l/qz50AUSnj8Uh0pzTe3IzePQpV5m2TAmKAujD/E187KOndEUq6AhSEd9NbQBHCOkSDQuyie1vSB6VwFjJ1vFDNPBrnKA/acAJhQGrTFEsR+15tPFk8RqWG9hcHH8y7XFxXIrobj49huCjIEs0mZISPuSwgIe5bSwvo="
+    , "https://api.reportgrid.com/js/reportgrid-charts.js?authCode=WUfNPIu3l/qz50AUSnj8Uh0pzTe3IzePQpV5m2TAmKAujD/E187KOndEUq6AhSEd9NbQBHCOkSDQuyie1vSB6VwFjJ1vFDNPBrnKA/acAJhQGrTFEsR+15tPFk8RqWG9hcHH8y7XFxXIrobj49huCjIEs0mZISPuSwgIe5bSwvo="
 ],
 
 function(jsonmodel, ui, notification, tplOptionsPanel) {
