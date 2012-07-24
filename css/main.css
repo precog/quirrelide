@@ -486,16 +486,8 @@
     margin-bottom: 0;
 }
 
-.pg-ide button.pg-rg-logo {
-    overflow: hidden;
-    width: 170px;
-}
-
-.pg-ide button.pg-rg-logo img {
-    display: block;
-    top: -4px;
-    left: -12px;
-    position: absolute;
+.pg-chart-logo {
+    text-align: center;
 }
 
 .pg-ide .ui-widget.ui-content.pg-overflow-hidden {

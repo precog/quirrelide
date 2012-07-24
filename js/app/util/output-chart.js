@@ -4,7 +4,7 @@ define([
     , "app/util/notification"
     , "rtext!templates/panel.options.chart-output.html"
     , "https://api.reportgrid.com/js/reportgrid-core.js"
-    , "https://api.reportgrid.com/js/reportgrid-charts.js"
+    , "https://api.reportgrid.com/js/reportgrid-charts.js?auth=WUfNPIu3l/qz50AUSnj8Uh0pzTe3IzePQpV5m2TAmKAujD/E187KOndEUq6AhSEd9NbQBHCOkSDQuyie1vSB6VwFjJ1vFDNPBrnKA/acAJhQGrTFEsR+15tPFk8RqWG9hcHH8y7XFxXIrobj49huCjIEs0mZISPuSwgIe5bSwvo="
 ],
 
 function(jsonmodel, ui, notification, tplOptionsPanel) {
@@ -223,7 +223,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                     handler : selectOption("Chart Options"),
                     disabled : true
                 });
-
+/*
                 ui.button(toolbar, {
                     label : 'powered by ReportGrid <img src="http://api.reportgrid.com/css/images/reportgrid-clear.png" title="Powered by ReportGrid" height="29" width="194">',
                     text : true,
@@ -231,6 +231,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                         window.open("http://reportgrid.com/", "_blank");
                     }
                 }).addClass("pg-rg-logo");
+*/
             }
             toolbar.show();
         },
