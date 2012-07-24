@@ -63,14 +63,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             elRoot = el.find(".pg-tree").append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = el.find(".pg-tree").append('<div class="pg-structure"></div>').find(".pg-structure"),
             elUploader = el.append('<div style="display: none"><input name="files" type="file" multiple></div>').find('input[type=file]'),
-            contextButtonsRoot = [
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-plus",
-                    handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
-                })
-            ],
-            contextButtonsNode = [
+            contextButtons = [
                 ui.button(elContext, {
                     text : false,
                     icon : "ui-icon-plus",
@@ -101,20 +94,14 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");
-            $.each(contextButtonsRoot, function() {
-                this.hide();
-            });
-            $.each(contextButtonsNode, function() {
-                this.hide();
+            $.each(contextButtons, function() {
+                $(this).button("disable");
             });
             if(path) {
-                if(path === "/") {
-                    $.each(contextButtonsRoot, function() {
-                        this.show();
-                    });
-                } else {
-                    $.each(contextButtonsNode, function() {
-                        this.show();
+                $(contextButtons[0]).button("enable");
+                if(path !== "/") {
+                    $.each(contextButtons, function() {
+                        $(this).button("enable");
                     });
                 }
             }
