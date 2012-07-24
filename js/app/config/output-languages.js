@@ -19,7 +19,7 @@ function(convert, precog) {
         handler : function(code) {
             code = convert.quirrelToOneLine(code);
             return "// Quirrel query in JavaScript generated with Quirrel IDE by Precog\n\n" +
-                'Precog.query("'+code+'",\n\tfunction(data) { /* do something with the data */ },\n\tfunction(error) { console.log(error); }\n);';
+                'Precog.query("'+code+'",\n  function(data) { /* do something with the data */ },\n  function(error) { console.log(error); }\n);';
         }
     }, {
         token: "html",
@@ -27,10 +27,12 @@ function(convert, precog) {
         handler : function(code) {
             code = convert.quirrelToOneLine(code);
             return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?tokenId='+tokenId+'&analyticsService='+service+'"></script>\n' +
-                '<script>\n' +
-                "// Quirrel query in JavaScript generated with Quirrel IDE by Precog\n\n" +
-                'Precog.query("'+code+'",\n\tfunction(data) {\n\t\t/* do something with the data */\n\t\tconsole.log(data);\n\t},\n\tfunction(error) { console.log(error); }\n);\n' +
-                '</script>\n</head>\n<body></body>\n</html>'
+                "<script>\n" +
+                "function init() {\n" +
+                "  // Quirrel query in JavaScript generated with Quirrel IDE by Precog\n" +
+                '  Precog.query("'+code+'",\n    function(data) {\n      /* do something with the data */\n      console.log(data);\n    },\n    function(error) { console.log(error); }\n  );\n' +
+                "}\n" +
+                '</script>\n</head>\n<body onload="init()"></body>\n</html>'
                 ;
         }
     }, {
@@ -44,9 +46,9 @@ function(convert, precog) {
                 '' +
                 '$precog = new PrecogAPI("'+tokenId+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +
                 'if(false === $precog) {\n' +
-                '\tdie($precog->errorMessage());\n' +
+                '  die($precog->errorMessage());\n' +
                 '} else {\n' +
-                '\t// do something with $result here\n' +
+                '  // do something with $result here\n' +
                 '}\n?>'
                 ;
         }
