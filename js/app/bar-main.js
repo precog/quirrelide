@@ -37,7 +37,7 @@ define([
 
         ui.button(right, {
             icon : "ui-icon-gear"
-        }).mouseenter(function() {
+        }).click(function() {
                 var pos = $(this).offset(),
                     w = $(this).outerWidth(),
                     h = $(this).outerHeight();
