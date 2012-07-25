@@ -40,7 +40,7 @@ define(function(require, exports, module) {
 
 var oop = require("../lib/oop");
 var Mirror = require("../worker/mirror").Mirror;
-var coffee = require("coffee/coffee-script");
+var coffee = require("../mode/coffee/coffee-script");
 
 window.addEventListener = function() {};
 

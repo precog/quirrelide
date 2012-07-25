@@ -42,7 +42,7 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 "use strict";
 
-var oop = require("oop");
+var oop = require("../lib/oop");
 var EventEmitter = require("./event_emitter").EventEmitter;
 var assert = require("../test/assertions");
 

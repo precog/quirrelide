@@ -92,9 +92,13 @@ function() {
                             data.sort(function(a, b) {
                                 return ReportGrid.compare(a[key], b[key]);
                             });
-                            var t1 = params.type === "number" ? data[0][key] : ReportGrid.date.parse(data[0][key]),
-                                t2 = params.type === "number" ? data[data.length-1][key] : ReportGrid.date.parse(data[data.length-1][key]);
-                            params.periodicity = periodicity(t1, t2);
+                            try {
+                                var t1 = params.type === "number" ? data[0][key] : ReportGrid.date.parse(data[0][key]),
+                                    t2 = params.type === "number" ? data[data.length-1][key] : ReportGrid.date.parse(data[data.length-1][key]);
+                                params.periodicity = periodicity(t1, t2);
+                            } catch(e) {
+
+                            }
                         }
                     }
                     columns.push(params);

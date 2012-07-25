@@ -43,7 +43,7 @@ define(function(require, exports, module) {
 "use strict";
 
 var assert = require("../../test/assertions");
-var coffee = require("coffee-script");
+var coffee = require("../coffee/coffee-script");
 
 
 module.exports = {

@@ -40,7 +40,7 @@ define(function(require, exports, module) {
     
 var oop = require("../lib/oop");
 var Mirror = require("../worker/mirror").Mirror;
-var xquery = require("xquery/xquery");
+var xquery = require("../mode/xquery/xquery");
 var Tokenizer = require("../tokenizer").Tokenizer;
 var XQueryHighlightRules = require("./xquery_highlight_rules").XQueryHighlightRules;
 
