@@ -33,6 +33,8 @@
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited,
 .ui-state-hover a, .ui-state-hover a:hover { color: #ffffff; text-decoration: none; }
 .ui-widget :active { outline: none; }
+.jstree-default .jstree-hovered { background: #414141; border: 1px solid #414141;}
+.jstree-default .jstree-clicked { background: #717171; border: 1px solid #717171;}
 .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #cccccc;
     background: #eeeeee url(images/ui-bg_highlight-soft_80_eeeeee_1x100.png) 50% top repeat-x; color: #2e7db2; }
 .ui-state-highlight a, .ui-widget-content .ui-state-highlight a,.ui-widget-header .ui-state-highlight a { color: #2e7db2; }
