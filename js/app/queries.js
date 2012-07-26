@@ -9,6 +9,9 @@ define([
 
     , "rtext!templates/toolbar.folders.html"
 
+//    , 'libs/jquery/ui/jquery.ui.draggable'
+//    , 'libs/jquery/ui/jquery.ui.droppable'
+
     , 'libs/jquery/jstree/vakata'
     , 'libs/jquery/jstree/jstree'
     , 'libs/jquery/jstree/jstree.sort'
@@ -29,20 +32,20 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         var wrapper;
 
         el.find(".pg-toolbar").append(tplToolbar);
-        var elDescription = el.find(".pg-toolbar-description"),
-            elActions = el.find(".pg-toolbar-actions"),
-            elContext = el.find(".pg-toolbar-context"),
-            elMain    = el.find(".pg-queries"),
-            elTree    = elMain.append('<div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find(".pg-tree"),
-            elRoot    = elTree.append('<div class="pg-root"></div>').find(".pg-root"),
-            elFolders = elTree.append('<div class="pg-structure"></div>').find(".pg-structure"),
+        var elDescription  = el.find(".pg-toolbar-description"),
+            elActions      = el.find(".pg-toolbar-actions"),
+            elContext      = el.find(".pg-toolbar-context"),
+            elMain         = el.find(".pg-queries"),
+            elTree         = elMain.append('<div class="pg-tree"></div><div class="pg-message ui-content ui-state-highlight ui-corner-all"><p>You don\'t have saved queries. To save a query use the "disk" button on the editor toolbar.</p></div>').find(".pg-tree"),
+            elRoot         = elTree.append('<div class="pg-root"></div>').find(".pg-root"),
+            elFolders      = elTree.append('<div class="pg-structure"></div>').find(".pg-structure"),
             contextButtons = [
                 {
                     el : ui.button(elContext, {
                         text : false,
                         icon : "ui-icon-plus",
                         handler : function() {
-                            var path = $(selectedNode).attr("data");
+                            var path = $(selectedNode).attr("data-path");
                             if(path === "/") path = "";
                             requestFolderCreationAt(path);
                         }
@@ -53,7 +56,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                         text : false,
                         icon : "ui-icon-minus",
                         handler : function() {
-                            var path = $(selectedNode).attr("data");
+                            var path = $(selectedNode).attr("data-path");
                             if(path.substr(0, 1) === "/")
                                 requestFolderRemovalAt(path);
                             else
@@ -66,7 +69,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                         text : false,
                         icon : "ui-icon-tag",
                         handler : function() {
-                            var path    = $(selectedNode).attr("data"),
+                            var path    = $(selectedNode).attr("data-path"),
                                 title   = "Rename Query";;
                             path = path.split("/");
                             var name = path.pop(),
@@ -94,7 +97,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         }
 
         function refreshActions() {
-            var path = selectedNode && $(selectedNode).attr("data");
+            var path = selectedNode && $(selectedNode).attr("data-path");
             $.each(contextButtons, function() {
                 $(this.el).button("disable");
             });
@@ -169,14 +172,15 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
 
         var tree = elFolders.jstree({
             plugins : [
-                "themes", "sort", "ui"
+                "themes", "sort", "ui", "dnd"
             ],
             sort : function (a, b) {
                 if($(a).attr("rel") > $(b).attr("rel")) {
                     return 1;
                 }
-                return $(a).attr("data") > $(b).attr("data") ? 1 : -1;
+                return $(a).attr("data-path") > $(b).attr("data-path") ? 1 : -1;
             },
+//            themes : { theme : "themeroller" },
             types : {
                 query : {
                     valid_children : "none"
@@ -191,8 +195,95 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 , select_multiple_modifier : false
                 , select_range_modifier : false
             }
+/*
+            ,
+            dnd : {
+                copy_modifier : false,
+                "drop_finish" : function(a, b) {
+                    console.log("DROP", a, b, this);
+                },
+                "drag_check" : function(a, b) {
+                    console.log("CHECK", a, b, this);
+                    var path = data.r.attr("data-path");
+                    if(path.substr(0, 1) === "/")
+                        return {
+                            after : false,
+                            before : false,
+                            inside : true
+                        };
+                    else
+                        return {
+                            after : false,
+                            before : false,
+                            inside : false
+                        };
+                },
+                "check_move" : function(a, b) {
+                    console.log("CHECK", a, b, this);
+                    var path = data.r.attr("data-path");
+                    if(path.substr(0, 1) === "/")
+                        return {
+                            after : false,
+                            before : false,
+                            inside : true
+                        };
+                    else
+                        return {
+                            after : false,
+                            before : false,
+                            inside : false
+                        };
+                }
+            }
+*/
         });
-        elRoot.html('<div class="jstree jstree-default"><a href="#" data="/"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
+/*
+        tree.bind("drop_finish.jstree", function(a, b) {
+            console.log("DROP 2", a, b, this);
+        });
+
+        tree.bind("drag_check.jstree", function(a, b) {
+            console.log("CHECK 2", a, b, this);
+            var path = data.r.attr("data-path");
+            if(path.substr(0, 1) === "/")
+                return {
+                    after : false,
+                    before : false,
+                    inside : true
+                };
+            else
+                return {
+                    after : false,
+                    before : false,
+                    inside : false
+                };
+        });
+*/
+/*
+        tree.bind("move_node.jstree", function(a, b) {
+            console.log("MOVING 2", a, b, this);
+        });
+*/
+/*
+        tree.bind("check_move.jstree", function(a, b) {
+            console.log("CHECK 2", a, b, this);
+            var path = data.r.attr("data-path");
+            if(path.substr(0, 1) === "/")
+                return {
+                    after : false,
+                    before : false,
+                    inside : true
+                };
+            else
+                return {
+                    after : false,
+                    before : false,
+                    inside : false
+                };
+        });
+*/
+
+        elRoot.html('<div class="jstree jstree-default"><a href="#" data-path="/"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
         elRoot.find('a')
             .mouseenter(function(){
                 $(this).addClass("jstree-hovered");
@@ -206,6 +297,12 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 selectedNode = this;
                 refreshActions();
             });
+/*        elRoot.droppable({
+            drop: function(e, ui) {
+                console.log("DROPPED", e, ui);
+            }
+        });
+*/
         tree.bind("click.jstree", function() {
             elRoot.find('a').removeClass("jstree-clicked");
             selectedNode = tree.jstree("get_selected");
@@ -241,7 +338,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             var list = tree.find("li[rel=folder]"),
                 len  = list.length;
             for(var i = 0; i < len; i++) {
-                if($(list.get(i)).attr("data") === path) {
+                if($(list.get(i)).attr("data-path") === path) {
                     return list.get(i);
                 }
             }
@@ -253,7 +350,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             var list = tree.find("li[rel=query]"),
                 len  = list.length;
             for(var i = 0; i < len; i++) {
-                if($(list.get(i)).attr("data") === path) {
+                if($(list.get(i)).attr("data-path") === path) {
                     return list.get(i);
                 }
             }
@@ -263,7 +360,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         function createNodeCreatedHandler(path, callback) {
             var f = function(e, data) {
                 var r = data.rslt, el = $(r.obj[0]);
-                if(el.attr("data") !== path) return;
+                if(el.attr("data-path") !== path) return;
                 tree.unbind("create_node.jstree", f);
                 if(callback)
                     callback(el);
@@ -275,10 +372,11 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             tree.bind("create_node.jstree", createNodeCreatedHandler(name, function(el) {
                 tree.jstree("set_icon", el, 'pg-tree-leaf');
                 $(el).dblclick(function() {
-                    var path = $(this).attr("data");
+                    var path = $(this).attr("data-path");
                     openQuery(path);
                 });
                 if(callback) callback(el);
+//                $(el).draggable({ revert: "valid" });
             }));
             return tree.jstree(
                   "create_node"
@@ -286,7 +384,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 , {
                      "title" : name.split("/").pop()
                     , "li_attr" : {
-                        data : name,
+                        "data-path" : name,
                         rel : "query"
                     }
                 }
@@ -296,8 +394,16 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
 
         function addChildFolder(parent, name, callback) {
             if(!parent) parent = -1;
-            var path = (parent === -1 ? "" : $(parent).attr("data")) + "/" + name;
+            var path = (parent === -1 ? "" : $(parent).attr("data-path")) + "/" + name;
             tree.bind("create_node.jstree", createNodeCreatedHandler(path, function(el) {
+/*
+                $(el).draggable({ revert: "valid" });
+                $(el).droppable({
+                    drop: function(e, ui) {
+                        console.log("DROPPED", e, ui);
+                    }
+                });
+*/
                 $(el).find("a:first").dblclick(function(e) {
                     tree.jstree("toggle_node", selectedNode);
                     e.preventDefault(); return false;
@@ -311,7 +417,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 , {
                       "title" : name
                     , "li_attr" : {
-                        data : path,
+                        "data-path" : path,
                         rel : "folder"
                     }
                 }
@@ -436,7 +542,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             nameAtPath : function(name) {
                 if(!selectedNode)
                     return name;
-                var path = $(selectedNode).attr("data");
+                var path = $(selectedNode).attr("data-path");
                 if(!path || path === "/")
                     return name;
                 if(path.substr(0, 1) === "/")

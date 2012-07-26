@@ -11,6 +11,7 @@ requirejs.config({
         , 'libs/jquery/ui/jquery.ui.button' : ['libs/jquery/ui/jquery.ui.widget']
         , 'libs/jquery/ui/jquery.ui.sortable' : ['libs/jquery/ui/jquery.ui.widget']
         , 'libs/jquery/ui/jquery.ui.draggable' : ['libs/jquery/ui/jquery.ui.mouse']
+        , 'libs/jquery/ui/jquery.ui.droppable' : ['libs/jquery/ui/jquery.ui.draggable']
         , 'libs/jquery/ui/jquery.ui.dialog' : [
               'libs/jquery/ui/jquery.ui.widget'
             , 'libs/jquery/ui/jquery.ui.draggable'
@@ -33,6 +34,7 @@ requirejs.config({
         , 'app/util/ui' : ['libs/jquery/ui/jquery.ui.menu', 'libs/jquery/ui/jquery.ui.tabs', 'libs/jquery/ui/jquery.ui.progressbar']
         , 'libs/jquery/layout/jquery.layout' : ['libs/jquery/ui/jquery.ui.draggable']
         , 'libs/jquery/jstree/jstree' : ['libs/jquery/jstree/vakata']
+//        , 'libs/jquery/jstree/jstree.dnd2' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.sort' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.types' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.themes' : ['libs/jquery/jstree/jstree']
