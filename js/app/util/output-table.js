@@ -137,7 +137,7 @@ function(jsonmodel) {
                     $(wrapper).trigger("optionsChanged", options);
                 }
 
-                if(options.table.sort) {
+                if(options.table.sort && grid) {
                     grid.setSortColumns(options.table.sort.map(function(col){
                         return {
                             columnId : col.field,
