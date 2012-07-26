@@ -85,7 +85,7 @@
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #ffffff; text-decoration: none; }
 */
 .ui-widget :active { outline: none; }
-
+.jstree-default .jstree-hovered { background: #333333; border: 0px solid #000;}
 /* Interaction Cues
 ----------------------------------*/
 .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #cccccc;
