@@ -74,7 +74,8 @@
     border: 1px solid #3c454d;
     background: #3c454d url(images/ui-bg_flat_65_3c454d_40x100.png) 50% 50% repeat-x; font-weight: normal; color: #ffffff; outline: none; }
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #ffffff; outline: none; text-decoration: none; }
-
+.jstree-default .jstree-hovered { background: #374047; border: 1px solid #374047;}
+.jstree-default .jstree-clicked { background: #505D67; border: 1px solid #505D67;}
 /* Interaction Cues
 ----------------------------------*/
 .ui-state-highlight, .ui-widget-content .ui-state-highlight {
