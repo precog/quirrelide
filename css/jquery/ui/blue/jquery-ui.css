@@ -98,6 +98,8 @@
 .ui-priority-primary, .ui-widget-content .ui-priority-primary, .ui-widget-header .ui-priority-primary { font-weight: bold; }
 .ui-priority-secondary, .ui-widget-content .ui-priority-secondary,  .ui-widget-header .ui-priority-secondary { opacity: .7; filter:Alpha(Opacity=70); font-weight: normal; }
 .ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled { opacity: .35; filter:Alpha(Opacity=35); background-image: none; }
+.jstree-default .jstree-hovered { background: #B1CBDE; border: 1px solid #B1CBDE;}
+.jstree-default .jstree-clicked { background: #C1DEF2; border: 1px solid #C1DEF2;}
 
 /* Icons
 ----------------------------------*/
