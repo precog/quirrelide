@@ -36,7 +36,8 @@ define([
         });
 
         ui.button(right, {
-            icon : "ui-icon-gear"
+            icon : "ui-icon-gear",
+            description : "theme settings"
         }).click(function() {
                 var pos = $(this).offset(),
                     w = $(this).outerWidth(),
@@ -50,6 +51,7 @@ define([
 
         ui.button(right, {
             icon : fullscreen.isFullScreen() ? "ui-icon-newwin" : "ui-icon-arrow-4-diag",
+            description : "toggle fullscreen",
             handler : function() {
                 fullscreen.toggle();
                 if(fullscreen.isFullScreen()) {

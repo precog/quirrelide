@@ -67,6 +67,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 ui.button(elContext, {
                     text : false,
                     icon : "ui-icon-plus",
+                    description : "create new folder",
                     handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
                 }),
 //                ui.button(elContext, {
@@ -77,16 +78,19 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 ui.button(elContext, {
                     text : false,
                     icon : "ui-icon-lightbulb",
+                    description : "query data at path",
                     handler : function() { triggerQuery($(selectedNode).attr("data")); }
                 }),
                 ui.button(elContext, {
                     text : false,
                     icon : "ui-icon-arrowthickstop-1-s",
+                    description : "download folder data",
                     handler : function() { window.location.href = downloadUrl($(selectedNode).attr("data")); }
                 }),
                 ui.button(elContext, {
                     text : false,
                     icon : "ui-icon-arrowthickstop-1-n",
+                    description : "upload data to folder",
                     handler : function() { uploadDialog($(selectedNode).attr("data")); }
                 })
             ],
@@ -297,6 +301,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
 
         ui.button(elActions, {
             icon   : "ui-icon-refresh",
+            description : "refresh folders",
             handler : function() { wrapper.refresh(); }
         });
 

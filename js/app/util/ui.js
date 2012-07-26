@@ -16,7 +16,7 @@ define([
 ],
 
 function() {
-    var uid = 0;
+    var wrapper, uid = 0;
 
     $.fn.outerHTML = function(){
 
@@ -32,7 +32,7 @@ function() {
 
     }
 
-    return {
+    return wrapper = {
         clickOrDoubleClick : function(el, clickHandler, dblClickHandler) {
             var sequence = 0;
             el.click(function(e) {
@@ -78,7 +78,8 @@ function() {
                     o.handler.apply(button.get(0));
                     e.preventDefault(); return false;
                 });
-
+            if(o.description)
+                wrapper.tooltip(button, o.description);
             return button;
         },
         menu : function(el, o) {
@@ -129,6 +130,8 @@ function() {
                             }
                         }
                     });
+                    if(action.description)
+                        wrapper.tooltip(btn, action.description);
                     if(action.checked)
                         current = btn;
                 });
@@ -159,6 +162,8 @@ function() {
                         if(action.handler)
                             action.handler(action);
                     });
+                    if(action.description)
+                        wrapper.tooltip(btn, action.description);
                 });
             }
             return el.buttonset();
@@ -171,8 +176,10 @@ function() {
             el = $(el);
             return el.progressbar();
         },
-        select : function(el) {
-
+        tooltip : function(el, html) {
+            var f = "function" === typeof html ? html : function() { return html; };
+            $(el).attr("title", f.apply($(el), []));
+            return el;
         }
     };
 });

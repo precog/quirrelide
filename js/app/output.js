@@ -32,6 +32,7 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
 
         ui.button(elToolbarMainContext, {
             icon : "ui-icon-arrowthickstop-1-s",
+            description : "download query result",
             handler : function() {
                 var format = last && map[last.current].preferredDownloadFormat(lastOptions);
                 openDialog("Download Results", exportLanguages, editors.getOutputResult(), format);

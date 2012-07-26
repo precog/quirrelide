@@ -90,6 +90,7 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
 
         var history = ui.button(elContext, {
             icon : "ui-icon-clock",
+            description : "display query history",
             handler : function() {
                 $(wrapper).trigger("requesthistorylist");
             }
@@ -97,6 +98,7 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
 
         ui.button(elContext, {
             icon : "ui-icon-disk",
+            description : "save query",
             handler : function() {
                 var editor = editors.get();
                 if(editor.hasname) {
@@ -116,6 +118,7 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
 
         ui.button(elContext, {
             icon : "ui-icon-mail-closed",
+            description : "send query by email",
             handler : function(e) {
                 var email   = 'support@precog.com',
                     subject = 'Quirrel Help',
@@ -128,6 +131,7 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
         var copier;
         ui.button(elContext, {
             icon : "ui-icon-link",
+            description : "copy a link with the current query",
             handler : function(e) {
                 var base = document.location.origin + document.location.pathname;
                 // strip q if it exists
@@ -144,6 +148,7 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
 
         ui.button(elContext, {
             icon : "ui-icon-arrowthickstop-1-s",
+            description : "download query code",
             handler : function() {
                 openExportDialog("Download Query", exportLanguages, editors.getCode());
             }
@@ -151,6 +156,7 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
 
         ui.button(elContext, {
             icon : "ui-icon-plus",
+            description : "create new empty tab",
             handler : function() {
                 autoGoToTab = true;
                 editors.add();

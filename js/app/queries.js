@@ -44,6 +44,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                     el : ui.button(elContext, {
                         text : false,
                         icon : "ui-icon-plus",
+                        description : "create folder",
                         handler : function() {
                             var path = $(selectedNode).attr("data-path");
                             if(path === "/") path = "";
@@ -55,6 +56,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                     el : ui.button(elContext, {
                         text : false,
                         icon : "ui-icon-minus",
+                        description : "remove folder/query",
                         handler : function() {
                             var path = $(selectedNode).attr("data-path");
                             if(path.substr(0, 1) === "/")
@@ -68,6 +70,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                     el : ui.button(elContext, {
                         text : false,
                         icon : "ui-icon-tag",
+                        description : "rename query",
                         handler : function() {
                             var path    = $(selectedNode).attr("data-path"),
                                 title   = "Rename Query";;
