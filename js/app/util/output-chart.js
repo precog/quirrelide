@@ -4,7 +4,7 @@ define([
     , "app/util/notification"
     , "rtext!templates/panel.options.chart-output.html"
     , "https://api.reportgrid.com/js/reportgrid-core.js"
-    , "https://api.reportgrid.com/js/reportgrid-charts.js?authCode=WUfNPIu3l%2Fqz50AUSnj8Uh0pzTe3IzePQpV5m2TAmKAujD%2FE187KOndEUq6AhSEd9NbQBHCOkSDQuyie1vSB6VwFjJ1vFDNPBrnKA%2FacAJhQGrTFEsR%2B15tPFk8RqWG9hcHH8y7XFxXIrobj49huCjIEs0mZISPuSwgIe5bSwvo%3D"
+    , "https://api.reportgrid.com/js/reportgrid-charts.js?authCode=r59uh0XNfjFqI1M%2ByxJK33KGZ0Mm82UqEme9ShK7g12KlIHBhCZK1rFV7KdOHgZ7GAePArW%2FT4EuOgzCPCbZB%2BAGlqH7I8OeRMwxKJA5lSRO1GTNp5IkXcrS4rKVj0KT3jnc%2Fkc6gJBjzZPBwwX10Xgdg2%2B%2FKI1QnoOCVhDJ8Hg%3D"
 //    , "http://localhost/rg/js/reportgrid-charts.js?authCode=IGLBxMA3vSoTDWz%2BFu3cjPZNmdpS%2BfYSlwyN7LvpssTRTRpE4Lt%2BhqO9nX6LaLf2SZZBVf7vFDTyUID1uWUdoPC73kAA9HVzsOZwxO5jY%2BNdazmeBwK64oD5vRkxth5vO3ejfjx0nkh7mgaoSwde0zri1V%2Bb%2BSVHR92RidT5Isk%3D"
 //    , "http://localhost/rg/js/reportgrid-charts.js?authCode=WUfNPIu3l%2Fqz50AUSnj8Uh0pzTe3IzePQpV5m2TAmKAujD%2FE187KOndEUq6AhSEd9NbQBHCOkSDQuyie1vSB6VwFjJ1vFDNPBrnKA%2FacAJhQGrTFEsR%2B15tPFk8RqWG9hcHH8y7XFxXIrobj49huCjIEs0mZISPuSwgIe5bSwvo%3D"
 ],
