@@ -655,6 +655,12 @@ html > body .ui-pnotify {
     background-position:0 0;
     background-image: url(images/file.png);
 }
+.ui-pnotify .pg-easter {
+    text-align: center;
+    font-size: 120%;
+    font-style: italic;
+    padding: 40px 0;
+}
 @keyframes progressbg
 {
     0%   {background-position: 0 0;}
