@@ -163,7 +163,7 @@ function(dom) {
             o.history = false;
             o.sticker = false;
             o.width = '500px';
-            o.min_height = '300px';
+            if(!o.min_height) o.min_height = '300px';
             o.hide = false;
             o.stack = false;
             o.shadow = true;

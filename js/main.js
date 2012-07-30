@@ -62,9 +62,10 @@ require([
     , 'app/startup-tips'
     , 'app/util/precog'
     , 'app/util/querystring'
+    , 'app/eggmanager'
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs) {
 $(function() {
 
     precog.cache.disable();
@@ -162,7 +163,8 @@ $(function() {
         editors.setOutputResult(data);
     });
     $(editor).on('execute', function(_, code) {
-        precog.query(code);
+        if(!eastereggs.easterEgg(code))
+            precog.query(code);
     });
 
     $(editors).on('activated', function(_, index) {
