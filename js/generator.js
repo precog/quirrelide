@@ -20,7 +20,7 @@ function () {
     }
 
     var model = {
-            ideHost : "ide.precog.com/",
+            ideHost : "lab.precog.com/",
             protocol : "https",
             tokenId : null,
             basePath : "/",

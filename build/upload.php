@@ -11,7 +11,7 @@ function trace() {
 			$args[$key] = json_encode($message);
 	}
 
-	error_log((ISCLI ? "CLI" : "SER").": ".implode(" ", $args)."\n", 3, "/tmp/ide-upload.log");
+	error_log((ISCLI ? "CLI" : "SER").": ".implode(" ", $args)."\n", 3, "/tmp/lab-upload.log");
 }
 
 function handleShutdown() {
@@ -367,7 +367,7 @@ if(ISCLI) {
 
 
 	if(!isset($_FILES["file"])) {
-		error("uploaded file is too big for the IDE (max upload size is: ".ini_get('post_max_size').")");
+		error("uploaded file is too big for the Lab (max upload size is: ".ini_get('post_max_size').")");
 	}
 	$file = $_FILES["file"];
 
