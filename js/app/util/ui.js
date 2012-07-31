@@ -112,42 +112,32 @@ function() {
             return el.tabs(o);
         },
         radios : function(el, actions) { /* group, label, handler */
+            var current;
             el = $(el);
             if(actions) {
                 el.find("*").remove();
                 uid++;
-                var current;
                 $(actions).each(function(i, action) {
                     var name = action.group,
                         id = "pg-buttonset-" + uid + "-" + i,
                         label = action.label;
-                    var btn = el.append('<input type="radio" id="'+id+'" name="'+name+'" '+(action.checked ? 'checked="checked" ' : '')+'/><label for="'+id+'">'+label+'</label>').find("#"+id);
-                    btn.click(function() {
+                    action.btn = el.append('<input type="radio" id="'+id+'" name="'+name+'" '+(action.checked ? 'checked="checked" ' : '')+'/><label for="'+id+'">'+label+'</label>').find("#"+id);
+                    action.btn.click(function() {
                         $(actions).each(function(i, a) {
-                            if(a.token === action.token) {
-                                if(!action.checked) {
-                                    action.checked = true; //!!btn.prop("checked");
-                                    if(action.handler) {
-                                        action.handler(action);
-                                    }
-                                }
-                            } else {
-                                a.checked = false;
-                            }
+                            a.checked = a.token === action.token;
                         });
+                        action.handler(action);
                     });
+                    if(action.checked)
+                        current = action.btn;
                     if(action.description)
                         wrapper.tooltip(btn, action.description);
-                    if(action.checked)
-                        current = btn;
                 });
             }
             var buttons = el.buttonset();
-            // this should not be necessary, bug in buttonset?
-            if(actions && current) {
+            if(current) {
                 setTimeout(function() {
-//                    el.buttonset("refresh");
-                    current.change();
+                    current.click();
                 }, 100);
             }
             return buttons;

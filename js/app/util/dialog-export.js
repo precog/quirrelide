@@ -84,19 +84,18 @@ function(tplDialog, ui, dom, notification) {
         function execute(action) {
             elDialog.find("input[name=name]").val("precog." + action.token);
             elOptions.find("*").remove();
-            if(action.buildOptions)
+            if(action.buildOptions) {
                 action.buildOptions(elOptions, function() {
                     elText.text(action.handler(code, action.options));
                     selectCode();
                 });
+            }
             elText.text(action.handler(code, action.options));
             selectCode();
         }
 
-        var selectedIndex = -1;
+        selected = selected || actions[0].token;
         ui.radios(elActions, $(actions).map(function(i, action) {
-            if(action.token === selected)
-                selectedIndex = i;
             return {
                   label : action.name
                 , handler : function() {
@@ -104,12 +103,9 @@ function(tplDialog, ui, dom, notification) {
                     return true;
                 }
                 , group : "actions"
-                , checked : selectedIndex === i
+                , checked : action.token === selected
             };
         }));
-
-        if(selectedIndex === -1) selectedIndex = 0;
-        execute(actions[selectedIndex]);
 
         elActions.find(".ui-button:first").click();
 
