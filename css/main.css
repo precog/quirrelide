@@ -296,7 +296,7 @@
     font-size: 13px;
     line-height: 16px;
     width: 799px;
-    height: 350px;
+    height: 324px;
     margin-top: 4px;
     padding: 0;
     border: 0;
@@ -304,6 +304,10 @@
 
 .pg-el.ui-widget .pg-export textarea:focus {
     outline: 0;
+}
+
+.ui-dialog .ui-dialog-content.pg-dialog-export {
+    overflow: hidden;
 }
 
 .pg-el.ui-widget .pg-dialog-export .pg-toolbar.pg-actions,
