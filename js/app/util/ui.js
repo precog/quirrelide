@@ -123,12 +123,18 @@ function() {
                         label = action.label;
                     var btn = el.append('<input type="radio" id="'+id+'" name="'+name+'" '+(action.checked ? 'checked="checked" ' : '')+'/><label for="'+id+'">'+label+'</label>').find("#"+id);
                     btn.click(function() {
-                        if(action.checked !== !!btn.attr("checked")) {
-                            action.checked = !!btn.attr("checked");
-                            if(action.handler) {
-                                action.handler(action);
+                        $(actions).each(function(i, a) {
+                            if(a.token === action.token) {
+                                if(!action.checked) {
+                                    action.checked = true; //!!btn.prop("checked");
+                                    if(action.handler) {
+                                        action.handler(action);
+                                    }
+                                }
+                            } else {
+                                a.checked = false;
                             }
-                        }
+                        });
                     });
                     if(action.description)
                         wrapper.tooltip(btn, action.description);
@@ -157,10 +163,10 @@ function() {
                         id = "pg-buttonset-" + uid + "-" + i,
                         label = action.label;
                     var btn = el.append('<input type="checkbox" id="'+id+'" name="'+name+'" '+(checked ? 'checked="checked" ' : "")+'/><label for="'+id+'">'+label+'</label>').find("#"+id);
-                    btn.click(function() {
+                    btn.click(function(e) {
                         action.checked = !!btn.attr("checked");
                         if(action.handler)
-                            action.handler(action);
+                            action.handler.call(btn, e, action);
                     });
                     if(action.description)
                         wrapper.tooltip(btn, action.description);

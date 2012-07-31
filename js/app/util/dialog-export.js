@@ -58,6 +58,7 @@ function(tplDialog, ui, dom, notification) {
                 }]
             }),
         elActions = elDialog.find(".pg-actions"),
+        elOptions = elDialog.find(".pg-options"),
         elText = elDialog.find(".pg-export textarea"),
         elForm = elDialog.find("form");
 
@@ -78,10 +79,18 @@ function(tplDialog, ui, dom, notification) {
             inited = true;
         }
         elActions.find("*").remove();
+        elOptions.find("*").remove();
 
         function execute(action) {
             elDialog.find("input[name=name]").val("precog." + action.token);
-            elText.text(action.handler(code));
+            elOptions.find("*").remove();
+            if(action.buildOptions)
+                action.buildOptions(elOptions, function() {
+                    console.log("OPTION CHANGED");
+                    elText.text(action.handler(code, action.options));
+                    selectCode();
+                });
+            elText.text(action.handler(code, action.options));
             selectCode();
         }
 
@@ -91,7 +100,10 @@ function(tplDialog, ui, dom, notification) {
                 selectedIndex = i;
             return {
                   label : action.name
-                , handler : function() { execute(action); }
+                , handler : function() {
+                    execute(action);
+                    return true;
+                }
                 , group : "actions"
                 , checked : selectedIndex === i
             };

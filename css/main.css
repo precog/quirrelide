@@ -3,7 +3,7 @@
 @import "jquery/slickgrid/slick.pager.css";
 @import "jquery/pnotify/jquery.pnotify.default.css";
 
-.pg-ide, .pg-el, .pg-el.ui-widget, .ui-pnotify, .ui-pnotify-history-container {
+.pg-lab, .pg-el, .pg-el.ui-widget, .ui-pnotify, .ui-pnotify-history-container {
     font-size: 73%;
     font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
 }
@@ -39,7 +39,7 @@
 /*    border:0 !important; */
 }
 
-.pg-ide .ui-widget-header {
+.pg-lab .ui-widget-header {
     line-hwight: 17px;
 }
 
@@ -146,7 +146,7 @@
     height: 18px;
 }
 
-.pg-ide .pg-position {
+.pg-lab .pg-position {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -155,7 +155,7 @@
     border-top: 0;
 }
 
-.pg-ide .pg-support-tabs.ui-tabs .ui-tabs-nav {
+.pg-lab .pg-support-tabs.ui-tabs .ui-tabs-nav {
     border-top: 0;
     border-left: 0;
     border-right: 0;
@@ -164,7 +164,7 @@
     border-bottom-width: 1px;
 }
 
-.pg-ide .pg-support-tabs .ui-tabs-panel {
+.pg-lab .pg-support-tabs .ui-tabs-panel {
     clear: left;
 }
 
@@ -282,11 +282,11 @@
     background-image: url(images/logo-precog.svg);
 }
 
-.pg-ide .ui-layout-toggler {
+.pg-lab .ui-layout-toggler {
     border: 0;
 }
 
-.pg-ide .ui-layout-resizer {
+.pg-lab .ui-layout-resizer {
     border-radius: 0;
 }
 
@@ -306,8 +306,15 @@
     outline: 0;
 }
 
-.pg-el.ui-widget .pg-dialog-export .pg-toolbar.pg-actions {
+.pg-el.ui-widget .pg-dialog-export .pg-toolbar.pg-actions,
+.pg-el.ui-widget .pg-dialog-export .pg-toolbar.pg-options
+{
     text-align: center;
+}
+
+.pg-el.ui-widget .pg-dialog-export .pg-toolbar.pg-options
+{
+    margin-top: 4px;
 }
 
 .pg-tree {
@@ -451,7 +458,7 @@
     padding-top: 8px;
     clear: left;
 }
-.ui-pnotify .pg-clear, .pg-ide .pg-clear {
+.ui-pnotify .pg-clear, .pg-lab .pg-clear {
     clear: both;
 }
 
@@ -490,16 +497,16 @@
     text-align: center;
 }
 
-.pg-ide .ui-widget.ui-content.pg-overflow-hidden {
+.pg-lab .ui-widget.ui-content.pg-overflow-hidden {
     overflow: hidden;
 }
 
-.pg-ide .pg-toolbar-result-type button {
+.pg-lab .pg-toolbar-result-type button {
     display: block;
     float: right;
 }
 
-.pg-ide .pg-current-options {
+.pg-lab .pg-current-options {
     font-weight: normal;
     margin-right: 0.5em;
     font-size: 93%;
@@ -508,17 +515,17 @@
     display: inline-block;
 }
 
-.pg-ide .pg-toolbar-context .pg-toolbar-result-type button {
+.pg-lab .pg-toolbar-context .pg-toolbar-result-type button {
     padding: 0;
 }
 
-.pg-ide .pg-table .ui-state-default {
+.pg-lab .pg-table .ui-state-default {
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
 }
 
-.pg-ide .jstree .pg-tree-leaf {
+.pg-lab .jstree .pg-tree-leaf {
     background-position:0 0;
     background-image: url(images/file.png);
 }

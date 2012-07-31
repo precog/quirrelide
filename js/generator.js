@@ -68,7 +68,7 @@ function () {
                 if (!!value.match(/^(([a-z0-9_\-.]+)+([:]\d+)?([\/a-z0-9_\-.]+)*)$/i)) {
                     return true;
                 } else {
-                    this.validationError = "invalid IDE host url";
+                    this.validationError = "invalid Lab host url";
                     return false;
                 }
             },

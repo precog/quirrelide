@@ -3,6 +3,19 @@ define([
 ],
 
 function() {
+    function quoteSplitter(s) {
+        var parts = [],
+            pos = 0;
+        while(pos >= 0) {
+            var npos = s.indexOf(s, pos);
+            if(npos < 0) {
+                // no quotes found
+
+            }
+        }
+
+        return parts;
+    }
     return {
         jsonToCsv : function(json) {
             if(!json) return "";
@@ -65,6 +78,62 @@ function() {
         },
 
         quirrelToOneLine : function(code) {
+            function splitter(s) {
+                var parts = [],
+                    pos = 0,
+                    npos,
+                    inquote = false,
+                    rest = "",
+                    len = s.length;
+                ;
+
+                var guard = 20;
+
+                function nextQuote(s, pos) {
+                    npos = s.indexOf('"', pos);
+                    if(npos < 0) return npos;
+                    if(s.substr(npos - 1, 1) === '\\')
+                        return nextQuote(s, npos + 1);
+                    return npos;
+                }
+
+                while(pos >= 0 && pos < len) {
+                    npos = nextQuote(s, pos);
+                    if(npos < 0) {
+                        break;
+                    } else if(npos === 0) {
+                        pos = 1;
+                        inquote = true;
+                    } else if(inquote) {
+                        rest += s.substr(pos, npos - pos);
+                        parts.push('"' + rest + '"');
+                        pos = npos + 1;
+                        inquote = false;
+                        rest = "";
+                    } else {
+                        parts.push(s.substr(pos, npos - pos))
+                        inquote = true;
+                        pos = npos + 1;
+                    }
+                    guard--;
+                    if(guard < 0) break;
+                }
+                var last = (inquote ? '"' : '') + rest + s.substr(pos);
+                if(last)
+                    parts.push(last);
+
+                return parts;
+            }
+
+            var parts = splitter(code);
+            for(var i = 0; i < parts.length; i++) {
+                var part = parts[i],
+                    len = part.length;
+                if(part.substr(0, 1) !== '"' || part.substr(len-1) !== '"') {
+                    // not quoted, needs cleanup
+                }
+            }
+
             return code
                 .replace(/--(.*)$/mg, '(- $1 -)')
                 .replace(/(\s+)/mg, ' ')

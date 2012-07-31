@@ -53,7 +53,7 @@ define([
         }
 
         // main seperation
-        layouts.push(container.find('.pg-ide').layout({
+        layouts.push(container.find('.pg-lab').layout({
             defaults : defaults,
             north : $.extend({}, toolbar, { size : toolbarMainHeight }),
             west : {

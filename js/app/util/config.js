@@ -3,7 +3,7 @@ define([
 ],
 
 function(createStore) {
-    var CONFIG_KEY = "pg-quirrel-ide-config",
+    var CONFIG_KEY = "pg-precog-lab-config",
         defaults = {
             theme : "gray",
             indentUsingSpaces : false,
