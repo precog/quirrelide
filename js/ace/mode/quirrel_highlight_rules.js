@@ -19,8 +19,8 @@ function(require, exports, module) {
         var builtinFunctions = lang.arrayToMap(
             ("count|distinct|load|max|mean|geometricMean|sumSq|variance|median|min|mode|stdDev|sum").split("|")
         );
-
-        this.$rules = {
+ 
+        var rules = {
             "start" : [ {
                 token : "comment",
                 regex : "--.*$"
@@ -79,12 +79,14 @@ function(require, exports, module) {
 			],
 			
 			// TODO if we have nested objects, we will abort the state stack prematurely
-			"object-contents" : this.start.concat([{
+			"object-contents" : rules.start.concat([{
 				token : "keyword.operator",
 				regex : ',',
 				next : "object-start"
 			}])
         };
+        
+        this.$rules = rules;
     };
 
     oop.inherits(QuirrelHighlightRules, TextHighlightRules);
