@@ -9,15 +9,15 @@ function(require, exports, module) {
     var QuirrelHighlightRules = function() {
 
         var keywords = lang.arrayToMap(
-            ("new|where").split("|")
+            ("difference|else|forall|if|import|intersect|new|then|union|where|with").split("|")
         );
 
         var builtinConstants = lang.arrayToMap(
-            ("true|false").split("|")
+            ("true|false|null").split("|")
         );
 
         var builtinFunctions = lang.arrayToMap(
-            ("with|count|dataset|load|max|mean|median|min|mode|stdDev|sum").split("|")
+            ("count|distinct|load|max|mean|geometricMean|sumSq|variance|median|min|mode|stdDev|sum").split("|")
         );
 
         this.$rules = {
@@ -26,16 +26,16 @@ function(require, exports, module) {
                 regex : "--.*$"
             }, {
                 token : "comment",
-                regex : "\\(-.*?-\\)"
+                regex : '\(-([^\-]|-+[^)\-])*-\)'
             }, {
                 token : "string",           // " string
-                regex : '".*?"'
+                regex : '"([^\n\r\\"]|\\.)*"'
             }, {
                 token : "constant.numeric", // float
-                regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
+                regex : "[0-9]+(\\.[0-9]+)?([eE][0-9]+)?"
             }, {
                 token : "variable",
-                regex : "'[a-zA-Z_][a-zA-Z0-9_]*\\b"
+                regex : "'[a-zA-Z_0-9]['a-zA-Z_0-9]*\\b"
             }, {
                 token : function(value) {
                     if (keywords.hasOwnProperty(value))
@@ -47,18 +47,43 @@ function(require, exports, module) {
                     else
                         return "identifier";
                 },
-                regex : "[a-zA-Z_][a-zA-Z0-9_]*\\b"
+                regex : "[a-zA-Z]['a-zA-Z_0-9]*|_['a-zA-Z_0-9]+\\b"
             }, {
-                token : "constant",
-                regex : "\\/(?:\\/[a-zA-Z0-9-]+)+"
+                token : "string",
+                regex : "/(/[a-zA-Z_\-0-9]+)+\\b"
             }, {
                 token : "invalid",
                 regex : "//"
             }, {
                 token : "keyword.operator",
-                regex : "::|:=|\\+|\\/|\\-|\\*|%|<|>|<=|=>|!=|<>|="
+                regex : "~|:=|\\+|\\/|\\-|\\*|&|\\||<|>|<=|=>|!=|<>|=|!|neg"
+            }, {
+            	token : "keyword.operator",
+            	regex : "\{",
+            	next : "object-start"
+            }, {
+            	token : "constant.character",
+            	regex : '`([^`\\]|\\.)+`'
             }
-            ]
+            ],
+        
+			"object-start" : [ {
+				token : "entity.name.function",
+				regex : '([a-zA-Z_][a-zA-Z_0-9]*|`([^`\\]|\\.)+`|"([^"\\]|\\.)+"):',
+				next : "object-contents"
+			}, {
+				token : "keyword.operator",
+				regex : '\}',
+				next : "start"
+			}
+			],
+			
+			// TODO if we have nested objects, we will abort the state stack prematurely
+			"object-contents" : this.start.concat([{
+				token : "keyword.operator",
+				regex : ',',
+				next : "object-start"
+			}])
         };
     };
 
