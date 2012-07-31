@@ -86,7 +86,6 @@ function(tplDialog, ui, dom, notification) {
             elOptions.find("*").remove();
             if(action.buildOptions)
                 action.buildOptions(elOptions, function() {
-                    console.log("OPTION CHANGED");
                     elText.text(action.handler(code, action.options));
                     selectCode();
                 });

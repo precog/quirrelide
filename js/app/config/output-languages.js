@@ -9,12 +9,17 @@ function(convert, precog, ui, converters) {
     var tokenId = precog.config.tokenId,
         service = precog.config.analyticsService
     ;
+
+    function escapeQuotes(s) {
+        return s.replace(/"/g, '\\"');
+    }
+
     return [{
         token: "qrl",
         name : "Quirrel",
         handler : function(code, options) {
             if(options.compact)
-                return converters.quirrelToOneLine(code);
+                return converters.minifyQuirrel(code);
             else
                 return "-- Quirrel query generated with Quirrel Lab by Precog\n\n" + code.trim();
         },
@@ -27,25 +32,16 @@ function(convert, precog, ui, converters) {
                 label : "compact",
                 description : "remove newlines and comments from query",
                 handler : function() {
-console.log("HANDLER", action, this);
                     action.options.compact = $(this).prop("checked");
                     handler();
                 }
             }]);
-
-/*
- name (group)
- checked
- label
- handler
- description
- */
         }
     }, {
         token: "js",
         name : "JavaScript",
         handler : function(code) {
-            code = convert.quirrelToOneLine(code);
+            code = escapeQuotes(convert.minifyQuirrel(code));
             return "// Quirrel query in JavaScript generated with Quirrel Lab by Precog\n\n" +
                 'Precog.query("'+code+'",\n  function(data) { /* do something with the data */ },\n  function(error) { console.log(error); }\n);';
         }
@@ -53,7 +49,7 @@ console.log("HANDLER", action, this);
         token: "html",
         name : "HTML",
         handler : function(code) {
-            code = convert.quirrelToOneLine(code);
+            code = escapeQuotes(convert.minifyQuirrel(code));
             return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?tokenId='+tokenId+'&analyticsService='+service+'"></script>\n' +
                 "<script>\n" +
                 "function init() {\n" +
@@ -67,7 +63,7 @@ console.log("HANDLER", action, this);
         token: "php",
         name : "PHP",
         handler : function(code) {
-            code = convert.quirrelToOneLine(code);
+            code = escapeQuotes(convert.minifyQuirrel(code));
             return '<?php\n\n' +
                 "// Quirrel query in PHP generated with Quirrel Lab by Precog\n\n" +
                 'require_once("Precog.php");\n\n' +

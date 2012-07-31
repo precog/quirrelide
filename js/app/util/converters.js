@@ -77,69 +77,84 @@ function() {
             return rows.join("\n");
         },
 
-        quirrelToOneLine : function(code) {
-            function splitter(s) {
-                var parts = [],
-                    pos = 0,
-                    npos,
-                    inquote = false,
-                    rest = "",
-                    len = s.length;
-                ;
+        minifyQuirrel : function(code) {
+            var stringcontexts = [{
+                        open : '"',  close : '"',  escape : '\\', start : -1, end : -1, handler : function(s) { return '"' + s + '"'; }
+                    }],
+                allcontexts = stringcontexts.concat([{
+                        open : '--', close : '\n', escape : false, start : -1, end : -1, handler : function(s) { return ' '; }
+                    }, {
+                        open : '(-', close : '-)', escape : false, start : -1, end : -1, handler : function(s) { return ' '; }
+                    }]),
+                defaultHandler = function(s) {
+                    return s.replace(/(\s+)/g, ' ');
+                };
+
+            function findEnd(s, ctx, pos) {
+                if(ctx.escape) {
+                    var elen = ctx.escape.length, npos;
+                    while(true) {
+                        npos = s.indexOf(ctx.close, pos);
+                        if(npos < 0) return npos;
+                        pos = npos + ctx.close.length;
+                        if(s.substr(npos - elen, elen) === ctx.escape) {
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
+                    return npos;
+                } else {
+                    return s.indexOf(ctx.close, pos);
+                }
+            }
+
+            function selectContext(contexts, s, pos) {
+                var minpos = s.length, npos, ctx;
+                for(var i = 0; i < contexts.length; i++) {
+                    npos = s.indexOf(contexts[i].open, pos);
+                    if(npos >= 0 && npos < minpos) {
+                        ctx = contexts[i];
+                        ctx.start = minpos = npos;
+                    }
+                }
+                if(!ctx) return null;
+                ctx.end = findEnd(s, ctx, ctx.start + ctx.open.length);
+                return ctx;
+            }
+
+            function process(contexts, s) {
+                var result = "", ctx, pos = 0;
 
                 var guard = 20;
-
-                function nextQuote(s, pos) {
-                    npos = s.indexOf('"', pos);
-                    if(npos < 0) return npos;
-                    if(s.substr(npos - 1, 1) === '\\')
-                        return nextQuote(s, npos + 1);
-                    return npos;
-                }
-
-                while(pos >= 0 && pos < len) {
-                    npos = nextQuote(s, pos);
-                    if(npos < 0) {
-                        break;
-                    } else if(npos === 0) {
-                        pos = 1;
-                        inquote = true;
-                    } else if(inquote) {
-                        rest += s.substr(pos, npos - pos);
-                        parts.push('"' + rest + '"');
-                        pos = npos + 1;
-                        inquote = false;
-                        rest = "";
-                    } else {
-                        parts.push(s.substr(pos, npos - pos))
-                        inquote = true;
-                        pos = npos + 1;
+                do {
+                    ctx = selectContext(contexts, s, pos);
+                    if(!ctx) break;
+                    if(ctx.start > pos) {
+                        result += defaultHandler(s.substr(pos, ctx.start - pos));
                     }
+                    if(ctx.end >= 0) {
+                        result += ctx.handler(s.substr(ctx.start + ctx.open.length, ctx.end - (ctx.start + ctx.open.length)));
+                        pos = ctx.end + ctx.close.length;
+                    } else {
+                        pos = -1;
+                    }
+
                     guard--;
-                    if(guard < 0) break;
+                    if(guard < 0) {
+                        console.log("GUARD REACHED", s);
+                        break;
+                    }
+                } while(ctx && pos < s.length && pos >= 0);
+                if(ctx) {
+                    result += ctx.handler(s.substr(ctx.start + ctx.open.length));
+                } else {
+                    result += defaultHandler(s.substr(pos));
                 }
-                var last = (inquote ? '"' : '') + rest + s.substr(pos);
-                if(last)
-                    parts.push(last);
-
-                return parts;
+                return result.trim();
             }
 
-            var parts = splitter(code);
-            for(var i = 0; i < parts.length; i++) {
-                var part = parts[i],
-                    len = part.length;
-                if(part.substr(0, 1) !== '"' || part.substr(len-1) !== '"') {
-                    // not quoted, needs cleanup
-                }
-            }
-
-            return code
-                .replace(/--(.*)$/mg, '(- $1 -)')
-                .replace(/(\s+)/mg, ' ')
-                .replace(/"/g, '\\"')
-                .trim()
-                ;
+            return process(stringcontexts, process(allcontexts, code));
         }
     }
 });
