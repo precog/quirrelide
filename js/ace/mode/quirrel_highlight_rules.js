@@ -59,7 +59,7 @@ function(require, exports, module) {
                 regex : "~|:=|\\+|\\/|\\-|\\*|&|\\||<|>|<=|=>|!=|<>|=|!|neg"
             }, {
             	token : "keyword.operator",
-            	regex : "\{"
+            	regex : "\{",
             	next : "object-start"
             }, {
             	token : "constant.character",
