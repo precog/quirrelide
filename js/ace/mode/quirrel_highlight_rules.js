@@ -20,22 +20,29 @@ function(require, exports, module) {
             ("count|distinct|load|max|mean|geometricMean|sumSq|variance|median|min|mode|stdDev|sum").split("|")
         );
  
-        var rules = {
-            "start" : [ {
+        var start = [{
                 token : "comment",
                 regex : "--.*$"
             }, {
-                token : "comment",
-                regex : '\(-([^\-]|-+[^)\-])*-\)'
+                token : function(token) {
+                    return "comment";
+                },
+                regex  : '\\(-(?:[^-]|-+[^)-])*-\\)'
             }, {
                 token : "string",           // " string
-                regex : '"([^\n\r\\"]|\\.)*"'
+                regex : '"(?:[^\n\r\\\\"]|\\\\.)*"'
             }, {
                 token : "constant.numeric", // float
-                regex : "[0-9]+(\\.[0-9]+)?([eE][0-9]+)?"
+                regex : "[0-9]+(?:\\\\.[0-9]+)?(?:[eE][0-9]+)?"
             }, {
                 token : "variable",
                 regex : "'[a-zA-Z_0-9]['a-zA-Z_0-9]*\\b"
+            }, {
+                token : "string",
+                regex : "/(?:/[a-zA-Z_0-9-]+)+\\b"
+            }, {
+                token : "keyword.operator",
+                regex : "~|:=|\\+|\\/|\\-|\\*|&|\\||<|>|<=|=>|!=|<>|=|!|neg\\b"
             }, {
                 token : function(value) {
                     if (keywords.hasOwnProperty(value))
@@ -47,46 +54,46 @@ function(require, exports, module) {
                     else
                         return "identifier";
                 },
-                regex : "[a-zA-Z]['a-zA-Z_0-9]*|_['a-zA-Z_0-9]+\\b"
-            }, {
-                token : "string",
-                regex : "/(/[a-zA-Z_\-0-9]+)+\\b"
+                regex : "([a-zA-Z]['a-zA-Z_0-9]*|_['a-zA-Z_0-9]+)\\b"
             }, {
                 token : "invalid",
                 regex : "//"
             }, {
-                token : "keyword.operator",
-                regex : "~|:=|\\+|\\/|\\-|\\*|&|\\||<|>|<=|=>|!=|<>|=|!|neg"
+                token : "identifier",
+                regex : "\\{",
+                next : "object-start"
             }, {
-            	token : "keyword.operator",
-            	regex : "\{",
-            	next : "object-start"
-            }, {
-            	token : "constant.character",
-            	regex : '`([^`\\]|\\.)+`'
+                token : "identifier",
+                regex : '`(?:[^`\\\\]|\\\\.)+`'
             }
-            ],
+        ];
+        this.$rules = {
+            "start" : start,
         
 			"object-start" : [ {
 				token : "entity.name.function",
-				regex : '([a-zA-Z_][a-zA-Z_0-9]*|`([^`\\]|\\.)+`|"([^"\\]|\\.)+"):',
+				regex :  '(?:[a-zA-Z_][a-zA-Z_0-9]*|`(?:[^`\\\\]|\\\\.)+`|"(?:[^"\\\\]|\\\\.)+"):',
 				next : "object-contents"
 			}, {
-				token : "keyword.operator",
-				regex : '\}',
+				token : "identifier",
+				regex : '\\}',
 				next : "start"
 			}
 			],
 			
 			// TODO if we have nested objects, we will abort the state stack prematurely
-			"object-contents" : rules.start.concat([{
-				token : "keyword.operator",
+			"object-contents" : start.concat([{
+				token : "identifier",
 				regex : ',',
 				next : "object-start"
-			}])
+			}, {
+                token : "identifier",
+                regex : '\\}',
+                next : "start"
+            }])
         };
         
-        this.$rules = rules;
+//        this.$rules = rules;
     };
 
     oop.inherits(QuirrelHighlightRules, TextHighlightRules);
