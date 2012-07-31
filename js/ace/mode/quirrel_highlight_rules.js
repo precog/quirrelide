@@ -79,7 +79,7 @@ function(require, exports, module) {
 			],
 			
 			// TODO if we have nested objects, we will abort the state stack prematurely
-			"object-contents" : this.$rules.start.concat([{
+			"object-contents" : this.start.concat([{
 				token : "keyword.operator",
 				regex : ',',
 				next : "object-start"
