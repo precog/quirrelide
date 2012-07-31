@@ -1,4 +1,4 @@
-quirrelide
+quirrellab
 ==========
 
-Quirrel IDE
+Quirrel Lab
