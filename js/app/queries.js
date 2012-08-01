@@ -72,8 +72,23 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                         icon : "ui-icon-tag",
                         description : "rename query",
                         handler : function() {
+                            var path = $(selectedNode).attr("data-path");
+                            path = path.split("/");
+                            var name = path.pop();
+                            path = path.length === 0 ? "" : path.join("/")+"/";
+
+                            ui.edit($(selectedNode).find("a"), {
+                                handler : function(newname, callback) {
+                                    var err = utils.validateQueryName(newname, path + newname, wrapper);
+                                    callback(err);
+                                    if(!err) {
+                                        renameQuery(path + name, path + newname);
+                                    }
+                                }
+                            });
+                            /*
                             var path    = $(selectedNode).attr("data-path"),
-                                title   = "Rename Query";;
+                                title   = "Rename Query";
                             path = path.split("/");
                             var name = path.pop(),
                                 message = "please pick a new name for the query '"+name+"'";
@@ -84,7 +99,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                             }, function(newname) {
                                 renameQuery(path + name, path + newname);
                             });
-                            // ADD RENAME LOGIC HERE
+                            */
                         }
                     }),
                     groups : ["query"]

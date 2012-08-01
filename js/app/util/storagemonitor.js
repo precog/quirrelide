@@ -4,7 +4,9 @@ define([
 ],
 
 function(traverse, buildStorage) {
+console.log("STORAGEMONITOR IN DAHAUS");
     return function(key, defaults) {
+console.log("STORAGEMONITOR IN DAHAUS " + key);
         var storage = buildStorage(key, defaults),
             monitor;
 
@@ -39,9 +41,11 @@ function(traverse, buildStorage) {
                 last = {},
                 paths = [],
                 pathsCounter = {};
-
+console.log("INIT MONITOR FOR " + key);
             function loop() {
                 if(paths.length == 0 || storage.dirty()) return;
+console.log("looping", key);
+                /*
                 $.jStorage.reInit();
                 var params = storage.all(),
                     len = paths.length,
@@ -62,13 +66,16 @@ function(traverse, buildStorage) {
                     traverse.set(params, path, cvalue);
                     $(storage).trigger(path, [cvalue]);
                 }
+                */
             }
 
             loop();
 
             return {
                 start : function(delay) {
-                    delay = delay || 2500;
+console.log(delay);
+                    delay = (100 * delay) || 10000;
+console.log(key, delay);
                     if(this.monitoring()) {
                         this.end();
                         this.start(delay);
@@ -96,7 +103,7 @@ function(traverse, buildStorage) {
                 }
             }
         }());
-
+console.log("START " + key);
         monitor.start();
 
         return storage;

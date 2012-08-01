@@ -32,7 +32,7 @@ requirejs.config({
         , 'libs/jquery/slickgrid/slick.columnpicker' : ['libs/jquery/slickgrid/slick.pager']
         , 'app/util/output-table' : ['libs/jquery/slickgrid/slick.columnpicker']
 
-        , 'app/util/ui' : ['libs/jquery/ui/jquery.ui.menu', 'libs/jquery/ui/jquery.ui.tabs', 'libs/jquery/ui/jquery.ui.progressbar']
+        , 'app/util/ui' : ['libs/jquery/ui/jquery.ui.menu', 'libs/jquery/ui/jquery.ui.tabs', 'libs/jquery/ui/jquery.ui.progressbar', 'app/util/dom']
         , 'libs/jquery/layout/jquery.layout' : ['libs/jquery/ui/jquery.ui.draggable']
         , 'libs/jquery/jstree/jstree' : ['libs/jquery/jstree/vakata']
 //        , 'libs/jquery/jstree/jstree.dnd2' : ['libs/jquery/jstree/jstree']

@@ -116,7 +116,7 @@ function(dom) {
             o.hide = false;
             o.stack = false;
             o.shadow = true;
-            o.type = "info";
+            o.type = o.type || "info";
             o.opacity = 0.95;
             o.voffset = o.voffset || 40;
             o.hoffset = o.hoffset || 10;

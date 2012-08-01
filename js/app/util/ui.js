@@ -1,5 +1,7 @@
 define([
-      'jquery'
+      'app/util/dom'
+    , 'app/util/notification'
+    , 'jquery'
     , 'libs/jquery/ui/jquery.ui.core'
     , 'libs/jquery/ui/jquery.ui.position'
     , 'libs/jquery/ui/jquery.ui.widget'
@@ -15,7 +17,7 @@ define([
     , 'libs/jquery/ui/jquery.ui.menu'
 ],
 
-function() {
+function(dom, notification) {
     var wrapper, uid = 0;
 
     $.fn.outerHTML = function(){
@@ -176,6 +178,76 @@ function() {
             var f = "function" === typeof html ? html : function() { return html; };
             $(el).attr("title", f.apply($(el), []));
             return el;
+        },
+        edit : function(el, options) {
+            el = $(el);
+            options = $.extend({
+                handler : function(t) { return null; }
+            }, options);
+            var text = options.text || el.text().trim(),
+                html = el.html(),
+                edit = el.html('<input type="text" name="pg-editable" id="pg-editable" value="'+text+'" />').find("#pg-editable"),
+                tip;
+
+            function exit() {
+                if(tip) tip.remove();
+                el.html(html);
+            }
+
+//            var interacted = false; // workaround for firefox
+            $(document.body).one("mousedown", function() { exit(); });
+            edit.change(function() {
+                    var newtext = edit.val();
+                    if(newtext === text) {
+                        return exit();
+                    }
+                    options.handler(newtext, function(error) {
+                        if(tip) tip.remove();
+                        if(error) {
+                            console.log("DISPLAY ERROR");
+                            tip = notification.tip("invalid value", {
+                                target : el,
+                                text : error,
+                                type : "error"
+                            })
+                            return;
+                        } else {
+                            el.html(newtext);
+                        }
+                    });
+                })
+                .keyup(function(e) {
+                    switch(e.which) {
+                        case 9:
+                        case 13:
+                            edit.trigger("change");
+                            break;
+                        case 27:
+                            exit();
+                            break;
+                    }
+                    console.log(e.which);
+                })
+                /*
+                .mousedown(function(e) {
+                    interacted = true;
+                    e.preventDefault(); return false;
+                })
+                .focusout(function() {
+    console.log("focusout", interacted);
+                    if(interacted) {
+                        interacted = false;
+                        return;
+                    }
+                    exit();
+                })
+                */
+                ;
+            edit.focus();
+            var selectable = el.get(0);
+            if(!dom.canSelect(selectable))  // firefox doesn't like selecting text this way
+                selectable = edit.get(0);
+            dom.selectText(selectable, 0, text.length);
         }
     };
 });
