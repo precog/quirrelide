@@ -18,7 +18,7 @@ $(function() {
     }
 
     var model = {
-            ideHost : "lab.precog.com/",
+            labHost : "lab.precog.com/",
             protocol : "https",
             tokenId : null,
             basePath : "/",
@@ -97,12 +97,12 @@ $(function() {
     }
 
     function generate() {
-        if (!(model.protocol && model.tokenId && model.basePath && model.analyticsService && model.ideHost)) {
+        if (!(model.protocol && model.tokenId && model.basePath && model.analyticsService && model.labHost)) {
             return;
         }
         var url = model.protocol
             + "://"
-            + model.ideHost
+            + model.labHost
             + "?tokenId=" + encodeURIComponent(model.tokenId);
         if (model.basePath !== "/") {
             url += "&basePath=" + encodeURIComponent(model.basePath);
@@ -110,8 +110,8 @@ $(function() {
         if (model.analyticsService !== "api.precog.com/v1") {
             url += "&analyticsService=" + encodeURIComponent(model.protocol + "://" + model.analyticsService);
         }
-        $("input#ideurl").val(url);
-        $("#gotoide").attr("href", url).show();
+        $("input#labUrl").val(url);
+        $("#gotoLab").attr("href", url).show();
     }
 
     function assignToModel(name) {
@@ -133,10 +133,10 @@ $(function() {
         .change(validateInput(protocol, changeProtocol))
         .change();
 
-    $('input#ideHost')
-        .val(model.ideHost)
-        .keyup(validateInput(host, assignToModel("ideHost")))
-        .change(validateInput(host, assignToModel("ideHost")));
+    $('input#labHost')
+        .val(model.labHost)
+        .keyup(validateInput(host, assignToModel("labHost")))
+        .change(validateInput(host, assignToModel("labHost")));
 
     $('input#tokenId')
         .val(model.tokenId)
