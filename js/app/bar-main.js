@@ -34,6 +34,14 @@ define([
         menu.find(".editor-theme").click(function() {
             theme.set($(this).attr("data-editor-theme"));
         });
+/*
+        ui.button(right, {
+            icon : "ui-icon-help",
+            description : "about Precog Lab"
+        }).click(function() {
+            window.open("http://precog.com/lab");
+        });
+*/
 
         ui.button(right, {
             icon : "ui-icon-gear",

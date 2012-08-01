@@ -7,10 +7,8 @@ requirejs.config({
 
 require([],
 function () {
-    $(function() {
-
-
-    'use strict';
+'use strict';
+$(function() {
     function stripTrailingSlash(value) {
         value = value.trim();
         if (value.length > 1 && value.substr(-1) === "/") {
