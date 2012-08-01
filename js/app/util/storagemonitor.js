@@ -45,7 +45,7 @@ console.log("INIT MONITOR FOR " + key);
             function loop() {
                 if(paths.length == 0 || storage.dirty()) return;
 console.log("looping", key);
-                /*
+
                 $.jStorage.reInit();
                 var params = storage.all(),
                     len = paths.length,
@@ -66,7 +66,6 @@ console.log("looping", key);
                     traverse.set(params, path, cvalue);
                     $(storage).trigger(path, [cvalue]);
                 }
-                */
             }
 
             loop();
@@ -74,7 +73,7 @@ console.log("looping", key);
             return {
                 start : function(delay) {
 console.log(delay);
-                    delay = (100 * delay) || 10000;
+                    delay = delay || 10000;
 console.log(key, delay);
                     if(this.monitoring()) {
                         this.end();

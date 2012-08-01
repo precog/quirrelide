@@ -25,9 +25,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
         STORE_KEY = "pg-quirrel-queries-"+precog.hash,
         store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {}), folders : [] });
 
-
-    store.monitor.start(500);
-
     return function(el) {
         var wrapper;
 

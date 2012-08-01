@@ -22,8 +22,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         basePath = precog.config.basePath || "/",
         store = createStore(STORE_KEY, { virtuals : { }});
 
-    store.monitor.start(500);
-
     function setVirtualPath(parent, name) {
         var arr = getVirtualPaths(parent);
         if(arr.indexOf(name) < 0)

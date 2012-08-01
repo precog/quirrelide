@@ -12,8 +12,6 @@ function(precog, md5, createStore, utils) {
             editors : {}
         });
 
-    store.monitor.start(500);
-
     function createId() {
         return md5(""+Math.random()).substr(0, 8);
     }
