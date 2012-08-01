@@ -313,8 +313,8 @@ $(function() {
         config.monitor.bind('tabSize', function(_, value) {
             editor.setTabSize(value);
         });
-    }, 150);
 
-    layout.container.show();
+        layout.container.show();
+    }, 150);
 });
 });

@@ -1,7 +1,15 @@
 define([
       "rtext!templates/layout.full.html"
 
-    , "libs/jquery/layout/jquery.layout"
+    , 'libs/jquery/ui/jquery.ui.core'
+    , 'libs/jquery/ui/jquery.ui.position'
+    , 'libs/jquery/ui/jquery.ui.widget'
+    , 'libs/jquery/ui/jquery.ui.mouse'
+    , 'libs/jquery/ui/jquery.ui.resizable'
+    , 'libs/jquery/ui/jquery.ui.button'
+    , 'libs/jquery/ui/jquery.ui.sortable'
+    , 'libs/jquery/ui/jquery.ui.draggable'
+    , 'libs/jquery/layout/jquery.layout'
 ],
 
  function(template) {
