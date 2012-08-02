@@ -49,7 +49,24 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                         }
                     }),
                     groups : ["root", "folder"]
-                }, {
+                }, /*{
+                    el : ui.button(elContext, {
+                        text : false,
+                        icon : "ui-icon-plus",
+                        description : "create query",
+                        handler : function() {
+                            // create a fake node in the tree
+                            // trigger inline edit
+                            // if confirm
+                                // remove fake node
+                                // trigger add query
+                            // if exit
+                                // remove fake node
+                            console.log("CREATE QUERY");
+                        }
+                    }),
+                    groups : ["root", "folder"]
+                },*/ {
                     el : ui.button(elContext, {
                         text : false,
                         icon : "ui-icon-minus",

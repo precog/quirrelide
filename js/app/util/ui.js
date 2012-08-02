@@ -194,7 +194,6 @@ function(dom, notification) {
                 el.html(html);
             }
 
-//            var interacted = false; // workaround for firefox
             $(document.body).one("mousedown", function() { exit(); });
             edit.change(function() {
                     var newtext = edit.val();
@@ -204,7 +203,6 @@ function(dom, notification) {
                     options.handler(newtext, function(error) {
                         if(tip) tip.remove();
                         if(error) {
-                            console.log("DISPLAY ERROR");
                             tip = notification.tip("invalid value", {
                                 target : el,
                                 text : error,
@@ -226,23 +224,7 @@ function(dom, notification) {
                             exit();
                             break;
                     }
-                    console.log(e.which);
-                })
-                /*
-                .mousedown(function(e) {
-                    interacted = true;
-                    e.preventDefault(); return false;
-                })
-                .focusout(function() {
-    console.log("focusout", interacted);
-                    if(interacted) {
-                        interacted = false;
-                        return;
-                    }
-                    exit();
-                })
-                */
-                ;
+                });
             edit.focus();
             var selectable = el.get(0);
             if(!dom.canSelect(selectable))  // firefox doesn't like selecting text this way
