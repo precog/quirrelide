@@ -4,6 +4,27 @@ define([
 
 function(utils) {
     var values = [{
+        name : "Athletes By Country",
+        code : "data := //summer_games/athletes \nforall 'Countryname \n  {CountryName: 'Countryname, count: count(data where data.Countryname = 'Countryname)}"
+    }, {
+        name : "Athletes By Sport",
+        code : "data := //summer_games/athletes \nforall 'Sportname \n  {Sportname: 'Sportname, count: count(data where data.Sportname = 'Sportname)}"
+    }, {
+        name : "Top US Sports - Men",
+        code : "data := //summer_games/athletes \nUSMaleAthletes := data where data.Countryname = \"US\" & data.Sex = \"M\" \nbySport := forall 'Sportname \n  {sport: 'Sportname, numberOfAthletes: count(USMaleAthletes where USMaleAthletes.Sportname = 'Sportname)} \nrank := std::stats::rank(bySport.numberOfAthletes) \nbySport where rank > max(rank) - 10"
+    }, {
+        name : "Top US Sports - Women",
+        code : "data := //summer_games/athletes \nUSFemaleAthletes := data where data.Countryname = \"US\" & data.Sex = \"F\" \nbySport := forall 'Sportname \n  {sport: 'Sportname, numberOfAthletes: count(USFemaleAthletes where USFemaleAthletes.Sportname = 'Sportname)} \nrank := std::stats::rank(bySport.numberOfAthletes) \nbySport where rank > max(rank) - 10"
+    }, {
+        name : "Percentage of Female Athletes",
+        code : "data := //summer_games/athletes \npercentageFemaleAthletesByCountry := forall 'Countryname \n  {country: 'Countryname, percentFemale: 100*count(data where data.Sex = \"F\" & data.Countryname = 'Countryname)/count(data where data.Countryname = 'Countryname)}\n \nrank := std::stats::rank(percentageFemaleAthletesByCountry.percentFemale)\n \npercentageFemaleAthletesByCountry where rank > max(rank) - 5"
+    }, {
+        name : "Lowest Athletes Per Million",
+        code : "data := //summer_games/athletes \nperCapitaAthletes := forall 'Countryname \n  {country: 'Countryname, athletesPerMillion: count(data)/(data.Population/1000000) where data.Countryname = 'Countryname} \ndistinctData := distinct(perCapitaAthletes) \nrank := std::stats::rank(distinctData.athletesPerMillion) \ndistinctData where rank < min(rank) + 10"
+    },{
+        name : "Highest Athletes Per Million",
+        code : "data := //summer_games/athletes \nperCapitaAthletes := forall 'Countryname \n  {country: 'Countryname, athletesPerMillion: count(data)/(data.Population/1000000) where data.Countryname = 'Countryname} \ndistinctData := distinct(perCapitaAthletes) \nrank := std::stats::rank(distinctData.athletesPerMillion) \ndistinctData where rank > max(rank) - 10"
+    },{
         name : "Income By State",
         code : '-- This query will return the State(s) with the highest average income\n\nusers := //users -- assigns the user data to a variable called "users"\n\nincomeByState := forall \'location\n\t\t{location: \'location.state, mean : mean(users.income where users.location = \'location)}\n-- These two lines determine the average income of each state by using the mean function within a forall statement\n\nincomeByState where incomeByState.mean = max(incomeByState.mean)\n-- returns the results filtered by a \'where\' condition, in this case: States that have the max average income'
     }, {
