@@ -12,7 +12,7 @@ define([], function() {
         ui : "gray",
         group : "light",
         editor : {
-            ace : "dawn"
+            ace : "tomorrow"
         }
     }, {
         token : "blue",

@@ -69,28 +69,30 @@ function(notification, ui, createStore, tplMain, tplCode, tplFileSystem, tplQuer
     return function(layout) {
 
         if(store.get("main")) {
-            var n = notification.main("Welcome to Labcoat", {
-                text : '<div class="pg-content">'+tplMain+'</div><div class="pg-actions"><label>display panel tips<input type="checkbox" name="pg-display-tips" checked></label></div>'
-                , after_close : function() {
-                    store.set("main", false);
-                    if(n.find('input[type="checkbox"]').attr("checked"))
-                        displayPaneTips(layout);
-                    else {
-                        for(var i = 0; i < tips.length; i++) {
-                            store.set(tips[i].store, false)
+            setTimeout(function(){
+                var n = notification.main("Welcome to Labcoat", {
+                    text : '<div class="pg-content">'+tplMain+'</div><div class="pg-actions"><label>display panel tips<input type="checkbox" name="pg-display-tips" checked></label></div>'
+                    , after_close : function() {
+                        store.set("main", false);
+                        if(n.find('input[type="checkbox"]').attr("checked"))
+                            displayPaneTips(layout);
+                        else {
+                            for(var i = 0; i < tips.length; i++) {
+                                store.set(tips[i].store, false)
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            ui.button(n.find('.pg-actions'), {
-                label : "close",
-                text : true,
-                icon : "ui-icon-close",
-                handler : function() {
-                    n.pnotify_remove();
-                }
-            });
+                ui.button(n.find('.pg-actions'), {
+                    label : "close",
+                    text : true,
+                    icon : "ui-icon-close",
+                    handler : function() {
+                        n.pnotify_remove();
+                    }
+                });
+            }, 1000);
         } else {
             displayPaneTips(layout);
         }

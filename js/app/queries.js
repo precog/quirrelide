@@ -79,7 +79,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 }, {
                     el : ui.button(elContext, {
                         text : false,
-                        icon : "ui-icon-minus",
+                        icon : "ui-icon-trash",
                         description : "remove folder/query",
                         handler : function() {
                             var path = $(selectedNode).attr("data-path");
@@ -93,7 +93,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 }, {
                     el : ui.button(elContext, {
                         text : false,
-                        icon : "ui-icon-tag",
+                        icon : "ui-icon-rename",
                         description : "rename query",
                         handler : function() {
                             var path = $(selectedNode).attr("data-path");

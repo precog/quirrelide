@@ -64,7 +64,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             contextButtons = [
                 ui.button(elContext, {
                     text : false,
-                    icon : "ui-icon-plus",
+                    icon : "ui-icon-new-folder",
                     description : "create new folder",
                     handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
                 }),
