@@ -24,13 +24,13 @@ requirejs.config({
         , 'libs/jquery/ui/jquery.ui.tabs' : ['libs/jquery/ui/jquery.ui.widget']
         , 'libs/jquery/ui/jquery.ui.menu' : ['libs/jquery/ui/jquery.ui.widget']
 
-        , 'libs/jquery/slickgrid/jquery.event.drag-2.0.min' : ['jquery']
+        , 'libs/jquery/slickgrid/jquery.event.drag-2.0.min' : ['jquery', 'libs/jquery/ui/jquery.ui.sortable']
         , 'libs/jquery/slickgrid/slick.core' : ['libs/jquery/slickgrid/jquery.event.drag-2.0.min', 'libs/jquery/ui/jquery.ui.sortable']
         , 'libs/jquery/slickgrid/slick.grid' : ['libs/jquery/slickgrid/slick.core']
         , 'libs/jquery/slickgrid/slick.dataview' : ['libs/jquery/slickgrid/slick.grid']
         , 'libs/jquery/slickgrid/slick.pager' : ['libs/jquery/slickgrid/slick.dataview']
         , 'libs/jquery/slickgrid/slick.columnpicker' : ['libs/jquery/slickgrid/slick.pager']
-        , 'app/util/output-table' : ['libs/jquery/slickgrid/slick.columnpicker']
+        , 'app/util/output-table' : ['libs/jquery/slickgrid/slick.columnpicker', 'libs/jquery/ui/jquery.ui.sortable']
 
         , 'app/util/ui' : ['libs/jquery/ui/jquery.ui.menu', 'libs/jquery/ui/jquery.ui.tabs', 'libs/jquery/ui/jquery.ui.progressbar', 'app/util/dom']
         , 'libs/jquery/layout/jquery.layout' : ['libs/jquery/ui/jquery.ui.draggable']

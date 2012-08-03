@@ -128,15 +128,16 @@ function(jsonmodel) {
                 }] : jsonmodel.create(data);
                 data = transformData(model, data);
 
-                try {
+//                try {
                     grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
-                } catch(e) {}
+//                } catch(e) {
+//                    console.log("FAILED TO INSTANTIATE SLICK GRID", grid);
+//                }
 
                 changePagerHandler = function(e, args) {
                     options.table.pager = { size : args.pageSize, page : args.pageNum };
                     $(wrapper).trigger("optionsChanged", options);
                 }
-
                 if(options.table.sort && grid) {
                     grid.setSortColumns(options.table.sort.map(function(col){
                         return {
