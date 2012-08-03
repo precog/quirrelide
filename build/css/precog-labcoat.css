@@ -493,7 +493,7 @@ html > body .ui-pnotify {
     margin-top: 4px;
 }
 .pg-tree {
-    overflow : auto;
+    overflow : visible;
 }
 .pg-structure.jstree.jstree-default {
     background-color: transparent;
