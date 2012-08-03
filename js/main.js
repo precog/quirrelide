@@ -73,7 +73,7 @@ $(function() {
     var queries,
         layout = createLayout(config.get('ioPanesVertical'));
 
-    layout.container.hide();
+    layout.getContainer().hide();
 
     buildBarMain(layout.getBarMain());
 
@@ -314,7 +314,7 @@ $(function() {
             editor.setTabSize(value);
         });
 
-        layout.container.show();
+        layout.getContainer().show();
     }, 150);
 });
 });

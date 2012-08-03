@@ -197,6 +197,7 @@ define([
         return layout = {
             container : container,
             refresh : refreshLayouts,
+            getContainer  : function() { return container.find('.pg-labcoat'); },
             getInput      : function() { return container.find('.pg-input'); },
             getBarEditor  : function() { return container.find('.pg-input .pg-toolbar'); },
             getBarMain    : function() { return container.find('.pg-mainbar'); },
