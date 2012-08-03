@@ -69,7 +69,7 @@ function(notification, ui, createStore, tplMain, tplCode, tplFileSystem, tplQuer
     return function(layout) {
         setTimeout(function(){
             if(store.get("main")) {
-                var n = notification.main("Welcome to Labcoat", {
+                var n = notification.main("Welcome to Labcoat!", {
                     text : '<div class="pg-content">'+tplMain+'</div><div class="pg-actions"><label>display panel tips<input type="checkbox" name="pg-display-tips" checked></label></div>'
                     , after_close : function() {
                         store.set("main", false);
