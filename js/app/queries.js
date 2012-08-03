@@ -65,7 +65,8 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                                         callback(err);
                                         if(!err) {
                                             removeTempNode();
-                                            wrapper.queryCreate(path + name, '');
+                                            var p = (path + name).substr(1);
+                                            wrapper.queryCreate(p, '');
                                         }
                                     },
                                     cancel : function() {
