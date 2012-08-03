@@ -230,6 +230,10 @@
 .ui-icon-grip-solid-horizontal { background-position: -48px -224px; }
 .ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }
 .ui-icon-grip-diagonal-se { background-position: -80px -224px; }
+.ui-icon-new-folder { background-position: -96px -208px; }
+.ui-icon-query { background-position: -112px -208px; }
+.ui-icon-new-query { background-position: -128px -208px; }
+.ui-icon-rename { background-position: -144px -208px; }
 .ui-corner-tl { -moz-border-radius-topleft: 6; -webkit-border-top-left-radius: 6; }
 .ui-corner-tr { -moz-border-radius-topright: 6; -webkit-border-top-right-radius: 6; }
 .ui-corner-bl { -moz-border-radius-bottomleft: 6; -webkit-border-bottom-left-radius: 6; }
