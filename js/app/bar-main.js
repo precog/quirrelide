@@ -36,7 +36,7 @@ define([
         });
 
         ui.button(right, {
-            icon : "ui-icon-help",
+            icon : "ui-icon-info",
             description : "about Labcoat"
         }).click(function() {
             window.open("http://precog.com/labcoat");
