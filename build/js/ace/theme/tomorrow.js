@@ -38,8 +38,8 @@
 define(function(require, exports, module) {
 
 exports.isDark = false;
-exports.cssClass = "ace-dawn";
-exports.cssText = require('ace/requirejs/text!./dawn.css');
+exports.cssClass = "ace-tomorrow";
+exports.cssText = require('ace/requirejs/text!./tomorrow.css');
 
     var dom = require("../lib/dom");
     dom.importCssString(exports.cssText, exports.cssClass);
