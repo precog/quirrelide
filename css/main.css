@@ -322,7 +322,7 @@
 }
 
 .pg-tree {
-    overflow : auto;
+    overflow : visible;
 }
 
 .pg-structure.jstree.jstree-default {
