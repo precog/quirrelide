@@ -40,12 +40,12 @@ h1 {
     font-weight: bolder;
     font-size: 93%;
 }
-#ideurl {
+#labcoatUrl {
     width: 540px;
 }
 #tokenId {
     width: 21em;
 }
-#gotoide {
+#gotoLabcoat {
     display: none;
 }
