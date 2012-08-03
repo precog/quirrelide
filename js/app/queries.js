@@ -37,7 +37,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 {
                     el : ui.button(elContext, {
                         text : false,
-                        icon : "ui-icon-plus",
+                        icon : "ui-icon-new-folder",
                         description : "create folder",
                         handler : function() {
                             var path = $(selectedNode).attr("data-path");
@@ -49,7 +49,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 }, {
                     el : ui.button(elContext, {
                         text : false,
-                        icon : "ui-icon-plus",
+                        icon : "ui-icon-new-query",
                         description : "create query",
                         handler : function() {
                             var folder = selectedNode,

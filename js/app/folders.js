@@ -75,7 +75,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
 //                }),
                 ui.button(elContext, {
                     text : false,
-                    icon : "ui-icon-lightbulb",
+                    icon : "ui-icon-query",
                     description : "query data at path",
                     handler : function() { triggerQuery($(selectedNode).attr("data")); }
                 }),
