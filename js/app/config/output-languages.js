@@ -21,7 +21,7 @@ function(convert, precog, ui, converters) {
             if(options.compact)
                 return converters.minifyQuirrel(code);
             else
-                return "-- Quirrel query generated with Quirrel Lab by Precog\n\n" + code.trim();
+                return "-- Quirrel query generated with Labcoat by Precog\n\n" + code.trim();
         },
         options : { compact : false },
         buildOptions : function(el, handler) {
@@ -42,7 +42,7 @@ function(convert, precog, ui, converters) {
         name : "JavaScript",
         handler : function(code) {
             code = escapeQuotes(convert.minifyQuirrel(code));
-            return "// Quirrel query in JavaScript generated with Quirrel Lab by Precog\n\n" +
+            return "// Quirrel query in JavaScript generated with Labcoat by Precog\n\n" +
                 'Precog.query("'+code+'",\n  function(data) { /* do something with the data */ },\n  function(error) { console.log(error); }\n);';
         }
     }, {
@@ -53,7 +53,7 @@ function(convert, precog, ui, converters) {
             return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?tokenId='+tokenId+'&analyticsService='+service+'"></script>\n' +
                 "<script>\n" +
                 "function init() {\n" +
-                "  // Quirrel query in JavaScript generated with Quirrel Lab by Precog\n" +
+                "  // Quirrel query in JavaScript generated with Labcoat by Precog\n" +
                 '  Precog.query("'+code+'",\n    function(data) {\n      /* do something with the data */\n      console.log(data);\n    },\n    function(error) { console.log(error); }\n  );\n' +
                 "}\n" +
                 '</script>\n</head>\n<body onload="init()">\n</body>\n</html>'
@@ -65,7 +65,7 @@ function(convert, precog, ui, converters) {
         handler : function(code) {
             code = escapeQuotes(convert.minifyQuirrel(code));
             return '<?php\n\n' +
-                "// Quirrel query in PHP generated with Quirrel Lab by Precog\n\n" +
+                "// Quirrel query in PHP generated with Labcoat by Precog\n\n" +
                 'require_once("Precog.php");\n\n' +
                 '' +
                 '$precog = new PrecogAPI("'+tokenId+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +

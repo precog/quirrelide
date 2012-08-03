@@ -37,9 +37,9 @@ define([
 /*
         ui.button(right, {
             icon : "ui-icon-help",
-            description : "about Precog Lab"
+            description : "about Labcoat"
         }).click(function() {
-            window.open("http://precog.com/lab");
+            window.open("http://precog.com/labcoat");
         });
 */
 

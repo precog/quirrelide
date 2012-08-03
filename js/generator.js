@@ -18,7 +18,7 @@ $(function() {
     }
 
     var model = {
-            labHost : "lab.precog.com/",
+            labcoatHost : "labcoat.precog.com/",
             protocol : "https",
             tokenId : null,
             basePath : "/",
@@ -66,7 +66,7 @@ $(function() {
                 if (!!value.match(/^(([a-z0-9_\-.]+)+([:]\d+)?([\/a-z0-9_\-.]+)*)$/i)) {
                     return true;
                 } else {
-                    this.validationError = "invalid Lab host url";
+                    this.validationError = "invalid Labcoat host url";
                     return false;
                 }
             },
@@ -97,12 +97,12 @@ $(function() {
     }
 
     function generate() {
-        if (!(model.protocol && model.tokenId && model.basePath && model.analyticsService && model.labHost)) {
+        if (!(model.protocol && model.tokenId && model.basePath && model.analyticsService && model.labcoatHost)) {
             return;
         }
         var url = model.protocol
             + "://"
-            + model.labHost
+            + model.labcoatHost
             + "?tokenId=" + encodeURIComponent(model.tokenId);
         if (model.basePath !== "/") {
             url += "&basePath=" + encodeURIComponent(model.basePath);
@@ -110,7 +110,7 @@ $(function() {
         if (model.analyticsService !== "api.precog.com/v1") {
             url += "&analyticsService=" + encodeURIComponent(model.protocol + "://" + model.analyticsService);
         }
-        $("input#labUrl").val(url);
+        $("input#labcoatUrl").val(url);
         $("#gotoLab").attr("href", url).show();
     }
 
@@ -133,10 +133,10 @@ $(function() {
         .change(validateInput(protocol, changeProtocol))
         .change();
 
-    $('input#labHost')
-        .val(model.labHost)
-        .keyup(validateInput(host, assignToModel("labHost")))
-        .change(validateInput(host, assignToModel("labHost")));
+    $('input#labcoatHost')
+        .val(model.labcoatHost)
+        .keyup(validateInput(host, assignToModel("labcoatHost")))
+        .change(validateInput(host, assignToModel("labcoatHost")));
 
     $('input#tokenId')
         .val(model.tokenId)

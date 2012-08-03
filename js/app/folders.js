@@ -453,7 +453,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             dragnoty = null;
         }
 
-        var $pgide = $(el).parents(".pg-lab")
+        var $pgide = $(el).parents(".pg-labcoat")
             .on("dragenter", function(e) {
                 if(dragnoty) return;
                 dragnoty = notification.success("Drag your file on a folder to upload data", {

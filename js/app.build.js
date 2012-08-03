@@ -1,6 +1,6 @@
 ({
       baseUrl: "./"
-    , out: "../build/js/precog-lab.js"
+    , out: "../build/js/precog-labcoat.js"
     , mainConfigFile: 'main.js'
     , paths : {
         'jquery' : 'empty:'

@@ -18,7 +18,7 @@ function() {
             }
         };
     } else {
-        setTimeout(function() { $('.pg-precog-lab .pg-fullscreen').hide(); }, 20);
+        setTimeout(function() { $('.pg-precog-labcoat .pg-fullscreen').hide(); }, 20);
         requestFullScreen = function() { console.log("your browser doesn't support the FullScreen option"); };
     }
     if(document.exitFullscreen) {
@@ -35,7 +35,7 @@ function() {
     }
     function toggle() {
         isfullscreen = (!window.screenTop && !window.screenY);
-        $('.pg-precog-lab .pg-fullscreen span.k-link').text(isfullscreen ? "reduce" : "fullscreen");
+        $('.pg-precog-labcoat .pg-fullscreen span.k-link').text(isfullscreen ? "reduce" : "fullscreen");
     }
     if(document.addEventListener) {
         document.addEventListener("fullscreenchange", toggle, false);

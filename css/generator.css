@@ -47,7 +47,7 @@ h1 {
     font-size: 93%;
 }
 
-#ideurl {
+#labcoatUrl {
     width: 540px;
 }
 
@@ -55,6 +55,6 @@ h1 {
     width: 21em;
 }
 
-#gotoide {
+#gotoLabcoat {
     display: none;
 }

@@ -1,4 +1,4 @@
-quirrellab
+Labcoat
 ==========
 
-Quirrel Lab
+By Precog

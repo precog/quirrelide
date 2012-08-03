@@ -49,24 +49,37 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                         }
                     }),
                     groups : ["root", "folder"]
-                }, /*{
+                }, {
                     el : ui.button(elContext, {
                         text : false,
                         icon : "ui-icon-plus",
                         description : "create query",
                         handler : function() {
-                            // create a fake node in the tree
-                            // trigger inline edit
-                            // if confirm
-                                // remove fake node
-                                // trigger add query
-                            // if exit
-                                // remove fake node
-                            console.log("CREATE QUERY");
+                            var folder = selectedNode;
+                            addQueryToFolder(folder, "   ", function(el) {
+                                function removeTempNode() {
+                                    tree.jstree("delete_node", el);
+                                }
+                                ui.edit($(el).find("a"), {
+                                    handler : function(name, callback) {
+                                        var path = $(folder).attr("data-path");
+                                        if(path.substr(-1) !== "/") path += "/";
+                                        var err = utils.validateQueryName(name, path + name, wrapper);
+                                        callback(err);
+                                        if(!err) {
+                                            removeTempNode();
+                                            wrapper.queryCreate(path + name, '');
+                                        }
+                                    },
+                                    cancel : function() {
+                                        tree.jstree("delete_node", el);
+                                    }
+                                });
+                            });
                         }
                     }),
                     groups : ["root", "folder"]
-                },*/ {
+                }, {
                     el : ui.button(elContext, {
                         text : false,
                         icon : "ui-icon-minus",
@@ -100,20 +113,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                                     }
                                 }
                             });
-                            /*
-                            var path    = $(selectedNode).attr("data-path"),
-                                title   = "Rename Query";
-                            path = path.split("/");
-                            var name = path.pop(),
-                                message = "please pick a new name for the query '"+name+"'";
-                            path = path.length === 0 ? "" : path.join("/")+"/";
-
-                            openRequestInputDialog(title, message, "new query name", name, function(name) {
-                                return utils.validateQueryName(name, path + name, wrapper);
-                            }, function(newname) {
-                                renameQuery(path + name, path + newname);
-                            });
-                            */
                         }
                     }),
                     groups : ["query"]
@@ -212,7 +211,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 }
                 return $(a).attr("data-path") > $(b).attr("data-path") ? 1 : -1;
             },
-//            themes : { theme : "themeroller" },
             types : {
                 query : {
                     valid_children : "none"
@@ -227,93 +225,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 , select_multiple_modifier : false
                 , select_range_modifier : false
             }
-/*
-            ,
-            dnd : {
-                copy_modifier : false,
-                "drop_finish" : function(a, b) {
-                    console.log("DROP", a, b, this);
-                },
-                "drag_check" : function(a, b) {
-                    console.log("CHECK", a, b, this);
-                    var path = data.r.attr("data-path");
-                    if(path.substr(0, 1) === "/")
-                        return {
-                            after : false,
-                            before : false,
-                            inside : true
-                        };
-                    else
-                        return {
-                            after : false,
-                            before : false,
-                            inside : false
-                        };
-                },
-                "check_move" : function(a, b) {
-                    console.log("CHECK", a, b, this);
-                    var path = data.r.attr("data-path");
-                    if(path.substr(0, 1) === "/")
-                        return {
-                            after : false,
-                            before : false,
-                            inside : true
-                        };
-                    else
-                        return {
-                            after : false,
-                            before : false,
-                            inside : false
-                        };
-                }
-            }
-*/
         });
-/*
-        tree.bind("drop_finish.jstree", function(a, b) {
-            console.log("DROP 2", a, b, this);
-        });
-
-        tree.bind("drag_check.jstree", function(a, b) {
-            console.log("CHECK 2", a, b, this);
-            var path = data.r.attr("data-path");
-            if(path.substr(0, 1) === "/")
-                return {
-                    after : false,
-                    before : false,
-                    inside : true
-                };
-            else
-                return {
-                    after : false,
-                    before : false,
-                    inside : false
-                };
-        });
-*/
-/*
-        tree.bind("move_node.jstree", function(a, b) {
-            console.log("MOVING 2", a, b, this);
-        });
-*/
-/*
-        tree.bind("check_move.jstree", function(a, b) {
-            console.log("CHECK 2", a, b, this);
-            var path = data.r.attr("data-path");
-            if(path.substr(0, 1) === "/")
-                return {
-                    after : false,
-                    before : false,
-                    inside : true
-                };
-            else
-                return {
-                    after : false,
-                    before : false,
-                    inside : false
-                };
-        });
-*/
 
         elRoot.html('<div class="jstree jstree-default"><a href="#" data-path="/"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
         elRoot.find('a')
@@ -329,12 +241,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                 selectedNode = this;
                 refreshActions();
             });
-/*        elRoot.droppable({
-            drop: function(e, ui) {
-                console.log("DROPPED", e, ui);
-            }
-        });
-*/
         tree.bind("click.jstree", function() {
             elRoot.find('a').removeClass("jstree-clicked");
             selectedNode = tree.jstree("get_selected");

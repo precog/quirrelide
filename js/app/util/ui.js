@@ -182,7 +182,8 @@ function(dom, notification) {
         edit : function(el, options) {
             el = $(el);
             options = $.extend({
-                handler : function(t) { return null; }
+                handler : function(t) { return null; },
+                cancel : function() { }
             }, options);
             var text = options.text || el.text().trim(),
                 html = el.html(),
@@ -192,6 +193,7 @@ function(dom, notification) {
             function exit() {
                 if(tip) tip.remove();
                 el.html(html);
+                options.cancel();
             }
 
             $(document.body).one("mousedown", function() { exit(); });

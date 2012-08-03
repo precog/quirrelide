@@ -3,7 +3,7 @@ define([
 ],
 
 function(createStore) {
-    var CONFIG_KEY = "pg-precog-lab-config",
+    var CONFIG_KEY = "pg-labcoat-config",
         defaults = {
             theme : "gray",
             indentUsingSpaces : false,
