@@ -7,7 +7,6 @@ function() {
         selectText : function(element, start, end) {
             start = start || 0;
             end   = end || $(element).text().length;
-console.log(element, start, end);
             if(element.setSelectionRange) {
                 element.focus();
                 element.setSelectionRange(start, end);

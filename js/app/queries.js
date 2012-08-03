@@ -9,9 +9,6 @@ define([
 
     , "rtext!templates/toolbar.folders.html"
 
-//    , 'libs/jquery/ui/jquery.ui.draggable'
-//    , 'libs/jquery/ui/jquery.ui.droppable'
-
     , 'libs/jquery/jstree/vakata'
     , 'libs/jquery/jstree/jstree'
     , 'libs/jquery/jstree/jstree.sort'
@@ -55,14 +52,14 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                         icon : "ui-icon-plus",
                         description : "create query",
                         handler : function() {
-                            var folder = selectedNode;
-                            addQueryToFolder(folder, "   ", function(el) {
+                            var folder = selectedNode,
+                                path = $(folder).attr("data-path");
+                            addQueryToFolder(path === "/" ? -1 : folder, "   ", function(el) {
                                 function removeTempNode() {
                                     tree.jstree("delete_node", el);
                                 }
                                 ui.edit($(el).find("a"), {
                                     handler : function(name, callback) {
-                                        var path = $(folder).attr("data-path");
                                         if(path.substr(-1) !== "/") path += "/";
                                         var err = utils.validateQueryName(name, path + name, wrapper);
                                         callback(err);
@@ -314,7 +311,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
                     openQuery(path);
                 });
                 if(callback) callback(el);
-//                $(el).draggable({ revert: "valid" });
             }));
             return tree.jstree(
                   "create_node"
@@ -334,14 +330,6 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
             if(!parent) parent = -1;
             var path = (parent === -1 ? "" : $(parent).attr("data-path")) + "/" + name;
             tree.bind("create_node.jstree", createNodeCreatedHandler(path, function(el) {
-/*
-                $(el).draggable({ revert: "valid" });
-                $(el).droppable({
-                    drop: function(e, ui) {
-                        console.log("DROPPED", e, ui);
-                    }
-                });
-*/
                 $(el).find("a:first").dblclick(function(e) {
                     tree.jstree("toggle_node", selectedNode);
                     e.preventDefault(); return false;
