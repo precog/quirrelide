@@ -8,8 +8,8 @@ cp -r -f ../php ../build
 # COPY FILES
 cp -f ace/theme/textmate.css ../build/js/ace/theme/textmate.css
 
-cp -f ace/theme/dawn.js ../build/js/ace/theme/dawn.js
-cp -f ace/theme/dawn.css ../build/js/ace/theme/dawn.css
+cp -f ace/theme/tomorrow.js ../build/js/ace/theme/tomorrow.js
+cp -f ace/theme/tomorrow.css ../build/js/ace/theme/tomorrow.css
 cp -f ace/theme/idle_fingers.js ../build/js/ace/theme/idle_fingers.js
 cp -f ace/theme/idle_fingers.css ../build/js/ace/theme/idle_fingers.css
 cp -f ace/theme/solarized_dark.js ../build/js/ace/theme/solarized_dark.js

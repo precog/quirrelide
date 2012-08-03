@@ -67,9 +67,8 @@ function(notification, ui, createStore, tplMain, tplCode, tplFileSystem, tplQuer
     }
 
     return function(layout) {
-
-        if(store.get("main")) {
-            setTimeout(function(){
+        setTimeout(function(){
+            if(store.get("main")) {
                 var n = notification.main("Welcome to Labcoat", {
                     text : '<div class="pg-content">'+tplMain+'</div><div class="pg-actions"><label>display panel tips<input type="checkbox" name="pg-display-tips" checked></label></div>'
                     , after_close : function() {
@@ -92,9 +91,9 @@ function(notification, ui, createStore, tplMain, tplCode, tplFileSystem, tplQuer
                         n.pnotify_remove();
                     }
                 });
-            }, 1000);
-        } else {
-            displayPaneTips(layout);
-        }
+            } else {
+                displayPaneTips(layout);
+            }
+        }, 1000);
     }
 });
