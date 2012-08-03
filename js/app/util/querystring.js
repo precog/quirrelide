@@ -7,16 +7,16 @@ function() {
 
     function getCtx(ctx) {
         if(!ctx) {
-            return window.location.search.substr(1);
+            ctx = window.location.search.substr(1);
         } else if(ctx.substr(0, "http://".length) === "http://" || ctx.substr(0, "https://".length) === "https://") {
             var arr = ctx.split("?");
             arr.shift();
-            return arr.join("?");
+            ctx = arr.join("?");
         } else if(ctx.substr(0, 1) === "?") {
-            return ctx.substr(1);
-        } else {
-            return ctx;
+            ctx = ctx.substr(1);
         }
+        ctx = ctx.split("#");
+        return ctx[0];
     }
 
     function getParameterByName(name, ctx)

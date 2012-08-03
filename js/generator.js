@@ -111,7 +111,7 @@ $(function() {
             url += "&analyticsService=" + encodeURIComponent(model.protocol + "://" + model.analyticsService);
         }
         $("input#labcoatUrl").val(url);
-        $("#gotoLab").attr("href", url).show();
+        $("#gotoLabcoat").attr("href", url).show();
     }
 
     function assignToModel(name) {
