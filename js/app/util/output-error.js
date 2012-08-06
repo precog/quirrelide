@@ -7,6 +7,10 @@ function() {
     var elPanel = $('<div class="ui-widget"><div class="ui-content ui-state-error ui-corner-all"></div></div>'),
         elError = elPanel.find('.ui-state-error');
 
+    function escapeHtml(s) {
+        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
     return {
         type : "error",
         name : "Error",
@@ -15,22 +19,10 @@ function() {
             return elPanel;
         },
         update : function(error, options, wrapper) {
-            var message = '<p>'+error.message+'</p>';
+            var message = '<p>'+escapeHtml(error.message)+'</p>';
             if("undefined" !== typeof error.lineNum) {
                 message += '<p class="pg-position">Error at line '+error.lineNum+', column '+error.colNum+':</p><br>';
-/*
-                var indicator = [];
-                for(var i = 0; i < error.colNum; i++)
-                {
-                    indicator.push(' ');
-                }
-                indicator.push('\u2B06');
-
-                var line = error.line.replace(/\t/g, ' ');
-
-                message += '<pre>'+(line || "&nbsp;")+'\n'+indicator.join('')+'</pre><br>';
-*/
-                message += '<pre>'+error.detail+'</pre>';
+                message += '<pre>'+escapeHtml(error.detail)+'</pre>';
                 $(wrapper).trigger("syntaxError", { line : error.lineNum, column : error.colNum, text : error.detail });
             }
             elError.html(message);
