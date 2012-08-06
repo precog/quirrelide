@@ -6,6 +6,8 @@ cp -f ../upload.php ../build/upload.php
 cp -r -f ../php ../build
 
 # COPY FILES
+cp -f ../favicon.ico ../build/favicon.ico
+
 cp -f ace/theme/textmate.css ../build/js/ace/theme/textmate.css
 
 cp -f ace/theme/tomorrow.js ../build/js/ace/theme/tomorrow.js
