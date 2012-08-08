@@ -133,7 +133,7 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
             icon : "ui-icon-link",
             description : "copy a link with the current query",
             handler : function(e) {
-                var base = document.location.origin + document.location.pathname;
+                var base = document.location.protocol + "//" + document.location.hostname + document.location.pathname;
                 // strip q if it exists
                 var params = qs.all();
                 params.q = editors.getCode();
