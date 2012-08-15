@@ -362,15 +362,6 @@ if(ISCLI) {
 	if(!isset($headers["X-Precog-Service"])) error("Service is not in the request");
 	$service = $headers["X-Precog-Service"];
 
-	// use a fastest service
-	$betas = "https://beta2012v1.precog.com/v1";
-	$beta  = "http://beta2012v1.precog.com/v1";
-	$local = "http://localhost:30060";
-	if($service === $betas)
-	    $service = $beta;
-	if($service === $beta)
-        $service = $local;
-
 	if(!isset($headers["X-File-Name"])) error("File Name is not in the request");
 	$filename = $headers["X-File-Name"];
 

@@ -366,6 +366,16 @@ if(ISCLI) {
 	$filename = $headers["X-File-Name"];
 
 
+	// use a fastest service
+	$betas = "https://beta2012v1.precog.com/v1";
+	$beta  = "http://beta2012v1.precog.com/v1";
+	$local = "http://localhost:30060";
+	if($service === $betas)
+	    $service = $beta;
+	if($service === $beta)
+        $service = $local;
+    // end
+
 	if(!isset($_FILES["file"])) {
 		error("uploaded file is too big for Labcoat (max upload size is: ".ini_get('post_max_size').")");
 	}
