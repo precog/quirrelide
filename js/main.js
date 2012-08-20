@@ -63,9 +63,10 @@ require([
     , 'app/util/precog'
     , 'app/util/querystring'
     , 'app/eggmanager'
+    , 'app/gatrack'
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs, ga) {
 $(function() {
 
     precog.cache.disable();
@@ -155,12 +156,14 @@ $(function() {
         if(editorbar.historyPanelIsOpen()) {
             refreshHistoryList();
         }
+        ga.trackQueryExecution("success");
     });
     $(precog).on('failed', function(_, data) {
         queue.shift(); // cleanup the queue
         status.endRequest(false);
         output.setOutput(data, 'error', editors.getOutputOptions());
         editors.setOutputResult(data);
+        ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
     $(editor).on('execute', function(_, code) {
         if(!eastereggs.easterEgg(code))
