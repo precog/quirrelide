@@ -26,6 +26,7 @@ function() {
 
     return wrapper = {
         trackEvent : function(category, action, label, value) {
+//            console.log(category, action, label, value);
             enqueue(category, action, label, value);
         },
         trackQueryExecution : function(kind) {
