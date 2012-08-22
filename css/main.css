@@ -267,7 +267,7 @@
 
 .pg-logo {
     background-repeat: no-repeat;
-    width: 189px;
+    width: 400px;
     height: 21px;
     margin-top: 4px;
     marign-left: 4px;
@@ -280,6 +280,10 @@
 */
 .pg-precog {
     background-image: url(images/logo-precog-black.svg);
+}
+
+.pg-gridgain {
+    background-image: url(images/logo-gridgain-black.svg);
 }
 
 .pg-labcoat .ui-layout-toggler {

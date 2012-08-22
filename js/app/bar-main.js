@@ -5,6 +5,19 @@ define([
     , "app/util/fullscreen"
     , "app/theme"
 ], function(ui, tplToolbar, tplMenu, fullscreen, theme) {
+    var ABOUT_LINK  = "http://precog.com/labcoat",
+        BRAND_CLASS = "pg-precog";
+
+    switch(document.location.host)
+    {
+//        case "localhost":
+        case "labcoat.gridgain.com":
+            ABOUT_LINK  = "http://precog.com/labcoat";
+            BRAND_CLASS = "pg-gridgain";
+            break;
+    }
+
+
     function buildItems(menu, groups) {
         $.each(groups, function(key) {
             menu.append('<li class="ui-state-disabled ui-menu-item" role="presentation"><a href="#">'+key+' themes:</a></li>');
@@ -14,11 +27,17 @@ define([
         });
     }
 
+    function updateBrand(anchor) {
+        anchor.attr("href", ABOUT_LINK);
+        anchor.find(".pg-logo").addClass(BRAND_CLASS);
+    }
+
     return function(el) {
         el.append(tplToolbar);
         var right = el.find(".pg-toolbar-context"),
             menu = ui.contextmenu(tplMenu);
 
+        updateBrand(el.find("a.pg-brand"));
         buildItems(menu.find("ul:first"), theme.groups());
 
         $(theme).on("change", function(e, name) {
@@ -39,7 +58,7 @@ define([
             icon : "ui-icon-info",
             description : "about Labcoat"
         }).click(function() {
-            window.open("http://precog.com/labcoat");
+            window.open(ABOUT_LINK);
         });
 
         ui.button(right, {

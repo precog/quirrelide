@@ -406,3 +406,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; }
 .pg-precog {
     background-image: url(../../../images/logo-precog-black.svg);
 }
+.pg-gridgain {
+    background-image: url(../../../images/logo-gridgain-black.svg);
+}
