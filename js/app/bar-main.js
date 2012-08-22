@@ -6,13 +6,14 @@ define([
     , "app/theme"
 ], function(ui, tplToolbar, tplMenu, fullscreen, theme) {
     var ABOUT_LINK  = "http://precog.com/labcoat",
+        BRAND_LINK  = "http://precog.com/labcoat",
         BRAND_CLASS = "pg-precog";
 
     switch(document.location.host)
     {
 //        case "localhost":
         case "labcoat.gridgain.com":
-            ABOUT_LINK  = "http://precog.com/labcoat";
+            BRAND_LINK  = "http://www.gridgain.com/";
             BRAND_CLASS = "pg-gridgain";
             break;
     }
@@ -28,7 +29,7 @@ define([
     }
 
     function updateBrand(anchor) {
-        anchor.attr("href", ABOUT_LINK);
+        anchor.attr("href", BRAND_LINK);
         anchor.find(".pg-logo").addClass(BRAND_CLASS);
     }
 
