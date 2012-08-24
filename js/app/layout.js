@@ -37,7 +37,7 @@ define([
                 , slidable : true
             },
             toolbar = {
-                resizable : false
+                  resizable : false
                 , closable : false
                 , slidable : false
                 , size: toolbarHeight
@@ -45,7 +45,7 @@ define([
                 , spacing_closed: 0
             },
             toolbarDouble = {
-                resizable : false
+                  resizable : false
                 , closable : false
                 , slidable : false
                 , size: doubleBar
