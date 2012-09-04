@@ -24,10 +24,10 @@ function(require, exports, module) {
                 token : "comment",
                 regex : "--.*$"
             }, {
-                token : function(token) {
-                    return "comment";
-                },
-                regex  : '\\(-(?:[^-]|-+[^)-])*-\\)'
+                token : "comment",
+                regex  : '\\(-',
+                merge : true,
+                next : "comment"
             }, {
                 token : "string",           // " string
                 regex : '"(?:[^\n\r\\\\"]|\\\\.)*"'
@@ -69,17 +69,27 @@ function(require, exports, module) {
         ];
         this.$rules = {
             "start" : start,
-        
-			"object-start" : [ {
-				token : "entity.name.function",
-				regex :  '(?:[a-zA-Z_][a-zA-Z_0-9]*|`(?:[^`\\\\]|\\\\.)+`|"(?:[^"\\\\]|\\\\.)+"):',
-				next : "object-contents"
-			}, {
-				token : "identifier",
-				regex : '\\}',
-				next : "start"
-			}
-			],
+            "comment" : [
+                {
+                    token : "comment", // closing comment
+                    regex : ".*?-\\)",
+                    next : "start"
+                }, {
+                    token : "comment", // comment spanning whole line
+                    merge : true,
+                    regex : ".+"
+                }
+            ],
+            "object-start" : [ {
+                token : "entity.name.function",
+                regex :  '(?:[a-zA-Z_][a-zA-Z_0-9]*|`(?:[^`\\\\]|\\\\.)+`|"(?:[^"\\\\]|\\\\.)+"):',
+                next : "object-contents"
+            }, {
+              token : "identifier",
+              regex : '\\}',
+              next : "start"
+            }
+        ],
 			
 			// TODO if we have nested objects, we will abort the state stack prematurely
 			"object-contents" : start.concat([{
