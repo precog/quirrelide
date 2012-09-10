@@ -19,6 +19,7 @@ function() {
             return elPanel;
         },
         update : function(error, options, wrapper) {
+console.log(error);
             var message = '<p>'+escapeHtml(error.message)+'</p>';
             if("undefined" !== typeof error.lineNum) {
                 message += '<p class="pg-position">Error at line '+error.lineNum+', column '+error.colNum+':</p><br>';

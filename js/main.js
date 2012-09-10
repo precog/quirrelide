@@ -141,33 +141,45 @@ $(function() {
 
     var executions = {};
     $(precog).on("execute", function(_, query, lastExecution, id) {
-console.log(id);
         executions[id] = { query : query, name : editors.getName() };
         status.startRequest();
     });
 
     $(precog).on("completed", function(_, data, id) {
-console.log(id);
-        var execution = executions[id];
-        delete executions[id];
-        history.save(execution.name, execution.query, data);
+      var execution = executions[id];
+      delete executions[id];
+      history.save(execution.name, execution.query, data);
 
-        status.endRequest(true);
+      status.endRequest(true);
+      if(editors.getName() === execution.name) {
         output.setOutput(data, null, editors.getOutputOptions());
         editors.setOutputResult(data);
 
         if(editorbar.historyPanelIsOpen()) {
-            refreshHistoryList();
+          refreshHistoryList();
         }
-        ga.trackQueryExecution("success");
+      } else {
+        var index = editors.getIndexByName(execution.name);
+        if(index >= 0)
+          editors.setOutputResult(data, index);
+      }
+      ga.trackQueryExecution("success");
     });
     $(precog).on('failed', function(_, data, id) {
-console.log(id);
-        delete executions[id];
-        status.endRequest(false);
+      data = data instanceof Array ? data[0] : data;
+      var execution = executions[id];
+      delete executions[id];
+      status.endRequest(false);
+      if(editors.getName() === execution.name) {
         output.setOutput(data, 'error', editors.getOutputOptions());
         editors.setOutputResult(data);
-        ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
+      } else {
+        var index = editors.getIndexByName(execution.name);
+        if(index >= 0)
+          editors.setOutputResult(data, index);
+      }
+
+      ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
     $(editor).on("execute", function(_, code) {
         if(!eastereggs.easterEgg(code))

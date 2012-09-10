@@ -83,11 +83,13 @@ define([
             var elExecutionTime = el.find(".pg-execution-time");
             elExecutionTime.hide();
 
-            var progress = {
+            var counter = 0,
+                progress = {
                 startTime : null,
                 killProgress : null,
                 lastExecution : 2000,
                 start : function() {
+                    counter++;
                     clearInterval(progress.killProgress);
                     progress.startTime = new Date().getTime();
                     progress.update();
@@ -110,9 +112,11 @@ define([
                         progress.lastExecution = new Date().getTime() - progress.startTime;
                         elExecutionTime.html("query time " + progress.lastExecution + " ms");
                     }
-                    elProgressBar.hide();
-                    elExecutionTime.show();
-                    clearInterval(progress.killProgress);
+                  counter--;
+                  if(counter > 0) return;
+                  elProgressBar.hide();
+                  elExecutionTime.show();
+                  clearInterval(progress.killProgress);
                 }
             }
 
