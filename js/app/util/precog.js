@@ -1,11 +1,12 @@
 define([
       "app/util/querystring"
     , "app/util/md5"
+    , "app/util/guid"
 //    , "app/util/precogapi.js"
     , "https://api.reportgrid.com/js/precog.js"
 ],
 
-function(qs, md5){
+function(qs, md5, guid){
 // TODO basePath
 
     var config   = window.Precog.$.Config,
@@ -35,15 +36,16 @@ function(qs, md5){
 
     var q = {
         query : function(text) {
-            $(q).trigger("execute", [text, this.lastExecution]);
+            var id = guid();
+            $(q).trigger("execute", [text, this.lastExecution, id]);
             var me = this,
                 start = new Date().getTime();
             window.Precog.query(text, function(r) {
                 me.lastExecution = new Date().getTime() - start;
-                $(q).trigger("completed", [r]);
+                $(q).trigger("completed", [r, id]);
             }, function(code, e) {
                 if("string" == typeof e) e = { message : e };
-                $(q).trigger("failed", e);
+                $(q).trigger("failed", [e, id]);
             })
         },
         paths : function(parent, callback) {

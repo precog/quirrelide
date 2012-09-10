@@ -139,15 +139,18 @@ $(function() {
         editors.setOutputType(type);
     });
 
-    var queue = [];
-    $(precog).on('execute', function(_, query, lastExecution) {
-        queue.push({ query : query, name : editors.getName() });
+    var executions = {};
+    $(precog).on("execute", function(_, query, lastExecution, id) {
+console.log(id);
+        executions[id] = { query : query, name : editors.getName() };
         status.startRequest();
     });
 
-    $(precog).on("completed", function(_, data) {
-        var exec = queue.shift();
-        history.save(exec.name, exec.query, data);
+    $(precog).on("completed", function(_, data, id) {
+console.log(id);
+        var execution = executions[id];
+        delete executions[id];
+        history.save(execution.name, execution.query, data);
 
         status.endRequest(true);
         output.setOutput(data, null, editors.getOutputOptions());
@@ -158,14 +161,15 @@ $(function() {
         }
         ga.trackQueryExecution("success");
     });
-    $(precog).on('failed', function(_, data) {
-        queue.shift(); // cleanup the queue
+    $(precog).on('failed', function(_, data, id) {
+console.log(id);
+        delete executions[id];
         status.endRequest(false);
         output.setOutput(data, 'error', editors.getOutputOptions());
         editors.setOutputResult(data);
         ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
-    $(editor).on('execute', function(_, code) {
+    $(editor).on("execute", function(_, code) {
         if(!eastereggs.easterEgg(code))
             precog.query(code);
     });

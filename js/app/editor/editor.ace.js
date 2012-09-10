@@ -12,11 +12,11 @@ function(require, ace, ui) {
             editor = ace.edit($(el).get(0));
 
         function execute() {
-            $(wrapper).trigger('execute', wrapper.get());
+            $(wrapper).trigger("execute", wrapper.get());
         }
 
         function executeSelected() {
-            $(wrapper).trigger('execute', editor.session.getTextRange(editor.getSelectionRange()));
+            $(wrapper).trigger("execute", editor.session.getTextRange(editor.getSelectionRange()));
         }
 
         editor.commands.addCommand({
