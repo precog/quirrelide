@@ -160,8 +160,12 @@ $(function() {
         }
       } else {
         var index = editors.getIndexByName(execution.name);
-        if(index >= 0)
+        if(index >= 0) {
+          var currenttype = editors.getOutputType(index);
+          if(currenttype === "message" || currenttype === "error")
+            editors.setOutputType("table", index);
           editors.setOutputResult(data, index);
+        }
       }
       ga.trackQueryExecution("success");
     });
