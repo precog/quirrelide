@@ -325,7 +325,11 @@
     margin-top: 4px;
 }
 
-.pg-tree {
+.pg-folders .pg-tree {
+    overflow : auto;
+}
+
+.pg-queries .pg-tree {
     overflow : visible;
 }
 
@@ -356,7 +360,7 @@
     font-weight: bold;
 }
 .pg-queries .pg-queries {
-    padding: 2px 2px 46px 2px;
+    padding: 2px 2px 2px 2px;
     overflow: auto;
 }
 

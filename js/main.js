@@ -145,7 +145,7 @@ $(function() {
         status.startRequest();
     });
 
-    $(precog).on('completed', function(_, data) {
+    $(precog).on("completed", function(_, data) {
         var exec = queue.shift();
         history.save(exec.name, exec.query, data);
 
