@@ -235,7 +235,7 @@ $(function() {
         editorbar.changeTabName(index, editor.name);
     });
 
-    $(editors).on('added', function(e, editor) {
+    $(editors).on("added", function(e, editor) {
         editorbar.addTab(editor.name, !!editor.dirty);
     });
 

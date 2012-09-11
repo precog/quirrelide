@@ -21,15 +21,16 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
         var wrapper;
         el.append(tplToolbar);
         var elContext = el.find('.pg-toolbar-context'),
-            autoGoToTab = false,
+            autoGoToTab = 0,
             tabs = ui.tabs(el.find('.pg-editor-tabs'), {
                 tabTemplate: "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close pg-tab-close'>Remove Tab</span></li>",
                 add: function(event, ui) {
                     var index = ui.index;
                     if(autoGoToTab)
                     {
-                        tabs.tabs("select", ui.index);
-                        editors.activate(ui.index);
+                        tabs.tabs("select", index);
+                        editors.activate(index);
+                        autoGoToTab--;
                     }
                 }
             }),
@@ -158,9 +159,8 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
             icon : "ui-icon-plus",
             description : "create new empty tab",
             handler : function() {
-                autoGoToTab = true;
+                autoGoToTab++;
                 editors.add();
-                autoGoToTab = false;
             }
         });
 

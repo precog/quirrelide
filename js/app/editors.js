@@ -19,7 +19,9 @@ function(precog, md5, createStore, utils) {
     var list = [];
 
     var last = (function() {
-        var re = /query #(\d+)$/, m;
+        var re = /query #(\d+)$/,
+            m,
+            ID = -1;
         function extractNumber(s) {
             if(m = re.exec(s)) {
                 return parseInt(m[1]);
@@ -29,16 +31,20 @@ function(precog, md5, createStore, utils) {
         }
 
         return function() {
-            if(list.length == 0) return 0;
+          if(ID === -1) {
+            if(list.length == 0) return ID = 0;
             var max = 0;
             $.each(list, function(_, id) {
-                var name = store.get(editorKey(id)+".name");
-                if(!name) return;
-                var v = extractNumber(name);
-                if(v > max)
-                    max = v;
+              var name = store.get(editorKey(id)+".name");
+              if(!name) return;
+              var v = extractNumber(name);
+              if(v > max)
+                max = v;
             });
-            return max;
+            return ID = max;
+          } else {
+            return ++ID;
+          }
         };
     })();
 
@@ -96,12 +102,12 @@ function(precog, md5, createStore, utils) {
                 this.activate(list.length-1);
             },
             add : function(options) {
-                var editor = createEditor(options);
-                store.set(editorKey(editor.id), editor);
-                list.push(editor.id);
-                store.set("list", list);
-                $(wrapper).trigger("added", editor);
-                return editor;
+              var editor = createEditor(options);
+              list.push(editor.id);
+              store.set("list", list);
+              store.set(editorKey(editor.id), editor, true);
+              $(wrapper).trigger("added", editor);
+              return editor;
             },
             remove : function(index) {
                 if(list.length == 1) return;
@@ -173,7 +179,7 @@ function(precog, md5, createStore, utils) {
                 return currentIndex;
             },
             setField : function(field, value, index) {
-                store.set(this.getKey(index) + "." + field, value);
+                store.set(this.getKey(index) + "." + field, value, true);
             },
             getField : function(field, alt, index) {
                 return store.get(this.getKey(index) + "." + field, alt);

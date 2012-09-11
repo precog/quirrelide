@@ -118,7 +118,6 @@ function(traverse, buildStorage, utils) {
                 }
             }
         }());
-
         monitor.start();
         return storage;
     };
