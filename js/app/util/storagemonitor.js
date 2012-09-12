@@ -118,7 +118,8 @@ function(traverse, buildStorage, utils) {
                 }
             }
         }());
-        monitor.start();
+      // DISABLED TO PREVENT UI LOCKS
+//        monitor.start();
         return storage;
     };
 });
