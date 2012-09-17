@@ -5,8 +5,8 @@ define([
     , "app/util/fullscreen"
     , "app/theme"
 ], function(ui, tplToolbar, tplMenu, fullscreen, theme) {
-    var ABOUT_LINK  = "http://precog.com/labcoat",
-        BRAND_LINK  = "http://precog.com/labcoat",
+    var ABOUT_LINK  = "http://precog.com/products/labcoat",
+        BRAND_LINK  = "http://precog.com/products/labcoat",
         BRAND_CLASS = "pg-precog";
 
     switch(document.location.host)
