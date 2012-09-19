@@ -111,7 +111,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
 
         refreshActions();
 
-        elDescription.html("virtual file system");
+        elDescription.html("file system");
         var tree = elFolders.jstree({
             plugins : [
                 "themes", "sort", "ui"

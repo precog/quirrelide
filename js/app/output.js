@@ -113,19 +113,22 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
             setOutput : function(result, type, options) {
                 if("undefined" === typeof result)
                     result = result || last.result || null;
-                type = type || last.current || 'table';
+                type = type || 'table';
                 if(!options) {
                     options = {};
                 }
                 lastOptions = options;
 
+                var enabled = false;
                 if(result == null) {
                     activatePanel({ message : "please, type and execute a query" }, type = "message", options);
                 } else if(result instanceof Array && result.length == 0) {
                     activatePanel({ message : "empty dataset" }, type = "message", options);
                 } else if(map[type]) {
+                    enabled = true;
                     activatePanel(result, type, options);
                 } else {
+                    enabled = true;
                     activatePanel({ message : "invalid result type: " + type }, type = "error", options);
                 }
 
@@ -141,6 +144,11 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
                 elOutputs.find("input[type=radio]").each(function() {
                     $(this).attr("checked", $(this).attr("data-format") === type);
                 });
+                if(enabled) {
+                    elOutputs.buttonset("enable");
+                } else {
+                    elOutputs.buttonset("disable");
+                }
                 elOutputs.buttonset("refresh");
             },
             last : last,
