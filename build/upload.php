@@ -130,18 +130,21 @@ function extractFiles($file, $destination, $formats) {
 			if(strtolower(substr($entry, -strlen($format))) === $format) {
 				if(strpos($entry, '/.') || substr($entry, 0, 1) == '.')
 					continue;
+				$src = 'zip://'.$file.'#'.$entry;
+				$dst = "$destination/$entry";
 				try {
-					copy('zip://'.$file.'#'.$entry, $destination.$entry);
+					copy($src, $dst);
 				} catch(Exception $e) {
 					trace("unable to extract the entry $entry", $e);
 					continue;
 				}
-				if(!file_exists($destination.$entry)) {
+				if(!file_exists($dst)) {
 					clierror($file, "unable to find the '$entry' entry");
 				}
 				try {
-					$content = file_get_contents($destination.$entry);
+					$content = file_get_contents($dst);
 				} catch(Exception $e) {
+				    trace($file, "unable to open '$entry' ($dst). " . $e);
 					clierror($file, "unable to open '$entry'. " . $e);
 				}
 				if($content === FALSE) {
