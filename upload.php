@@ -135,15 +135,16 @@ function extractFiles($file, $destination, $formats) {
 				try {
 					copy($src, $dst);
 				} catch(Exception $e) {
-					trace("unable to extract the entry $entry (src: $src, dst : $dst)", $e);
+					trace("unable to extract the entry $entry", $e);
 					continue;
 				}
 				if(!file_exists($destination.$entry)) {
 					clierror($file, "unable to find the '$entry' entry");
 				}
 				try {
-					$content = file_get_contents($destination.$entry);
+					$content = file_get_contents($dst);
 				} catch(Exception $e) {
+				    trace($file, "unable to open '$entry' ($dst). " . $e);
 					clierror($file, "unable to open '$entry'. " . $e);
 				}
 				if($content === FALSE) {
