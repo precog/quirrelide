@@ -131,14 +131,14 @@ function extractFiles($file, $destination, $formats) {
 				if(strpos($entry, '/.') || substr($entry, 0, 1) == '.')
 					continue;
 				$src = 'zip://'.$file.'#'.$entry;
-				$dst = $destination.$entry;
+				$dst = "$destination/$entry";
 				try {
 					copy($src, $dst);
 				} catch(Exception $e) {
 					trace("unable to extract the entry $entry", $e);
 					continue;
 				}
-				if(!file_exists($destination.$entry)) {
+				if(!file_exists($dst)) {
 					clierror($file, "unable to find the '$entry' entry");
 				}
 				try {
