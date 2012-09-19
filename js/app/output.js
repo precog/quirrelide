@@ -125,10 +125,10 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
                 } else if(result instanceof Array && result.length == 0) {
                     activatePanel({ message : "empty dataset" }, type = "message", options);
                 } else if(map[type]) {
-                    enabled = true;
+                    enabled = map[type].display;
                     activatePanel(result, type, options);
                 } else {
-                    enabled = true;
+                    enabled = false;
                     activatePanel({ message : "invalid result type: " + type }, type = "error", options);
                 }
 
