@@ -33,7 +33,7 @@ function(qs, md5, guid){
     }
 
     if(!config.limit)
-      config.limit = 5000;
+      config.limit = 1000;
 
     var q = {
         deletePath : function(path, callback) {

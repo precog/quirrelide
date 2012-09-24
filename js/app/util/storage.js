@@ -5,13 +5,13 @@ define([
 
 function(traverse) {
   return function(key, defaults) {
-    var LIMIT_SIZE = 5000,
+    var LIMIT_SIZE = 500,
         dirty  = false,
         params = $.extend({}, defaults);
 
     function cloneLimited(obj, limit) {
       // Handle the 3 simple types, and null or undefined
-      if (null == obj || "object" != typeof obj) return obj;
+      if (null == obj || "object" !== typeof obj) return obj;
 
       // Handle Date
       if (obj instanceof Date) {
@@ -24,8 +24,9 @@ function(traverse) {
       if (obj instanceof Array) {
         var copy = [],
             len  = obj.length;
-        if(len > limit)
+        if(len > limit) {
           len = limit;
+        }
         for (var i = 0; i < len; ++i) {
           copy[i] = cloneLimited(obj[i], limit);
         }
@@ -46,7 +47,7 @@ function(traverse) {
 
     function save() {
       var o = cloneLimited(params, LIMIT_SIZE);
-      $.jStorage.set(key, o);
+      var result = $.jStorage.set(key, o);
       dirty = false;
     }
 

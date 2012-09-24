@@ -194,11 +194,11 @@ $(function() {
       clearInterval(execTimer);
       execTimer = setTimeout(function() {
         var pagination = output.paginationOptions();
-        precog.query(code, pagination);
-//        precog.query(code);
+//        precog.query(code, pagination);
+        precog.query(code);
       }, 0);
     });
-
+/*
     $(output).on("paginationChanged", function(_) {
       clearInterval(execTimer);
       execTimer = setTimeout(function() {
@@ -207,7 +207,7 @@ console.log(JSON.stringify(pagination));
         precog.query(editor.get(), pagination);
       }, 0);
     });
-
+*/
     $(editors).on('activated', function(_, index) {
         var result  = editors.getOutputResult(),
             type    = editors.getOutputType(),
