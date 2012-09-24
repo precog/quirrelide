@@ -18,7 +18,7 @@ define([
 
 function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfirmDialog, tplToolbar) {
     var list = [],
-        DEMO_TOKEN = "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2",
+        DEMO_TOKEN = "5CDA81E8-9817-438A-A340-F34E578E86F8",
         STORE_KEY = "pg-quirrel-queries-"+precog.hash,
         store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.apiKey ? demo : {}), folders : [] });
 
