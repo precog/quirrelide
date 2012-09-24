@@ -6,7 +6,7 @@ define([
 ],
 
 function(convert, precog, ui, converters) {
-    var tokenId = precog.config.tokenId,
+    var apiKey = precog.config.apiKey,
         service = precog.config.analyticsService
     ;
 
@@ -50,7 +50,7 @@ function(convert, precog, ui, converters) {
         name : "HTML",
         handler : function(code) {
             code = escapeQuotes(convert.minifyQuirrel(code));
-            return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?tokenId='+tokenId+'&analyticsService='+service+'"></script>\n' +
+            return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?apiKey='+apiKey+'&analyticsService='+service+'"></script>\n' +
                 "<script>\n" +
                 "function init() {\n" +
                 "  // Quirrel query in JavaScript generated with Labcoat by Precog\n" +
@@ -68,7 +68,7 @@ function(convert, precog, ui, converters) {
                 "// Quirrel query in PHP generated with Labcoat by Precog\n\n" +
                 'require_once("Precog.php");\n\n' +
                 '' +
-                '$precog = new PrecogAPI("'+tokenId+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +
+                '$precog = new PrecogAPI("'+apiKey+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +
                 'if(false === $precog) {\n' +
                 '  die($precog->errorMessage());\n' +
                 '} else {\n' +

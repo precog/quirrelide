@@ -249,7 +249,7 @@ function humanizeBytes($size) {
     return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
 }
 
-function track($file, $format, $path, $token, $service) {
+function track($file, $format, $path, $apikey, $service) {
 	require("php/Precog.php");
 	// open file
 	$result;
@@ -278,7 +278,7 @@ function track($file, $format, $path, $token, $service) {
 	if(substr($path, -1) != '/')
 		$path .= "/";
 
-	$precog = new PrecogAPI($token, $service);
+	$precog = new PrecogAPI($apikey, $service);
 	// iterate on each line
 	foreach ($result['records'] as $key => $value) {
 		//	track single event
@@ -296,7 +296,7 @@ function track($file, $format, $path, $token, $service) {
 	die("stored $total events ({$result['failures']} failures)");
 }
 
-function execute($id, $upload, $path, $token, $service) {
+function execute($id, $upload, $path, $apikey, $service) {
 	// move the file to a temp location
 	$file = tmpstatusfile($id);
 	move_uploaded_file($upload['tmp_name'], $file);
@@ -312,7 +312,7 @@ function execute($id, $upload, $path, $token, $service) {
 	$script = __FILE__;
 	$run = "php -q $script";
 	$cargs = array();
-	foreach (array($file, $format, $path, $token, $service) as $key => $value) {
+	foreach (array($file, $format, $path, $apikey, $service) as $key => $value) {
 		$cargs[] = escapeshellarg($value);
 	}
 	$run .= ' ' . implode(' ', $cargs);
@@ -332,16 +332,16 @@ if(ISCLI) {
 		}
 		array_shift($argv);
 		// get arguments
-		list($file, $format, $path, $token, $service) = $argv;
+		list($file, $format, $path, $apikey, $service) = $argv;
 		if(!is_file($file)) {
 			trace("no data file");
 			die("no data file");
 		}
 		if(!$format)  clierror($file, "invalid format argument");
 		if(!$path)    clierror($file, "invalid path argument");
-		if(!$token)   clierror($file, "invalid token argument");
+		if(!$apikey)   clierror($file, "invalid token argument");
 		if(!$service) clierror($file, "invalid service argument");
-		track($file, $format, $path, $token, $service);
+		track($file, $format, $path, $apikey, $service);
 	} catch(Exception $e) {
 		trace($e);
 	}
@@ -359,8 +359,8 @@ if(ISCLI) {
 	if(!isset($headers["X-Precog-Path"])) error("Path is not in the request");
 	$path = $headers["X-Precog-Path"];
 
-	if(!isset($headers["X-Precog-Token"])) error("Token is not in the request");
-	$token = $headers["X-Precog-Token"];
+	if(!isset($headers["X-Precog-Apikey"])) error("Apikey is not in the request");
+	$apikey = $headers["X-Precog-Apikey"];
 
 	if(!isset($headers["X-Precog-Service"])) error("Service is not in the request");
 	$service = $headers["X-Precog-Service"];
@@ -370,13 +370,13 @@ if(ISCLI) {
 
 
 	// use a fastest service
-	$betas = "https://beta2012v1.precog.com/v1";
-	$beta  = "http://beta2012v1.precog.com/v1";
-	$local = "http://localhost:30060";
+	$betas = "https://devapi.precog.com/";
+	$beta  = "http://devapi.precog.com/";
+	$local = "http://localhost:30060/";
 	if($service === $betas)
 	    $service = $beta;
-	if($service === $beta)
-        $service = $local;
+//	if($service === $beta)
+//        $service = $local;
     // end
 
 	if(!isset($_FILES["file"])) {
@@ -385,8 +385,8 @@ if(ISCLI) {
 	$file = $_FILES["file"];
 
 	try {
-		execute($id, $file, $path, $token, $service);
-		message(array("message" => "tracking service started: " . tmpstatusfile($id) . " $path $token $service"));
+		execute($id, $file, $path, $apikey, $service);
+		message(array("message" => "tracking service started: " . tmpstatusfile($id) . " $path $apikey $service"));
 		exit();
 	} catch(Exception $e) {
 		error("unable to initialize the track queue:", $e);

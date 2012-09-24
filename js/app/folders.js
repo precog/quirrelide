@@ -68,11 +68,11 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                     description : "create new folder",
                     handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
                 }),
-//                ui.button(elContext, {
-//                    text : false,
-//                    icon : "ui-icon-minus",
-//                    handler : function() { requestNodeRemovalAt($(selectedNode).attr("data")); }
-//                }),
+                ui.button(elContext, {
+                    text : false,
+                    icon : "ui-icon-trash",
+                    handler : function() { requestNodeRemovalAt($(selectedNode).attr("data")); }
+                }),
                 ui.button(elContext, {
                     text : false,
                     icon : "ui-icon-query",
@@ -213,7 +213,12 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 title   = "Delete Folder",
                 message = "Are you sure you want to delete the folder at: <i>"+path+"</i> and all of its content?<br>This operation cannot be undone!";
             openConfirmDialog(title, message, function() {
-                removeNode(path);
+                precog.deletePath(p, function(success) {
+                  if(success)
+                    removeNode(path);
+                  else
+                    alert("an error occurred deleting the path " + path);
+                });
             });
         }
 
@@ -235,7 +240,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
 
         function downloadUrl(path) {
             return DOWNLOAD_SERVICE
-                + "?tokenId=" + encodeURIComponent(precog.config.tokenId)
+                + "?apiKey=" + encodeURIComponent(precog.config.apiKey)
                 + "&analyticsService=" + encodeURIComponent(precog.config.analyticsService)
                 + "&path=" + encodeURIComponent(path);
         }
@@ -423,7 +428,8 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                     , "X-File-Type"      : file.type
                     , "X-Precog-Path"    : path
                     , "X-Precog-UUID"    : id
-                    , "X-Precog-Token"   : precog.config.tokenId
+                    , "X-Precog-Apikey"  : precog.config.apiKey
+                    , "X-Precog-Version" : precog.config.version
                     , "X-Precog-Service" : precog.config.analyticsService
                 },
                 //Options to tell JQuery not to process data or worry about content-type

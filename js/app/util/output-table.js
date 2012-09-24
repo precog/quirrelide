@@ -15,7 +15,8 @@ define([
 function(jsonmodel) {
     return function() {
 
-        var elPanel = $('<div class="ui-widget"><div class="pg-table" style="height:100%;width:100%"></div></div>'),
+        var PAGE_SIZE = 20,
+            elPanel = $('<div class="ui-widget"><div class="pg-table" style="height:100%;width:100%"></div></div>'),
             elOutput = elPanel.find('.pg-table'),
             dataView = new Slick.Data.DataView(),
             grid,
@@ -28,7 +29,7 @@ function(jsonmodel) {
             },
             wrapper;
         dataView.setPagingOptions({
-            pageSize: 20
+            pageSize: PAGE_SIZE
         });
         dataView.onRowCountChanged.subscribe(function (e, args) {
             if(!grid) return;
@@ -66,7 +67,6 @@ function(jsonmodel) {
 
             dataView.beginUpdate();
             dataView.setItems(data, "#id");
-            dataView.endUpdate();
             if(options && options.table.pager && (("undefined" !== typeof options.table.pager.size) || ("undefined" !== typeof options.table.pager.pageNum)))
             {
                 var pager = {};
@@ -76,6 +76,7 @@ function(jsonmodel) {
                     pager.pageNum = options.table.pager.page;
                 dataView.setPagingOptions(pager);
             }
+            dataView.endUpdate();
         }
 
         function reducedResize() {
@@ -101,7 +102,7 @@ function(jsonmodel) {
             });
         }
 
-        var changePagerHandler;
+        var changePagerHandler, options;
         return wrapper = {
             type : "table",
             name : "Table",
@@ -109,7 +110,8 @@ function(jsonmodel) {
             toolbar : function() {
                 return $('<div></div>');
             },
-            update : function(data, options) {
+            update : function(data, o) {
+                options = o;
                 if("undefined" === typeof options.table) {
                     options.table = {
                         pager : {}
@@ -128,15 +130,13 @@ function(jsonmodel) {
                 }] : jsonmodel.create(data);
                 data = transformData(model, data);
 
-//                try {
-                    grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
-//                } catch(e) {
-//                    console.log("FAILED TO INSTANTIATE SLICK GRID", grid);
-//                }
+                grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
 
                 changePagerHandler = function(e, args) {
                     options.table.pager = { size : args.pageSize, page : args.pageNum };
                     $(wrapper).trigger("optionsChanged", options);
+// TODO uncomment when pagination is fully supported
+//                    $(wrapper).trigger("paginationChanged", options.table.pager);
                 }
                 if(options.table.sort && grid) {
                     grid.setSortColumns(options.table.sort.map(function(col){
@@ -155,6 +155,8 @@ function(jsonmodel) {
                         };
                     });
                     $(wrapper).trigger("optionsChanged", options);
+// TODO uncomment when pagination is fully supported
+//                    $(wrapper).trigger("sortChanged", options.table.sort);
                     updateDataView(data, options);
                 });
                 new Slick.Controls.Pager(dataView, grid, this.toolbar);
@@ -168,7 +170,16 @@ function(jsonmodel) {
             preferredDownloadFormat : function() {
                 return 'csv';
             },
-            resize : reducedResize
+            resize : reducedResize,
+            paginationOptions : function() {
+              var pager = options && options.table && options.table.pager && options.table.pager || { page : 0, size : PAGE_SIZE };
+              var sort  = options && options.table && options.table.sort || null;
+              return {
+                skip  : pager.page * pager.size,
+                limit : pager.size,
+                sort  : sort
+              }
+            }
         };
     };
 });

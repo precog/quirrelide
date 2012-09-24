@@ -1,6 +1,6 @@
 <?php
 
-$token   = $_GET['tokenId'];
+$apiKey  = $_GET['apiKey'];
 $path    = $_GET['path'];
 $service = $_GET['analyticsService'];
 
@@ -30,7 +30,7 @@ function path2name($path, $ext = ".json") {
 	return $path . $ext;
 }
 
-if(!$token) error("Invalid Token");
+if(!$apiKey) error("Invalid Token");
 if(!$path) error("Invalid Path");
 if(substr($path, -1) != '/') $path .= "/";
 if(!$service) error("Invalid Analytic Service");
@@ -38,12 +38,12 @@ if(substr($service, -1) != '/') $service .= "/";
 
 /*
 echo "<pre>";
-echo "token: $token, path: $path, service : $service\n";
+echo "token: $apiKey, path: $path, service : $service\n";
 */
 require("php/Precog.php");
 require("php/zip.lib.php");
 
-$precog = new PrecogAPI($token, $service);
+$precog = new PrecogAPI($apiKey, $service);
 
 $results = array();
 

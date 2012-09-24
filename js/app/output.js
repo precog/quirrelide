@@ -72,6 +72,14 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
             $(format).on("optionsChanged", function(_, options) {
                 $(wrapper).trigger("optionsChanged", options);
             });
+          $(format).on("paginationChanged", function(_, pager) {
+console.log("INTERCEPT PAGINATION");
+            $(wrapper).trigger("paginationChanged", pager);
+          });
+          $(format).on("sortChanged", function(_, sort) {
+console.log("INTERCEPT SORT");
+            $(wrapper).trigger("sortChanged", sort);
+          });
         });
 
 
@@ -87,11 +95,17 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
                 map[last.type].resize();
             }
         }
-
+/*
+        function paginationChanged() {
+console.log("INTERMEDIATE TRIGGERING");
+          $(wrapper).trigger("paginationChanged");
+        }
+*/
         function activatePanel(result, type, options) {
             if(type !== last.type) {
                 if(last.type && map[last.type])
                 {
+//                    $(map[last.type]).off("paginationChanged");
                     map[last.type].deactivate();
                     $(map[last.type].toolbar).hide();
                     $(map[last.type].panel).hide();
@@ -103,6 +117,7 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
                 this.killActivatePanel = setTimeout(resize, 0);
             }
             if(map[type].display) {
+//                $(map[type]).on("paginationChanged");
                 map[type].display[0].checked = true;
                 map[type].display.button("refresh");
             }
@@ -150,6 +165,9 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
                     elOutputs.buttonset("disable");
                 }
                 elOutputs.buttonset("refresh");
+            },
+            paginationOptions : function() {
+              return map[last.current || "table"].paginationOptions();
             },
             last : last,
             resize : resize

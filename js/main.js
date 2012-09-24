@@ -145,14 +145,14 @@ $(function() {
         status.startRequest();
     });
 
-    $(precog).on("completed", function(_, data, id) {
+    $(precog).on("completed", function(_, id, data, extra) {
       var execution = executions[id];
       delete executions[id];
-      history.save(execution.name, execution.query, data);
-
+      history.save(execution.name, execution.query, data); // TODO CHECK HOW PAGINATION AFFECTS THE BEHAVIOR OF HISTORY
       status.endRequest(true);
       if(editors.getName() === execution.name) {
-        output.setOutput(data, null, editors.getOutputOptions());
+        output.setOutput(data, null, editors.getOutputOptions()); // TODO ADD HERE OUTPUT OPTIONS AND REMOVE REFERENCES TO DEFAULT TABLE
+        // TODO SET OUTPUT OPTIONS FOR PAGINATION
         editors.setOutputResult(data);
 
         if(editorbar.historyPanelIsOpen()) {
@@ -164,12 +164,13 @@ $(function() {
           var currenttype = editors.getOutputType(index);
           if(currenttype === "message" || currenttype === "error")
             editors.setOutputType("table", index);
+          // TODO SET OUTPUT OPTIONS FOR PAGINATION
           editors.setOutputResult(data, index);
         }
       }
       ga.trackQueryExecution("success");
     });
-    $(precog).on('failed', function(_, data, id) {
+    $(precog).on('failed', function(_, id, data) {
       data = data instanceof Array ? data[0] : data;
       var execution = executions[id];
       delete executions[id];
@@ -185,9 +186,26 @@ $(function() {
 
       ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
+
+    var execTimer;
     $(editor).on("execute", function(_, code) {
-        if(!eastereggs.easterEgg(code))
-            precog.query(code);
+      if(eastereggs.easterEgg(code)) return;
+
+      clearInterval(execTimer);
+      execTimer = setTimeout(function() {
+        var pagination = output.paginationOptions();
+        precog.query(code, pagination);
+//        precog.query(code);
+      }, 0);
+    });
+
+    $(output).on("paginationChanged", function(_) {
+      clearInterval(execTimer);
+      execTimer = setTimeout(function() {
+        var pagination = output.paginationOptions();
+console.log(JSON.stringify(pagination));
+        precog.query(editor.get(), pagination);
+      }, 0);
     });
 
     $(editors).on('activated', function(_, index) {

@@ -20,7 +20,7 @@ function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfi
     var list = [],
         DEMO_TOKEN = "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2",
         STORE_KEY = "pg-quirrel-queries-"+precog.hash,
-        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.tokenId ? demo : {}), folders : [] });
+        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.apiKey ? demo : {}), folders : [] });
 
     return function(el) {
         var wrapper;

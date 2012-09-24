@@ -20,7 +20,7 @@ $(function() {
     var model = {
             labcoatHost : "labcoat.precog.com/",
             protocol : "https",
-            tokenId : null,
+            apiKey : null,
             basePath : "/",
             analyticsService : "beta2012v1.precog.com/v1"
         },
@@ -97,13 +97,13 @@ $(function() {
     }
 
     function generate() {
-        if (!(model.protocol && model.tokenId && model.basePath && model.analyticsService && model.labcoatHost)) {
+        if (!(model.protocol && model.apiKey && model.basePath && model.analyticsService && model.labcoatHost)) {
             return;
         }
         var url = model.protocol
             + "://"
             + model.labcoatHost
-            + "?tokenId=" + encodeURIComponent(model.tokenId);
+            + "?apiKey=" + encodeURIComponent(model.apiKey);
         if (model.basePath !== "/") {
             url += "&basePath=" + encodeURIComponent(model.basePath);
         }
@@ -138,10 +138,10 @@ $(function() {
         .keyup(validateInput(host, assignToModel("labcoatHost")))
         .change(validateInput(host, assignToModel("labcoatHost")));
 
-    $('input#tokenId')
-        .val(model.tokenId)
-        .keyup(validateInput(token, assignToModel("tokenId")))
-        .change(validateInput(token, assignToModel("tokenId")));
+    $('input#apiKey')
+        .val(model.apiKey)
+        .keyup(validateInput(token, assignToModel("apiKey")))
+        .change(validateInput(token, assignToModel("apiKey")));
 
     $('input#basePath')
         .val(model.basePath)
@@ -153,8 +153,8 @@ $(function() {
         .keyup(validateInput(service, assignToModel("analyticsService")))
         .change(validateInput(service, assignToModel("analyticsService")));
 /*
-    $('input#tokenId').keypress(function () {
-        console.log($('input#tokenId').val());
+    $('input#apiKey').keypress(function () {
+        console.log($('input#apiKey').val());
     });
 */
     });

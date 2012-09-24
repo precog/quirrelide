@@ -9,7 +9,7 @@ function(require, exports, module) {
     var QuirrelHighlightRules = function() {
 
         var keywords = lang.arrayToMap(
-            ("difference|else|forall|if|import|intersect|new|then|union|where|with").split("|")
+            ("difference|else|solve|if|import|intersect|new|then|union|where|with").split("|")
         );
 
         var builtinConstants = lang.arrayToMap(

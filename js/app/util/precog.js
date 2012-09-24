@@ -2,15 +2,13 @@ define([
       "app/util/querystring"
     , "app/util/md5"
     , "app/util/guid"
-//    , "app/util/precogapi.js"
-    , "https://api.reportgrid.com/js/precog.js"
+//    , "https://api.reportgrid.com/js/precog.js"
+    , "http://localhost/rg/js/precog.js"
 ],
 
 function(qs, md5, guid){
-// TODO basePath
-
     var config   = window.Precog.$.Config,
-        params   = ["tokenId", "analyticsService", "basePath"],
+        params   = ["apiKey", "analyticsService", "basePath", "limit"],
         contexts = [null],
         reprecog = /(require|precog|quirrel)[^.]*.js[?]/i;
 
@@ -34,22 +32,55 @@ function(qs, md5, guid){
         appendConfig(contexts.shift());
     }
 
+    if(!config.limit)
+      config.limit = 5000;
+
     var q = {
-        query : function(text) {
-            var id = guid();
+        deletePath : function(path, callback) {
+          window.Precog.deletePath(path, function(r) {
+            if(callback) callback(true);
+          }, function(code, e) {
+            if(callback)
+               callback(false);
+            else
+              throw "Unable To Delete Path";
+          });
+        },
+        query : function(text, options) {
+            var params = {},
+                id = guid(),
+                limit = config.limit;
+            options = options || {};
+            params.limit = options.limit && options.limit < config.limit ? options.limit : config.limit;
+            params.basePath = config.basePath;
+            if(options.skip)
+              params.offset = options.skip; // TODO UPDATE TO SKIP
+            if(options.sort) {
+              params.sortOn = options.sort.map(function(v) { return v.field; });
+              params.sortOrder = options.sort[0].asc ? "asc" : "desc";
+            }
+
             $(q).trigger("execute", [text, this.lastExecution, id]);
             var me = this,
                 start = new Date().getTime();
-            window.Precog.query(text, function(r) {
+            window.Precog.query(text, function(r, headers) {
                 me.lastExecution = new Date().getTime() - start;
-                $(q).trigger("completed", [r, id]);
+                var extra = null;
+                if("undefined" !== typeof options.skip) {
+                  extra = {
+                    skip : options.skip,
+                    limit : options.limit,
+                    count : headers["X-Quirrel-Count"] || 1000
+                  };
+                }
+                $(q).trigger("completed", [id, r, extra]);
             }, function(code, e) {
                 if("string" == typeof e) e = { message : e };
-                $(q).trigger("failed", [e, id]);
-            })
+                $(q).trigger("failed", [id, e]);
+            }, params)
         },
         paths : function(parent, callback) {
-            window.Precog.query(":ls " + parent, function(r) {
+            window.Precog.children(parent, function(r) {
                 callback(r.map(function(path) {
                     return path.substr(-1) === '/' && path.substr(0, path.length-1) || path;
                 }).sort());
@@ -59,7 +90,7 @@ function(qs, md5, guid){
         },
         config : config,
         lastExecution : 2000,
-        hash : md5(config.tokenId),
+        hash : md5(config.apiKey),
         cache : window.Precog.cache
     };
 

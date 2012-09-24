@@ -43,6 +43,11 @@ function() {
             f : function() {
                 return function() { return null; }
             }
+        }, {
+          name : "paginationOptions",
+          f : function() {
+            return function() { return null; }
+          }
         }],
         inited = false;
 

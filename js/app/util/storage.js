@@ -5,7 +5,7 @@ define([
 
 function(traverse) {
   return function(key, defaults) {
-    var LIMIT_SIZE = 2001,
+    var LIMIT_SIZE = 5000,
         dirty  = false,
         params = $.extend({}, defaults);
 
