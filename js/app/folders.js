@@ -212,14 +212,19 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
                 title   = "Delete Folder",
                 message = "Are you sure you want to delete the folder at: <i>"+path+"</i> and all of its content?<br>This operation cannot be undone!";
-            openConfirmDialog(title, message, function() {
-                precog.deletePath(p, function(success) {
-                  if(success)
-                    removeNode(path);
-                  else
-                    alert("an error occurred deleting the path " + path);
-                });
-            });
+            openConfirmDialog(
+                title,
+                message,
+                function() {
+                    precog.deletePath(p, function(success) {
+                      if(success)
+                        removeNode(path);
+                      else
+                        alert("an error occurred deleting the path " + path);
+                    });
+                },
+                { captcha : true }
+            );
         }
 
         function uploadDialog(path) {
