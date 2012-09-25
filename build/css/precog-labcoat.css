@@ -486,6 +486,15 @@ html > body .ui-pnotify {
 .ui-dialog .ui-dialog-content.pg-dialog-export {
     overflow: hidden;
 }
+.ui-dialog .captcha {
+    text-align: center;
+}
+.ui-dialog .captcha p {
+    margin: 1em;
+}
+.ui-dialog .captcha .ui-widget {
+    margin-top: 1em;
+}
 .pg-el.ui-widget .pg-dialog-export .pg-toolbar.pg-actions,
 .pg-el.ui-widget .pg-dialog-export .pg-toolbar.pg-options
 {
