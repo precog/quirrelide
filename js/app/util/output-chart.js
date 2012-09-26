@@ -97,7 +97,6 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
     }
 
     function selectOption(title) {
-
         function filterMultivalue(column) {
             return !!column.multivalue;
         }
@@ -162,8 +161,9 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                     feed(noti.find(".pg-y"), model, options.chart.y, false, filterMultivalue).change(resetSegmentAndChangeOption("y"));
                     feed(noti.find(".pg-segment"), model, options.chart.segment, true, filterNumbersAndMultivalue).change(changeOption("segment"));
                     noti.find(".pg-sample").val(options.chart.samplesize).change(changeOption("samplesize"));
-                    if(options.chart.x !== noti.find(".pg-x").val())
-                        x.change();
+                    options.chart.x = noti.find(".pg-x").val();
+                    options.chart.y = noti.find(".pg-y").val();
+                    refresh();
                 }
             })
         };

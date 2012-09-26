@@ -67,25 +67,16 @@ function(dom) {
 
             var n = this.tip(title, o);
 
-            n.mouseenter(function() {
-                var selectOpened = false;
-                $('select').click(function(e) {
-                    selectOpened = !selectOpened;
-                    e.stopPropagation();
-                });
-                $('body').click(function() {
-                    if(selectOpened) {
-                        selectOpened = false;
-                    }
-                });
+            var close = function() {
+              $('body').off("mousedown", close);
+              n.remove();
+            };
 
-                n.mouseleave(function() {
-                    if(!selectOpened) {
-                        n.remove();
-                    }
-                });
+            n.mousedown(function(e) {
+              e.stopPropagation();
             });
 
+            $('body').on("mousedown", close);
             return n;
         },
 
