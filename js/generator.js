@@ -1,7 +1,7 @@
 /*global requirejs, require, $, console*/
 requirejs.config({
     paths: {
-    
+
     }
 });
 
@@ -22,7 +22,7 @@ $(function() {
             protocol : "https",
             apiKey : null,
             basePath : "/",
-            analyticsService : "beta2012v1.precog.com/v1"
+            analyticsService : "beta.precog.com/"
         },
         protocol = {
             validate : function (value) {
@@ -100,10 +100,7 @@ $(function() {
         if (!(model.protocol && model.apiKey && model.basePath && model.analyticsService && model.labcoatHost)) {
             return;
         }
-        var url = model.protocol
-            + "://"
-            + model.labcoatHost
-            + "?apiKey=" + encodeURIComponent(model.apiKey);
+        var url = model.protocol + "://" + model.labcoatHost + "?apiKey=" + encodeURIComponent(model.apiKey);
         if (model.basePath !== "/") {
             url += "&basePath=" + encodeURIComponent(model.basePath);
         }
