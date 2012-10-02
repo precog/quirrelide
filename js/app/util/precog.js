@@ -2,8 +2,8 @@ define([
       "app/util/querystring"
     , "app/util/md5"
     , "app/util/guid"
-//    , "https://api.reportgrid.com/js/precog.js"
-    , "http://localhost/rg/js/precog.js"
+    , "https://api.reportgrid.com/js/precog.js"
+//    , "http://localhost/rg/js/precog.js"
 ],
 
 function(qs, md5, guid){
