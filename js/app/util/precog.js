@@ -36,6 +36,9 @@ function(qs, md5, guid){
       config.limit = 1000;
 
     var q = {
+        ingest : function(path, events, type, start, progress, complete, error) {
+          throw "TODO";
+        },
         deletePath : function(path, callback) {
           window.Precog.deletePath(path, function(r) {
             if(callback) callback(true);
@@ -52,7 +55,6 @@ function(qs, md5, guid){
                 limit = config.limit;
             options = options || {};
             params.limit = options.limit && options.limit < config.limit ? options.limit : config.limit;
-            params.basePath = config.basePath;
             if(options.skip)
               params.offset = options.skip; // TODO UPDATE TO SKIP
             if(options.sort) {

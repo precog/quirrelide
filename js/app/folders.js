@@ -77,7 +77,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                     text : false,
                     icon : "ui-icon-query",
                     description : "query data at path",
-                    handler : function() { triggerQuery($(selectedNode).attr("data")); }
+                    handler : function() { triggerQuery(removeBasePath($(selectedNode).attr("data"))); }
                 }),
                 ui.button(elContext, {
                     text : false,
@@ -208,6 +208,12 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             });
         }
 
+        function removeBasePath(path) {
+          path = path.substr(0, basePath.length) === basePath ? path.substr(basePath.length) : path;
+          if(!path) path = "/";
+          return path;
+        }
+
         function requestNodeRemovalAt(path) {
             var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
                 title   = "Delete Folder",
@@ -288,7 +294,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 levels = 1;
 
             map[path] = true;
-            precog.paths(path, function(paths){
+            precog.paths(removeBasePath(path), function(paths){
                 var base = "/" === path ? "" : path,
                     virtuals = getVirtualPaths(path);
                 virtuals.forEach(function(virtual) {
