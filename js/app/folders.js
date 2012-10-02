@@ -393,8 +393,6 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             reader.onload = function(e) {
               var data = e.target.result,
                   filename = file.fileName || file.name;
-              console.log(data);
-              console.log(file, file.name);
 
               var noty = { text : "starting upload of '" + filename+"'" };
 
