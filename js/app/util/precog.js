@@ -2,8 +2,8 @@ define([
       "app/util/querystring"
     , "app/util/md5"
     , "app/util/guid"
-    , "https://api.reportgrid.com/js/precog.js"
-//    , "http://localhost/rg/js/precog.js"
+//    , "https://api.reportgrid.com/js/precog.js"
+    , "http://localhost/rg/js/precog.js"
 ],
 
 function(qs, md5, guid){
@@ -36,8 +36,15 @@ function(qs, md5, guid){
       config.limit = 1000;
 
     var q = {
-        ingest : function(path, events, type, start, progress, complete, error) {
-          throw "TODO";
+        ingest : function(path, data, type, progress, complete, error) {
+          window.Precog.ingest(path, data, type,
+            function(e) {
+              complete(e);
+            },
+            function(e) {
+              error(e);
+            }
+          );
         },
         deletePath : function(path, callback) {
           window.Precog.deletePath(path, function(r) {

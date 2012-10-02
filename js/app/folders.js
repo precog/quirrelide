@@ -16,8 +16,8 @@ define([
 ],
 
 function(precog, createStore, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, tplToolbar){
-    var UPLOAD_SERVICE = "upload.php",
-        DOWNLOAD_SERVICE = "download.php",
+//    var UPLOAD_SERVICE = "upload.php",
+    var DOWNLOAD_SERVICE = "download.php",
         STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
         basePath = precog.config.basePath || "/",
         store = createStore(STORE_KEY, { virtuals : { }});
@@ -337,7 +337,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         elUploader.on("change", function() {
             e.preventDefault(); return false;
         });
-
+/*
         function pollStatus(noty, id, retry) {
             retry = retry || 0;
             $.ajax({
@@ -385,10 +385,56 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 dataType: "json"
             });
         }
-
+*/
         function uploadFile(file, path) {
             if(!file) return;
+            path = removeBasePath(path);
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              var data = e.target.result,
+                  filename = file.fileName || file.name;
+              console.log(data);
+              console.log(file, file.name);
 
+              var noty = { text : "starting upload of '" + filename+"'" };
+
+              notification.progress("upload file", noty);
+
+              function progress(e) {
+                noty.progressStep(e.loaded / e.total);
+              }
+              function complete(e) {
+                if(e.failed > 0) {
+                  if(e.ingested === 0) {
+                    message = 'all of the ' +e.total+ ' events failed to be stored.';
+                  } else {
+                    message = (e.ingested) + ' events have been stored correctly, ' + e.failed + ' failed to be stored.';
+                  }
+                  if(e.skipped) {
+                    message += "<br>skipped " + e.skipped + " events."
+                  }
+                  if(e.errors.length) {
+                    message += "<ul class=\"errors\"><li>"+ e.errors.join("</li><li>")+"</li></ul>";
+                  }
+                  noty.progressError(message);
+                } else {
+                  message = 'all of the ' + e.total + ' events have been queued correctly and are now in the process to be ingested';
+                  noty.progressComplete(message);
+                }
+/*
+                noty.progressComplete("'"+filename+"' has been uploaded to the path '<var>"+path+"</var>'. Now your data will be queued.");
+                noty.progressStart('<div class="pg-ingest-phase">Uploading data</div><div class="pg-ingest-message">queue events</div>');
+*/
+//                pollStatus(noty, id);
+              }
+              function error(e) {
+                noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + JSON.stringify(e));
+              }
+
+              precog.ingest(path, data, file.type, progress, complete, error);
+            };
+            reader.readAsText(file);
+/*
             var filename = file.fileName || file.name,
                 id = utils.guid();
 
@@ -448,7 +494,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 contentType: false,
                 processData: false
             });
-
+*/
         }
         function traverseFiles (files, path) {
             if (typeof files !== "undefined") {
