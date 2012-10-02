@@ -195,9 +195,9 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         }
 
         function requestNodeCreationAt(path) {
-            var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
+            var p = removeBasePath(path),
                 title   = "Create Folder",
-                message = "Create a sub folder at: <i>"+path+"</i>";
+                message = "Create a sub folder at: <i>"+p+"</i>";
             openRequestInputDialog(title, message, "folder name", "", function(name) {
                 if(null != name && name.match(/^[a-z0-9]+$/i))
                     return null; // OK
@@ -234,9 +234,9 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         }
 
         function uploadDialog(path) {
-            var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
+            var p = removeBasePath(path),
                 title   = "Upload Data",
-                message = "Upload data at: <i>"+path+"</i><br>You can use a JSON file (one array of values/objects), a text file containing one JSON object per line, a CSV file (headers are mandatory) or a zip file containing any combination of the previous formats.";
+                message = "Upload data at: <i>"+p+"</i><br>You can use a JSON file (one array of values/objects), a text file containing one JSON object per line, a CSV file (headers are mandatory) or a zip file containing any combination of the previous formats.";
             openRequestInputDialog(title, message, "file to upload", "", function(name) {
                 if(name)
                     return null; // OK
@@ -389,9 +389,9 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         function uploadFile(file, path) {
             if(!file) return;
             path = removeBasePath(path);
-            var reader = new FileReader();
-            reader.onload = function(e) {
-              var data = e.target.result,
+//            var reader = new FileReader();
+//            reader.onload = function(e) {
+              var data = file, //e.target.result, //file
                   filename = file.fileName || file.name;
 
               var noty = { text : "starting upload of '" + filename+"'" };
@@ -399,7 +399,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
               notification.progress("upload file", noty);
 
               function progress(e) {
-                noty.progressStep(e.loaded / e.total);
+                noty.progressStep(e);
               }
               function complete(e) {
                 if(e.failed > 0) {
@@ -430,8 +430,8 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
               }
 
               precog.ingest(path, data, file.type, progress, complete, error);
-            };
-            reader.readAsText(file);
+//            };
+  //          reader.readAsText(file);
 /*
             var filename = file.fileName || file.name,
                 id = utils.guid();

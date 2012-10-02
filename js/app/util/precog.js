@@ -43,6 +43,9 @@ function(qs, md5, guid){
             },
             function(e) {
               error(e);
+            },
+            {
+              progress : progress
             }
           );
         },
