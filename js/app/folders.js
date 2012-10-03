@@ -6,6 +6,7 @@ define([
     , "app/util/notification"
     , "app/util/dialog-lineinput"
     , "app/util/dialog-confirm"
+    , "app/util/humanize"
     , "rtext!templates/toolbar.folders.html"
 
     , 'libs/jquery/jstree/vakata'
@@ -15,7 +16,7 @@ define([
     , 'libs/jquery/jstree/jstree.themes'
 ],
 
-function(precog, createStore, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, tplToolbar){
+function(precog, createStore, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, humanize, tplToolbar){
 //    var UPLOAD_SERVICE = "upload.php",
     var DOWNLOAD_SERVICE = "download.php",
         STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
@@ -399,24 +400,25 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
               notification.progress("upload file", noty);
 
               function progress(e) {
-                noty.progressStep(e);
+                noty.progressStep(e.loaded/ e.total);
+                noty.el.find(".pg-message").html("uploaded " + humanize.filesize(e.loaded) + " of " + humanize.filesize(e.total));
               }
               function complete(e) {
                 if(e.failed > 0) {
                   if(e.ingested === 0) {
-                    message = 'all of the ' +e.total+ ' events failed to be stored.';
+                    message = 'all of the ' + humanize.numberFormat(e.total, 0) + ' events failed to be stored.';
                   } else {
-                    message = (e.ingested) + ' events have been stored correctly, ' + e.failed + ' failed to be stored.';
+                    message = humanize.numberFormat(e.ingested, 0) + ' events have been stored correctly, ' + humanize.numberFormat(e.failed, 0) + ' failed to be stored.';
                   }
                   if(e.skipped) {
-                    message += "<br>skipped " + e.skipped + " events."
+                    message += "<br>skipped " + humanize.numberFormat(e.skipped, 0) + " events."
                   }
                   if(e.errors.length) {
                     message += "<ul class=\"errors\"><li>"+ e.errors.join("</li><li>")+"</li></ul>";
                   }
                   noty.progressError(message);
                 } else {
-                  message = 'all of the ' + e.total + ' events have been queued correctly and are now in the process to be ingested';
+                  message = 'all of the ' + humanize.numberFormat(e.total, 0) + ' events have been queued correctly and are now in the process to be ingested';
                   noty.progressComplete(message);
                 }
 /*
