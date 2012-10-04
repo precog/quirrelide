@@ -685,6 +685,15 @@ html > body .ui-pnotify {
     font-style: italic;
     padding: 40px 0;
 }
+.ui-pnotify .ui-state-error ul.errors {
+    padding: 0;
+    margin: 0;
+}
+.ui-pnotify .ui-state-error ul.errors li {
+    padding: 0;
+    margin: 0;
+    list-style-position:inside;
+}
 @keyframes progressbg
 {
     0%   {background-position: 0 0;}
