@@ -15,12 +15,12 @@ function(qs, md5, guid){
     var precog = ".precog.com",
         host   = window.location.host;
 console.log(host.substr(host.length - precog.length));
-
+console.log(JSON.stringify(config));
     if(host.substr(host.length - precog.length) === precog)
     {
       config.analyticsService = window.location.protocol + "://" + host + "/";
     }
-
+  console.log(JSON.stringify(config));
     $('script').each(function() {
         if(!this.src || !reprecog.test(this.src)) return;
         contexts.push(this.src);
