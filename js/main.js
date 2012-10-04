@@ -224,6 +224,8 @@ console.log(JSON.stringify(pagination));
     var folders = buildFolders(layout.getSystem());
 
     $(folders).on('querypath', function(e, path) {
+        if(path.substr(0, 1) !== "/")
+          path = "/" + path;
         var q = '/' + path;
         if(editors.getCode().trim() == '') {
             editor.set(q);

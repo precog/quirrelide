@@ -338,163 +338,64 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         elUploader.on("change", function() {
             e.preventDefault(); return false;
         });
-/*
-        function pollStatus(noty, id, retry) {
-            retry = retry || 0;
-            $.ajax({
-                url: UPLOAD_SERVICE,
-                data: { uuid : id },
-                success: function(data) {
-                    if(data && data.done === data.total) {
-                        var message;
-                        if(data.failures) {
-                            if(data.total - data.failures === 0) {
-                                message = 'all of the ' +data.failures+ ' events failed to be stored';
-                            } else {
-                                message = (data.total - data.failures) + ' events have been stored correctly and ' + data.failures + ' failed to be stored';
-                            }
-                            noty.progressError(message);
-                        } else {
-                            message = 'all of the ' + data.total + ' events have been queued correctly and are now in the process to be ingested';
-                            noty.progressComplete(message);
-                        }
 
-                    } else {
-                        if(!data) {
-                            if(retry > 10) {
-                                message = 'all the events have been queued correctly and are now in the process to be ingested';
-                                noty.progressComplete(message);
-                                return;
-                            }
-                        } else {
-                            if(data.total > 0) {
-                                noty.el.find(".pg-ingest-message").html(
-                                    "queued " + data.done + " events" + (data.failures ? " (" + data.failures + " failures)" : "") + " of " + data.total
-                                );
-                            }
-                            noty.progressStep(data.done / data.total);
-                        }
-                        setTimeout(function() {
-                            pollStatus(noty, id, data ? 0 : retry + 1);
-                        }, 500);
-                    }
-                },
-                error : function(e) {
-                    var err = JSON.parse(e.responseText);
-                    noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + err.error);
-                },
-                dataType: "json"
-            });
-        }
-*/
         function uploadFile(file, path) {
-            if(!file) return;
-            path = removeBasePath(path);
-//            var reader = new FileReader();
-//            reader.onload = function(e) {
-              var data = file, //e.target.result, //file
-                  filename = file.fileName || file.name;
+          if(!file) return;
+          path = removeBasePath(path);
+          var data = file, //e.target.result, //file
+              filename = file.fileName || file.name;
 
-              var noty = { text : "starting upload of '" + filename+"'" };
+          var noty = { text : "Starting upload of '" + filename+"'" };
 
-              notification.progress("upload file", noty);
+          notification.progress("upload file", noty);
 
-              function progress(e) {
-                noty.progressStep(e.loaded/ e.total);
-                noty.el.find(".pg-message").html("uploaded " + humanize.filesize(e.loaded) + " of " + humanize.filesize(e.total));
+          function progress(e) {
+            noty.progressStep(e.loaded/ e.total);
+            noty.el.find(".pg-message").html("uploaded " + humanize.filesize(e.loaded) + " of " + humanize.filesize(e.total));
+          }
+          function complete(e) {
+            if(e.failed > 0) {
+              if(e.ingested === 0) {
+                message = 'All of the ' + humanize.numberFormat(e.total, 0) + ' events failed to be stored.';
+              } else {
+                message = humanize.numberFormat(e.ingested, 0) + ' events have been stored correctly, ' + humanize.numberFormat(e.failed, 0) + ' failed to be stored.';
               }
-              function complete(e) {
-                if(e.failed > 0) {
-                  if(e.ingested === 0) {
-                    message = 'all of the ' + humanize.numberFormat(e.total, 0) + ' events failed to be stored.';
-                  } else {
-                    message = humanize.numberFormat(e.ingested, 0) + ' events have been stored correctly, ' + humanize.numberFormat(e.failed, 0) + ' failed to be stored.';
+              if(e.skipped) {
+                message += "<br>Skipped " + humanize.numberFormat(e.skipped, 0) + " events (the ingest process stops after "+humanize.numberFormat(e.failed, 0)+" errors)."
+              }
+              if(e.errors.length) {
+                var map = {};
+
+                $(e.errors).each(function() {
+                  var line   = this.line,
+                      reason = this.reason,
+                      arr    = map[reason] || (map[reason] = []);
+                  arr.push(line);
+                });
+
+                var errors = [];
+                for(var field in map) {
+                  if(map.hasOwnProperty(field)) {
+                    errors.push(field + " at line(s): " + map[field].join(", "));
                   }
-                  if(e.skipped) {
-                    message += "<br>skipped " + humanize.numberFormat(e.skipped, 0) + " events."
-                  }
-                  if(e.errors.length) {
-                    message += "<ul class=\"errors\"><li>"+ e.errors.join("</li><li>")+"</li></ul>";
-                  }
-                  noty.progressError(message);
-                } else {
-                  message = 'all of the ' + humanize.numberFormat(e.total, 0) + ' events have been queued correctly and are now in the process to be ingested';
-                  noty.progressComplete(message);
                 }
-/*
-                noty.progressComplete("'"+filename+"' has been uploaded to the path '<var>"+path+"</var>'. Now your data will be queued.");
-                noty.progressStart('<div class="pg-ingest-phase">Uploading data</div><div class="pg-ingest-message">queue events</div>');
-*/
-//                pollStatus(noty, id);
+                message +=
+                  "<p>Error details:</p>" +
+                  "<ul class=\"errors\"><li>" +
+                  errors.join("</li><li>") +
+                  "</li></ul>";
               }
-              function error(e) {
-                noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + JSON.stringify(e));
-              }
-
-              precog.ingest(path, data, file.type, progress, complete, error);
-//            };
-  //          reader.readAsText(file);
-/*
-            var filename = file.fileName || file.name,
-                id = utils.guid();
-
-            var noty = { text : "starting upload of '" + filename+"'" };
-
-            notification.progress("upload file", noty);
-
-            function progressHandlingFunction(e) {
-                noty.progressStep(e.loaded / e.total);
+              noty.progressError(message);
+            } else {
+              message = 'all of the ' + humanize.numberFormat(e.total, 0) + ' events have been queued correctly and are now in the process to be ingested';
+              noty.progressComplete(message);
             }
-            function beforeSendHandler() {
-                noty.progressStart('<div class="pg-ingest-phase">Phase 1 of 2</div><div class="pg-ingest-message">' + "uploading '" + filename + "'</div>");
-            }
-            function completeHandler() {
-                noty.progressComplete("'"+filename+"' has been uploaded to the path '<var>"+path+"</var>'. Now your data will be queued.");
-                noty.progressStart('<div class="pg-ingest-phase">Phase 2 of 2</div><div class="pg-ingest-message">queue events</div>');
-                pollStatus(noty, id);
-            }
-            function errorHandler(e) {
+          }
+          function error(e) {
+            noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + JSON.stringify(e));
+          }
 
-                var err = JSON.parse(e.responseText);
-                noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + err.error);
-            }
-
-            var formData = new FormData();
-            formData.append("file", file);
-
-            $.ajax({
-                url: UPLOAD_SERVICE,  //server script to process data
-                type: 'POST',
-                xhr: function() {  // custom xhr
-                    myXhr = $.ajaxSettings.xhr();
-                    if(myXhr.upload){ // check if upload property exists
-                        myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // for handling the progress of the upload
-                    }
-                    return myXhr;
-                },
-                //Ajax events
-                beforeSend: beforeSendHandler,
-                success: completeHandler,
-                error: errorHandler,
-                // Form data
-                data: formData,
-                headers : {
-//                          "Content-Type"     : "multipart/form-data"
-                      "X-File-Name"      : filename
-                    , "X-File-Size"      : file.fileSize || file.size
-                    , "X-File-Type"      : file.type
-                    , "X-Precog-Path"    : path
-                    , "X-Precog-UUID"    : id
-                    , "X-Precog-Apikey"  : precog.config.apiKey
-                    , "X-Precog-Version" : precog.config.version
-                    , "X-Precog-Service" : precog.config.analyticsService
-                },
-                //Options to tell JQuery not to process data or worry about content-type
-                cache: false,
-                contentType: false,
-                processData: false
-            });
-*/
+          precog.ingest(path, data, file.type, progress, complete, error);
         }
         function traverseFiles (files, path) {
             if (typeof files !== "undefined") {
