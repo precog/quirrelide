@@ -12,6 +12,13 @@ function(qs, md5, guid){
         contexts = [null],
         reprecog = /(require|precog|quirrel)[^.]*.js[?]/i;
 
+    var precog = ".precog.com",
+        host   = window.location.host;
+    if(host.substr(host.length - precog.length) === precog)
+    {
+      config.analyticsService = window.location.protocol + "://" + host + "/";
+    }
+
     $('script').each(function() {
         if(!this.src || !reprecog.test(this.src)) return;
         contexts.push(this.src);
