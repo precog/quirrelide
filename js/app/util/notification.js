@@ -38,6 +38,11 @@ function(dom) {
     }
 
     return {
+        error : function(title, o) {
+          o = o || {};
+          o.type = "error";
+          return this.success(title, o);
+        },
         success : function(title, o) {
             o = o || {};
 

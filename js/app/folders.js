@@ -341,9 +341,14 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
 
         function uploadFile(file, path) {
           if(!file) return;
+          var filename = file.fileName || file.name,
+              extension = filename.split(".").pop().toLowerCase();
+          if(["json", "csv", "zip"].indexOf(extension) < 0) {
+            notification.error("invalid file type", { text : "You can only upload files of type json, csv or zip. Be sure that the file extension matches the type." });
+            return;
+          }
           path = removeBasePath(path);
-          var data = file, //e.target.result, //file
-              filename = file.fileName || file.name;
+          var data = file; //e.target.result, //file
 
           var noty = { text : "Starting upload of '" + filename+"'" };
 
@@ -395,7 +400,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + JSON.stringify(e));
           }
 
-          precog.ingest(path, data, file.type, progress, complete, error);
+          precog.ingest(path, data, extension, progress, complete, error);
         }
         function traverseFiles (files, path) {
             if (typeof files !== "undefined") {
