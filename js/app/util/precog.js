@@ -14,6 +14,8 @@ function(qs, md5, guid){
 
     var precog = ".precog.com",
         host   = window.location.host;
+console.log(host.substr(host.length - precog.length));
+
     if(host.substr(host.length - precog.length) === precog)
     {
       config.analyticsService = window.location.protocol + "://" + host + "/";
