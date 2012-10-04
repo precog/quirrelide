@@ -30,7 +30,7 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
             elResult  = el.find('.pg-result'),
             lastOptions;
 
-        ui.button(elToolbarMainContext, {
+        var downloadButton = ui.button(elToolbarMainContext, {
             icon : "ui-icon-arrowthickstop-1-s",
             description : "download query result",
             handler : function() {
@@ -161,8 +161,10 @@ console.log("INTERMEDIATE TRIGGERING");
                 });
                 if(enabled) {
                     elOutputs.buttonset("enable");
+                    downloadButton.button("enable");
                 } else {
                     elOutputs.buttonset("disable");
+                    downloadButton.button("disable");
                 }
                 elOutputs.buttonset("refresh");
             },
