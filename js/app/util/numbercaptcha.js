@@ -7,7 +7,7 @@ function() {
   };
   return function(max) {
     var imax   = Math.round(max),
-        operator   = ["+", "-", "/", "*"][rand(3, 3)],
+        operator   = ["+", "-", "/", "*"][rand(0, 3)],
         second = rand(1, imax),
         first,
         result;

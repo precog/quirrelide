@@ -4,7 +4,11 @@ define([
     , "rtext!templates/menu.settings.html"
     , "app/util/fullscreen"
     , "app/theme"
-], function(ui, tplToolbar, tplMenu, fullscreen, theme) {
+    , "app/util/dialog-confirm"
+    , "rtext!templates/dialog.global.settings.html"
+    , "app/util/valuemodel"
+    , "app/util/precog"
+], function(ui, tplToolbar, tplMenu, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, precog) {
     var ABOUT_LINK  = "http://precog.com/products/labcoat",
         BRAND_LINK  = "http://precog.com/products/labcoat",
         BRAND_CLASS = "pg-precog";
@@ -32,6 +36,64 @@ define([
         anchor.attr("href", BRAND_LINK);
         anchor.find(".pg-logo").addClass(BRAND_CLASS);
     }
+
+    function extractFromConfig() {
+      return precog.config[this.name];
+    }
+
+    // add global settings
+    var message = $(tplGlobalSettings),
+      settings = [{
+        name    : "limit",
+        extract : extractFromConfig
+      }, {
+        name    : "analyticsService",
+        extract : function() {
+          var url = extractFromConfig.call(this);
+console.log(url);
+          url = url.split("://").pop();
+console.log(url);
+          if(url.substr(-1) == "/")
+            url = url.substr(0, url.length - 1);
+          return url;
+        }
+      }, {
+        name    : "apiKey",
+        extract : extractFromConfig
+      }, {
+        name    : "labcoatHost",
+        extract : function() { return window.location.hostname; }
+      }, {
+        name    : "basePath",
+        extract : extractFromConfig
+      }, {
+        name    : "version",
+        extract : extractFromConfig
+      }, {
+        name     : "protocol",
+        extract  : function() { return window.location.protocol === "https:" ? "https" : "http"; },
+        callback : function(value) {
+          message.find(".protocol").text(value);
+        }
+      }];
+
+    $(settings).each(function(index, info) {
+      var model = valueModel(info.defaultValue || info.extract(), info.validator, info.filter);
+      var input = message.find("#"+info.name);
+      input.val(model.get());
+      input.on("change", function() {
+        model.set(input.val());
+      });
+      model.on("validation.error", function(newvalue, error) {
+        console.log(info.name +": validation error '" + error + "' for " + newvalue);
+      });
+      model.on("value.change", function(newvalue, oldvalue) {
+        console.log(info.name+": value changed from " + oldvalue + " to " + newvalue);
+        if(info.callback) {
+          info.callback(newvalue);
+        }
+      });
+    });
 
     return function(el) {
         el.append(tplToolbar);
@@ -87,6 +149,21 @@ define([
                     $(this).find('.pg-icon').removeClass("ui-icon-arrow-4-diag").addClass("ui-icon-newwin");
                 }
             }
+        });
+
+        var settingsButton = $('<li class="ui-menu-item" role="presentation"><a href="#">global settings</a></li>');
+        menu.find("ul:first")
+          .append('<li class="ui-menu-item menu-separator ui-state-highlight"></li>')
+          .append(settingsButton);
+
+        settingsButton.click(function() {
+            var title   = "Hello World",
+                handler = function() {},
+                options = {
+                    width  : 600
+                  , height : 600
+                };
+            openDialog(title, message, handler, options);
         });
     }
 });

@@ -54,8 +54,6 @@ function(tplDialog, ui, dom, createCaptcha) {
 
         elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
         elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
-
-window.dialog = elDialog;
     }
 
     var inited = false;
@@ -69,6 +67,10 @@ window.dialog = elDialog;
         currentHandler = handler;
         elDialog.dialog("option", "position", "center");
         elDialog.dialog("option", "title", title);
+
+        elDialog.dialog("option", "width", options.width && options.width || 300);
+        elDialog.dialog("option", "height", options.height && options.height || "auto");
+
         elDialog.dialog("open");
 
 
@@ -76,8 +78,8 @@ window.dialog = elDialog;
             el = elDialog.find(".pg-message");
         el.find("*").remove();
 
-        message = '<div>' + (message || "") +'</div>';
-        el.html(message);
+        message = (!message || "string" === typeof message) ? $('<div>' + (message || "") +'</div>') : message;
+        el.append(message);
         if(options.captcha) {
           ok.button("disable");
 

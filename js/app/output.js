@@ -30,12 +30,17 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
             elResult  = el.find('.pg-result'),
             lastOptions;
 
+        function downloadCallback(data, action) {
+//console.log("DOWNLOAD", data, action);
+          return true;
+        }
+
         var downloadButton = ui.button(elToolbarMainContext, {
             icon : "ui-icon-arrowthickstop-1-s",
             description : "download query result",
             handler : function() {
                 var format = last && map[last.current].preferredDownloadFormat(lastOptions);
-                openDialog("Download Results", exportLanguages, editors.getOutputResult(), format);
+                openDialog("Download Results", exportLanguages, editors.getOutputResult(), format, downloadCallback);
             }
         });
 

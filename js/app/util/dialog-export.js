@@ -21,7 +21,7 @@ define([
 
 function(tplDialog, ui, dom, notification) {
     var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
-        elText, elDialog, elActions, elForm, clip;
+        elText, elDialog, elActions, elForm, clip, formCallback, currentAction;
 
     function selectCode() {
         setTimeout(function() { dom.selectText(elText.get(0)); }, 100);
@@ -63,6 +63,12 @@ function(tplDialog, ui, dom, notification) {
         elForm = elDialog.find("form");
 
         elForm.attr("action", downloadQueryService);
+        elForm.submit(function(e) {
+          if(formCallback)
+            return formCallback.call(this, elText.text(), currentAction);
+          else
+            return true;
+        });
 
         elText.click(function() {
             selectCode();
@@ -73,7 +79,8 @@ function(tplDialog, ui, dom, notification) {
     }
 
     var inited = false;
-    return function(title, actions, code, selected) {
+    return function(title, actions, code, selected, callback) {
+        formCallback = callback;
         if(!inited) {
             init();
             inited = true;
@@ -96,9 +103,12 @@ function(tplDialog, ui, dom, notification) {
 
         selected = selected || actions[0].token;
         ui.radios(elActions, $(actions).map(function(i, action) {
+            if(action.token === selected)
+              currentAction = action;
             return {
                   label : action.name
                 , handler : function() {
+                    currentAction = action;
                     execute(action);
                     return true;
                 }

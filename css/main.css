@@ -573,6 +573,27 @@
     list-style-position:inside;
 }
 
+.ui-menu .ui-menu-item.menu-separator {
+    height: 2px;
+    border: 0;
+}
+
+dl.labcoat-url-generator {
+
+}
+
+dl.labcoat-url-generator dt {
+    float: left;
+    display: block;
+    width: 100px;
+    margin-top: 0.6em;
+}
+
+dl.labcoat-url-generator dd {
+    clear: right;
+    margin-left: 110px;
+}
+
 @keyframes progressbg
 {
     0%   {background-position: 0 0;}
