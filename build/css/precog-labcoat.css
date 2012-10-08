@@ -694,6 +694,55 @@ html > body .ui-pnotify {
     margin: 0;
     list-style-position:inside;
 }
+.ui-menu .ui-menu-item.menu-separator {
+    height: 2px;
+    border: 0;
+}
+dl.labcoat-url-generator {
+}
+dl.labcoat-url-generator dt {
+    float: left;
+    display: block;
+    width: 100px;
+    margin-top: 0.6em;
+    padding-left: 10px;
+}
+dl.labcoat-url-generator dd {
+    clear: right;
+    padding-left: 120px;
+    margin: 0 0 5px 0;
+}
+dl.labcoat-url-generator input.url {
+    width: 20em;
+}
+dl.labcoat-url-generator input.path {
+    width: 10em;
+}
+dl.labcoat-url-generator input.int {
+    width: 5em;
+}
+dl.labcoat-url-generator input.api-key {
+    width: 25em;
+}
+dl.labcoat-url-generator dt.full-line {
+    padding: 0;
+}
+dl.labcoat-url-generator dd.full-line {
+    clear: both;
+    padding: 4px;
+    overflow: auto;
+}
+dl.labcoat-url-generator .input-error {
+    padding: 4px 8px;
+    margin: 2px 2px 2px 0;
+}
+dl.labcoat-url-generator dt.header {
+    width: inherit;
+    float: none;
+    margin: 12px 0 2px;
+    padding: 0;
+    font-weight: bold;
+}
 @keyframes progressbg
 {
     0%   {background-position: 0 0;}
