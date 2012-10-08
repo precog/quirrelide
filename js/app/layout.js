@@ -65,7 +65,7 @@ define([
             defaults : defaults,
             north : $.extend({}, toolbar, { size : toolbarMainHeight }),
             west : {
-                  size : 200
+                  size : 220
                 , initClosed : false
             }
         }));

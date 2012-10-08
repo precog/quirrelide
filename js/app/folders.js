@@ -41,15 +41,31 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
     }
 
     function removeVirtualPaths(parent, name) {
-        var arr = store.get("virtuals."+parent, []),
-            pos = arr.indexOf(name);
-        if(pos < 0) return;
-        arr.splice(pos, 1);
-        if(arr.length === 0) {
-            store.remove("virtuals."+parent);
-        } else {
-            store.set("virtuals." + parent, arr);
-        }
+      var arr = store.get("virtuals."+parent, []),
+        pos = arr.indexOf(name);
+      if(pos < 0) return;
+      arr.splice(pos, 1);
+      if(arr.length === 0) {
+        store.remove("virtuals."+parent, true);
+      } else {
+        store.set("virtuals."+parent, arr, true);
+      }
+    }
+
+    function normalizePath(path) {
+      path = path.replace(/\/+/g, "/");
+      if(path.substr(-1) === "/")
+        path = path.substr(0, path.length - 1);
+      return path;
+    }
+
+    function removeVirtualPath(path) {
+      path = normalizePath(path).substr(1);
+      var parts = path.split("/");
+      while(parts.length > 0) {
+        var name = parts.pop();
+        removeVirtualPaths("/"+parts.join("/"), name);
+      }
     }
 
     return function(el) {
@@ -148,14 +164,14 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             var paths = $(data.rslt.obj).find("li");
 
             paths.each(function(i, el){
-                var path = $(el).attr("data");
+                var path = normalizePath($(el).attr("data"));
                 if(map[path]) return;
                 loadAtPath(path, 1, el);
             });
         });
 
         function triggerQuery(path) {
-            $(wrapper).trigger("querypath", path);
+            $(wrapper).trigger("querypath", normalizePath(path));
         }
 
         function createNodeAt(path, name) {
@@ -168,7 +184,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             var parent = path === basePath ? -1 : findNode(path);
             if(!parent) return;
             // create visual node
-            var p = ("/" === path ? "/" : path + "/") + name;
+            var p = normalizePath(("/" === path ? "/" : path + "/") + name);
             if(map[p]) return; // node already exists in the tree
             map[p] = true;
             addFolder(name, p, null, parent);
@@ -189,9 +205,19 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             if(!path && (path = path.trim()) === "/" ) {
                 return;
             }
+            path = normalizePath(path);
             $(wrapper).trigger("requestPathDeletion", path);
-            // TODO: WIRE HERE PRECOG CALL
+            removeVirtualPath(path);
+
             delete map[path];
+            for(var key in map) {
+              if(map.hasOwnProperty(key)) {
+                if(key.substr(0, path.length + 1) === path + "/") {
+                  delete map[key];
+                }
+              }
+            }
+
             removeFolder(path);
         }
 
@@ -210,7 +236,8 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         }
 
         function removeBasePath(path) {
-          path = path.substr(0, basePath.length) === basePath ? path.substr(basePath.length) : path;
+          path = normalizePath(path);
+          path = (path + "/").substr(0, basePath.length) === basePath ? (path + "/").substr(basePath.length) : path;
           if(!path) path = "/";
           return path;
         }
@@ -260,7 +287,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         function addFolder(name, path, callback, parent) {
             if(!parent) parent = -1;
             return tree.jstree(
-                "create_node"
+                  "create_node"
                 , parent
                 , {
                     "title" : name
@@ -293,7 +320,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
         function loadAtPath(path, levels, parent) {
             if("undefined" === typeof levels)
                 levels = 1;
-
+            path = normalizePath(path);
             map[path] = true;
             precog.paths(removeBasePath(path), function(paths){
                 var base = "/" === path ? "" : path,
@@ -369,19 +396,19 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 message += "<br>Skipped " + humanize.numberFormat(e.skipped, 0) + " events (the ingest process stops after "+humanize.numberFormat(e.failed, 0)+" errors)."
               }
               if(e.errors.length) {
-                var map = {};
+                var m = {};
 
                 $(e.errors).each(function() {
                   var line   = this.line,
                       reason = this.reason,
-                      arr    = map[reason] || (map[reason] = []);
+                      arr    = m[reason] || (m[reason] = []);
                   arr.push(line);
                 });
 
                 var errors = [];
-                for(var field in map) {
-                  if(map.hasOwnProperty(field)) {
-                    errors.push(field + " at line(s): " + map[field].join(", "));
+                for(var field in m) {
+                  if(m.hasOwnProperty(field)) {
+                    errors.push(field + " at line(s): " + m[field].join(", "));
                   }
                 }
                 message +=

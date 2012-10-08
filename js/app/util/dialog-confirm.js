@@ -56,7 +56,8 @@ function(tplDialog, ui, dom, createCaptcha) {
         elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
     }
 
-    var inited = false;
+    var inited = false,
+        oldMessage, oldCaptcha;
     return function(title, message, handler, options) {
         options = options || {};
         if(!inited) {
@@ -76,20 +77,21 @@ function(tplDialog, ui, dom, createCaptcha) {
 
         var ok = elDialog.parent().find('button[ref=ok]'),
             el = elDialog.find(".pg-message");
-        el.detach("> *");
-
-        message = (!message || "string" === typeof message) ? $('<div>' + (message || "") +'</div>') : message;
+        if(oldMessage)
+          oldMessage.detach();
+        if(oldCaptcha)
+          oldCaptcha.detach();
+        oldMessage = message = (!message || "string" === typeof message) ? $('<div>' + (message || "") +'</div>') : message;
         el.append(message);
         if(options.captcha) {
           ok.button("disable");
-
-          var cont = $('<div class="captcha"></div>'),
+          var cont = oldCaptcha = $('<div class="captcha"></div>'),
               captcha = createCaptcha(100);
           cont.append('<div class="ui-widget"><div class="ui-state-highlight"><p>Solve this simple problem if you want to delete the data: <b>'+captcha.description+' is equal to?</b></p></div></div>');
           var input = $('<input type="number" step="1">').keyup(function() {
             var val = $(this).attr("value");
             if(val === "" + captcha.result) {
-              cont.find("*").remove();
+              cont.children("*").remove();
               cont.append('<div class="ui-widget"><div class="ui-state-highlight"><p>Good Job! Now click OK to confirm</p></div></div>');
               ok.button("enable");
             }
