@@ -14,15 +14,14 @@ function(createDispatcher) {
       ;
 
     return model = {
-      set : function(newvalue, force) {
-        if(value === newvalue) return true;
-        if(!!force && (lastError = validator(newvalue)) !== null) {
+      set : function(newvalue) {
+        if((lastError = validator(newvalue)) !== null) {
           dispatcher.emit(this, "validation.error", lastError, newvalue);
           return false;
         }
         var oldvalue = value;
         value = filter(newvalue);
-        dispatcher.emit(this, "value.change", newvalue, oldvalue);
+        dispatcher.emit(this, "value.change", value, oldvalue);
         return true;
       },
       reset : function() {
@@ -37,7 +36,7 @@ function(createDispatcher) {
         return value !== null && typeof value !== "undefined" && value || alt;
       },
       validate : function(value) {
-        var result = validator(value);
+        return validator(value) == null;
         return result === null;
       },
       lastError : function() {

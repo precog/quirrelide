@@ -1,51 +1,56 @@
 <div>
     <dl class="labcoat-url-generator">
-        <dt>Labcoat Host</dt>
-        <dd>
-            <span class="protocol"></span>://<input id="labcoatHost" value="" type="text">
-            <div class="input-error"></div>
-        </dd>
 
-        <dt>Analytics Service</dt>
-        <dd>
-            <span class="protocol"></span>://<input id="analyticsService" value="" type="text">
-            <div class="input-error"></div>
+        <dt class="header">Important Settings</dt>
+
+        <dt><label for="apiKey">API Key</label></dt>
+        <dd class="ui-widget-content ui-corner-all">
+            <input id="apiKey" value="" type="text" class="api-key">
+            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 
         <dt><label for="basePath">Base Path</label></dt>
-        <dd>
-            <input id="basePath" type="text">
-            <div class="input-error"></div>
+        <dd class="ui-widget-content ui-corner-all">
+            <input id="basePath" type="text" class="path">
+            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 
-        <dt><label for="version">Version</label></dt>
-        <dd>
-            <input id="version" type="text">
-            <div class="input-error"></div>
+        <dt><label for="limit">Limit</label></dt>
+        <dd class="ui-widget-content ui-corner-all">
+            <input id="limit" type="text" class="int">
+            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
+        </dd>
+
+        <dt class="header">Other Settings</dt>
+
+        <dt>Analytics Service</dt>
+        <dd class="ui-widget-content ui-corner-all">
+            <span class="protocol"></span>://<input id="analyticsService" value="" type="text" class="url">
+            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
+        </dd>
+
+        <dt>Labcoat Host</dt>
+        <dd class="ui-widget-content ui-corner-all">
+            <span class="protocol"></span>://<input id="labcoatHost" value="" type="text" class="url">
+            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 
         <dt><label for="protocol">Protocol</label></dt>
-        <dd>
+        <dd class="ui-widget-content ui-corner-all">
             <select id="protocol">
                 <option value="https">HTTPS</option>
                 <option value="http">HTTP</option>
             </select>
-            <div class="input-error"></div>
+            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 
-        <dt><label for="apiKey">API Key</label></dt>
-        <dd>
-            <input id="apiKey" value="" type="text">
-            <div class="input-error"></div>
+        <dt><label for="version">Version</label></dt>
+        <dd class="ui-widget-content ui-corner-all">
+            <input id="version" type="text" class="int">
+            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 
-        <dt><label for="limit">Limit</label></dt>
-        <dd>
-            <input id="limit" type="text">
-            <div class="input-error"></div>
-        </dd>
-
-        <dt>Labcoat Url</dt>
-        <dd><a href="" class="labcoatUrl" target="_blank"></a></dd>
+        <dt class="full-line output header">Labcoat Url</dt>
+        <dd class="full-line ui-widget-content ui-corner-all output"><a href="" class="labcoatUrl" target="_blank"></a></dd>
     </dl>
 </div>

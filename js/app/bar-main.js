@@ -7,8 +7,9 @@ define([
     , "app/util/dialog-confirm"
     , "rtext!templates/dialog.global.settings.html"
     , "app/util/valuemodel"
+    , "app/util/objectmodel"
     , "app/util/precog"
-], function(ui, tplToolbar, tplMenu, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, precog) {
+], function(ui, tplToolbar, tplMenu, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, objectModel, precog) {
     var ABOUT_LINK  = "http://precog.com/products/labcoat",
         BRAND_LINK  = "http://precog.com/products/labcoat",
         BRAND_CLASS = "pg-precog";
@@ -41,59 +42,197 @@ define([
       return precog.config[this.name];
     }
 
+    function intValidator(min, max) {
+      return function(value) {
+        value = trimFilter(value);
+        if(""+parseInt(value) !== ""+value)
+          return "must be an integer value";
+        value = parseInt(value);
+        if(min && value < min)
+          return "must be greater than " + min;
+        if(max && value > max)
+          return "must be less than " + max;
+        return null;
+      }
+    }
+
+    function trimFilter(value) {
+      return (""+value).trim();
+    }
+
+    function onlyTrailingSlash(value) {
+      value = trimFilter(value);
+      var ext = value.split(".").pop().toLowerCase();
+      if(value.substr(-1) !== "/" && ext !== "htm" && ext !== "html")
+      {
+        value += "/";
+      }
+      if(value.length === 1)
+        return value;
+      while(value.substr(0, 1) === "/")
+        value = value.substr(1);
+      return value;
+    }
+
+    function ensureSlashes(value) {
+      value = trimFilter(value);
+      if(value.substr(0, 1) !== "/")
+        value = "/" + value;
+      if(value.length === 1)
+        return value;
+      if(value.substr(-1) !== "/")
+        value += "/";
+      return value;
+    }
+
+    function toUpper(value) {
+      return trimFilter(value).toUpperCase();
+    }
+
+    function toLower(value) {
+      return trimFilter(value).toLowerCase();
+    }
+
+    function updateProtocol(value) {
+      message.find(".protocol").text(value);
+    }
+
+    function urlValidator(value) {
+      if (!!value.match(/^((\/?[a-z0-9_\-.]+)+)\/?$/i)) {
+        return null;
+      } else {
+        return "invalid url";
+      }
+    }
+
     // add global settings
     var message = $(tplGlobalSettings),
       settings = [{
-        name    : "limit",
-        extract : extractFromConfig
+        name      : "limit",
+        extract   : extractFromConfig,
+        validator : intValidator(1, null),
+        filter    : trimFilter
       }, {
-        name    : "analyticsService",
-        extract : function() {
+        name      : "analyticsService",
+        extract   : function() {
           var url = extractFromConfig.call(this);
-console.log(url);
           url = url.split("://").pop();
-console.log(url);
           if(url.substr(-1) == "/")
             url = url.substr(0, url.length - 1);
           return url;
+        },
+        filter    : onlyTrailingSlash,
+        validator : urlValidator
+      }, {
+        name      : "apiKey",
+        extract   : extractFromConfig,
+        filter    : toUpper,
+        validator : function (value) {
+            if (!!value.match(/^([A-F0-9]{8})(-[A-F0-9]{4}){3}-([A-F0-9]{12})$/)) {
+              return null;
+            } else {
+              return "invalid token pattern";
+            }
+          }
+      }, {
+        name         : "basePath",
+        extract      : extractFromConfig,
+        defaultValue : "/",
+        filter       : ensureSlashes,
+        validator : function (value) {
+          if (!!value.match(/^(\/?([a-z0-9_\-]+)(\/[a-z0-9_\-]+)*\/?)$/i)) {
+            return null;
+          } else {
+            return "invalid path pattern";
+          }
         }
       }, {
-        name    : "apiKey",
-        extract : extractFromConfig
+        name      : "labcoatHost",
+        extract   : function() { return window.location.hostname + window.location.pathname; },
+        filter    : onlyTrailingSlash,
+        validator : urlValidator
       }, {
-        name    : "labcoatHost",
-        extract : function() { return window.location.hostname; }
+        name      : "version",
+        extract   : extractFromConfig,
+        validator : intValidator(1, null),
+        filter    : trimFilter
       }, {
-        name    : "basePath",
-        extract : extractFromConfig
-      }, {
-        name    : "version",
-        extract : extractFromConfig
-      }, {
-        name     : "protocol",
-        extract  : function() { return window.location.protocol === "https:" ? "https" : "http"; },
-        callback : function(value) {
-          message.find(".protocol").text(value);
+        name      : "protocol",
+        extract   : function() { return window.location.protocol === "https:" ? "https" : "http"; },
+        callback  : updateProtocol,
+        filter    : toLower,
+        validator : function (value) {
+          if (["http", "https"].indexOf(value) >= 0) {
+            return null;
+          } else {
+            return "invalid protocol";
+          }
         }
       }];
 
+    var obmodel = objectModel(),
+       output = message.find(".labcoatUrl");
+
+    function changeUrlSuccess() {
+      var url = buildUrlSuccess();
+      output.attr("href", url);
+      output.text(url);
+      message.find(".output").show();
+    }
+
+    function buildUrlSuccess() {
+      var labcoat = obmodel.get("protocol") + "://" + obmodel.get("labcoatHost");
+      var params = [], t;
+
+      params.push("apiKey=" + encodeURIComponent(obmodel.get("apiKey")));
+
+      t = obmodel.get("protocol") + "://" + obmodel.get("analyticsService");
+      if(t !== labcoat)
+        params.push("analyticsService=" + encodeURIComponent(t));
+      params.push("limit=" + encodeURIComponent(obmodel.get("limit")));
+      t = obmodel.get("basePath");
+      if(t != "/")
+        params.push("basePath=" + encodeURIComponent(t));
+      t = obmodel.get("version");
+      if(t != 1)
+        params.push("version=" + encodeURIComponent(t));
+
+      return labcoat + "?" + params.join("&");
+    }
+
+    function changeUrlError() {
+      message.find(".output").hide();
+      output.attr("href", "#");
+      output.text("");
+    }
+
     $(settings).each(function(index, info) {
-      var model = valueModel(info.defaultValue || info.extract(), info.validator, info.filter);
+      var model = valueModel(info.extract() || info.defaultValue, info.validator, info.filter);
+      obmodel.addField(info.name, model);
       var input = message.find("#"+info.name);
       input.val(model.get());
       input.on("change", function() {
         model.set(input.val());
       });
-      model.on("validation.error", function(newvalue, error) {
-        console.log(info.name +": validation error '" + error + "' for " + newvalue);
+      model.on("validation.error", function(error, newvalue) {
+        input.parent().find(".input-error").html(error).show();
       });
       model.on("value.change", function(newvalue, oldvalue) {
-        console.log(info.name+": value changed from " + oldvalue + " to " + newvalue);
+        input.val(newvalue);
+        input.parent().find(".input-error").hide();
         if(info.callback) {
           info.callback(newvalue);
         }
       });
     });
+    obmodel.on("validation.error", changeUrlError);
+    obmodel.on("validation.success", changeUrlSuccess);
+
+    updateProtocol(obmodel.get("protocol"));
+    if(obmodel.isValid())
+      changeUrlSuccess();
+    else
+      changeUrlError();
 
     return function(el) {
         el.append(tplToolbar);
@@ -158,10 +297,13 @@ console.log(url);
 
         settingsButton.click(function() {
             var title   = "Hello World",
-                handler = function() {},
+                handler = function() {
+                  if(obmodel.isValid())
+                    window.location = buildUrlSuccess();
+                },
                 options = {
-                    width  : 600
-                  , height : 600
+                    width  : 500
+                  , height : 460
                 };
             openDialog(title, message, handler, options);
         });

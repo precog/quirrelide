@@ -76,7 +76,7 @@ function(tplDialog, ui, dom, createCaptcha) {
 
         var ok = elDialog.parent().find('button[ref=ok]'),
             el = elDialog.find(".pg-message");
-        el.find("*").remove();
+        el.detach("> *");
 
         message = (!message || "string" === typeof message) ? $('<div>' + (message || "") +'</div>') : message;
         el.append(message);
