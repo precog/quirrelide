@@ -296,7 +296,7 @@ define([
           .append(settingsButton);
 
         settingsButton.click(function() {
-            var title   = "Hello World",
+            var title   = "Global Settings",
                 handler = function() {
                   if(obmodel.isValid())
                     window.location = buildUrlSuccess();
