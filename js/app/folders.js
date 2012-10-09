@@ -325,7 +325,7 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             precog.paths(removeBasePath(path), function(paths){
                 var base = "/" === path ? "" : path,
                     virtuals = getVirtualPaths(path);
-                virtuals.forEach(function(virtual) {
+                $.each(virtuals, function(i, virtual) {
                     if(virtual.substr(0,1) !== '/') virtual = '/' + virtual;
                     if(paths.indexOf(virtual) < 0) paths.push(virtual);
                 });
