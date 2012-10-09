@@ -2,13 +2,13 @@ define([
       "app/util/querystring"
     , "app/util/md5"
     , "app/util/guid"
-	, "app/util/ie"
-	, "app/util/uploadservice"
+	  , "app/util/ie"
+//	, "app/util/uploadservice"
     , "https://api.reportgrid.com/js/precog.js"
 //    , "http://localhost/rg/js/precog.js"
 ],
 
-function(qs, md5, guid, ie, upload){
+function(qs, md5, guid, ie /*, upload*/){
     var config   = window.Precog.$.Config,
         params   = ["apiKey", "analyticsService", "basePath", "limit"],
         contexts = [null],
@@ -49,11 +49,11 @@ function(qs, md5, guid, ie, upload){
 
     var q = {
         ingest : function(path, data, type, progress, complete, error) {
-		  if(config.useJsonp) {
-			upload.ingest(path, data, type, progress, complete, error);
-		  } else {
-			window.Precog.ingest(path, data, type, complete, error, { progress : progress });
-		  }
+//          if(config.useJsonp) {
+//            upload.ingest(path, data, type, progress, complete, error);
+//          } else {
+            window.Precog.ingest(path, data, type, complete, error, { progress : progress });
+//          }
         },
         deletePath : function(path, callback) {
           window.Precog.deletePath(path, function(r) {
