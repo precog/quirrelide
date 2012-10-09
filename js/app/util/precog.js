@@ -2,23 +2,25 @@ define([
       "app/util/querystring"
     , "app/util/md5"
     , "app/util/guid"
+	, "app/util/ie"
+	, "app/util/uploadservice"
     , "https://api.reportgrid.com/js/precog.js"
 //    , "http://localhost/rg/js/precog.js"
 ],
 
-function(qs, md5, guid){
+function(qs, md5, guid, ie, upload){
     var config   = window.Precog.$.Config,
         params   = ["apiKey", "analyticsService", "basePath", "limit"],
         contexts = [null],
         reprecog = /(require|precog|quirrel)[^.]*.js[?]/i;
 
-    window.Precog.$.Http.setUseJsonp(false);
+	if(!ie.isIE() || ie.greaterOrEqualTo(10))
+		window.Precog.$.Http.setUseJsonp(false);
 
 
     var precog = ".precog.com",
         host   = window.location.host;
-    if(host.substr(host.length - precog.length) === precog)
-    {
+    if(host.substr(host.length - precog.length) === precog) {
       config.analyticsService = window.location.protocol + "//" + host + "/";
     }
 
@@ -47,17 +49,11 @@ function(qs, md5, guid){
 
     var q = {
         ingest : function(path, data, type, progress, complete, error) {
-          window.Precog.ingest(path, data, type,
-            function(e) {
-              complete(e);
-            },
-            function(e) {
-              error(e);
-            },
-            {
-              progress : progress
-            }
-          );
+		  if(config.useJsonp) {
+			upload.ingest(path, data, type, progress, complete, error);
+		  } else {
+			window.Precog.ingest(path, data, type, complete, error, { progress : progress });
+		  }
         },
         deletePath : function(path, callback) {
           window.Precog.deletePath(path, function(r) {

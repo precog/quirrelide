@@ -271,9 +271,11 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 else
                     return "select a file";
             }, function(_, files) {
-                for(var i = 0; i < files.length; i++) {
-                    uploadFile(files[i], path);
-                }
+				if(files) {
+					for(var i = 0; i < files.length; i++) {
+						uploadFile(files[i], path);
+					}
+				}
             }, "file");
         }
 
@@ -434,9 +436,8 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                 for (var i=0, l=files.length; i<l; i++) {
                     uploadFile(files[i], path);
                 }
-            }
-            else {
-                fileList.innerHTML = "No support for the File API in this web browser";
+            } else {
+                alert("No support for the File API in this web browser");
             }
         }
 
