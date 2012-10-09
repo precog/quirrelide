@@ -18,7 +18,7 @@ define([
 ],
 
 function(tplDialog, ui, dom, createCaptcha) {
-    var elDialog, currentHandler, currentType;
+    var elDialog, currentHandler, cancelHandler, currentType;
 
     function reposition() {
         elDialog.dialog("option", "position", "center");
@@ -47,6 +47,8 @@ function(tplDialog, ui, dom, createCaptcha) {
                     text : "Cancel",
                     click : function() {
                         $(this).dialog("close");
+                        if(cancelHandler)
+                          cancelHandler();
                     }
                 }]
             })
@@ -74,6 +76,7 @@ function(tplDialog, ui, dom, createCaptcha) {
 
         elDialog.dialog("open");
 
+        cancelHandler = options.cancel;
 
         var ok = elDialog.parent().find('button[ref=ok]'),
             el = elDialog.find(".pg-message");

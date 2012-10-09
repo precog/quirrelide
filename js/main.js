@@ -343,7 +343,7 @@ console.log(JSON.stringify(pagination));
             editors.setOutputOptions(options);
         });
 
-        theme.set(config.get('theme', 'franco'));
+        theme.set(precog.config.theme || config.get('theme', 'gray'));
 
         config.monitor.bind('theme', function(e, name) {
             theme.set(name);

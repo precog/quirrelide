@@ -1,7 +1,6 @@
 define([
       "app/util/ui"
     , "rtext!templates/toolbar.main.html"
-    , "rtext!templates/menu.settings.html"
     , "app/util/fullscreen"
     , "app/theme"
     , "app/util/dialog-confirm"
@@ -9,7 +8,7 @@ define([
     , "app/util/valuemodel"
     , "app/util/objectmodel"
     , "app/util/precog"
-], function(ui, tplToolbar, tplMenu, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, objectModel, precog) {
+], function(ui, tplToolbar, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, objectModel, precog) {
     var ABOUT_LINK  = "http://precog.com/products/labcoat",
         BRAND_LINK  = "http://precog.com/products/labcoat",
         BRAND_CLASS = "pg-precog";
@@ -21,16 +20,6 @@ define([
             BRAND_LINK  = "http://www.gridgain.com/";
             BRAND_CLASS = "pg-gridgain";
             break;
-    }
-
-
-    function buildItems(menu, groups) {
-        $.each(groups, function(key) {
-            menu.append('<li class="ui-state-disabled ui-menu-item" role="presentation"><a href="#">'+key+' themes:</a></li>');
-            $.each(this, function() {
-                menu.append('<li data-editor-theme="'+this.token+'" class="editor-theme ui-menu-item" role="presentation"><a href="#">'+this.name+'</a></li>');
-            })
-        });
     }
 
     function updateBrand(anchor) {
@@ -113,13 +102,20 @@ define([
         validator : intValidator(1, null),
         filter    : trimFilter
       }, {
+        name      : "theme",
+        extract   : function() { return theme.current || extractFromConfig.call(this); },
+        validator : function(value) {
+          return theme.list().map(function(el) { return el.token; }).indexOf(value) >= 0 ? null : "invalid theme";
+        },
+        callback : function(value) {
+          theme.set(value);
+        }
+      }, {
         name      : "analyticsService",
         extract   : function() {
           var url = extractFromConfig.call(this);
           url = url.split("://").pop();
-          if(url.substr(-1) == "/")
-            url = url.substr(0, url.length - 1);
-          return url;
+          return onlyTrailingSlash(url);
         },
         filter    : onlyTrailingSlash,
         validator : urlValidator
@@ -171,7 +167,15 @@ define([
       }];
 
     var obmodel = objectModel(),
-       output = message.find(".labcoatUrl");
+        output = message.find(".labcoatUrl");
+
+    var $theme = message.find("#theme");
+    $.each(theme.groups(), function(group) {
+      var optgroup = $('<optgroup label="'+group+' themes"></optgroup>').appendTo($theme);
+      $.each(this, function() {
+        optgroup.append($('<option value="'+this.token+'">'+this.name+'</option>'));
+      })
+    });
 
     function changeUrlSuccess() {
       var url = buildUrlSuccess();
@@ -196,6 +200,10 @@ define([
       t = obmodel.get("version");
       if(t != 1)
         params.push("version=" + encodeURIComponent(t));
+
+      t = obmodel.get("theme");
+      if(t)
+        params.push("theme=" + encodeURIComponent(t));
 
       return labcoat + "?" + params.join("&");
     }
@@ -236,26 +244,9 @@ define([
 
     return function(el) {
         el.append(tplToolbar);
-        var right = el.find(".pg-toolbar-context"),
-            menu = ui.contextmenu(tplMenu);
+        var right = el.find(".pg-toolbar-context");
 
         updateBrand(el.find("a.pg-brand"));
-        buildItems(menu.find("ul:first"), theme.groups());
-
-        $(theme).on("change", function(e, name) {
-            menu.find('.editor-theme').each(function() {
-                if($(this).attr("data-editor-theme") === name) {
-                    $(this).addClass('ui-state-active');
-                } else {
-                    $(this).removeClass('ui-state-active');
-                }
-            });
-        });
-
-        menu.find(".editor-theme").click(function() {
-            theme.set($(this).attr("data-editor-theme"));
-        });
-
         ui.button(right, {
             icon : "ui-icon-info",
             description : "about Labcoat"
@@ -267,15 +258,24 @@ define([
             icon : "ui-icon-gear",
             description : "theme settings"
         }).click(function() {
-                var pos = $(this).offset(),
-                    w = $(this).outerWidth(),
-                    h = $(this).outerHeight();
-                menu.css({
-                    position : "absolute",
-                    top : (pos.top + h) + "px",
-                    left : (pos.left + w - menu.outerWidth()) + "px"
-                }).show();
-            });
+            var currentTheme = theme.current,
+              title   = "Global Settings",
+              handler = function() {
+                if(obmodel.isValid())
+                  window.location = buildUrlSuccess();
+              },
+              options = {
+                width  : 500
+                , height : 500
+                , cancel : function() {
+                  if(theme.current !== currentTheme) {
+                    theme.set(currentTheme);
+                  }
+                }
+              };
+            message.find("#theme").val(theme.current);
+            openDialog(title, message, handler, options);
+          });
 
         ui.button(right, {
             icon : fullscreen.isFullScreen() ? "ui-icon-newwin" : "ui-icon-arrow-4-diag",
@@ -288,24 +288,6 @@ define([
                     $(this).find('.pg-icon').removeClass("ui-icon-arrow-4-diag").addClass("ui-icon-newwin");
                 }
             }
-        });
-
-        var settingsButton = $('<li class="ui-menu-item" role="presentation"><a href="#">global settings</a></li>');
-        menu.find("ul:first")
-          .append('<li class="ui-menu-item menu-separator ui-state-highlight"></li>')
-          .append(settingsButton);
-
-        settingsButton.click(function() {
-            var title   = "Global Settings",
-                handler = function() {
-                  if(obmodel.isValid())
-                    window.location = buildUrlSuccess();
-                },
-                options = {
-                    width  : 500
-                  , height : 460
-                };
-            openDialog(title, message, handler, options);
         });
     }
 });

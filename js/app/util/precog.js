@@ -10,7 +10,7 @@ define([
 
 function(qs, md5, guid, ie /*, upload*/){
     var config   = window.Precog.$.Config,
-        params   = ["apiKey", "analyticsService", "basePath", "limit"],
+        params   = ["apiKey", "analyticsService", "basePath", "limit", "theme"],
         contexts = [null],
         reprecog = /(require|precog|quirrel)[^.]*.js[?]/i;
 
