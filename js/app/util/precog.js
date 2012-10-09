@@ -14,7 +14,7 @@ function(qs, md5, guid, ie /*, upload*/){
         contexts = [null],
         reprecog = /(require|precog|quirrel)[^.]*.js[?]/i;
 
-	if(!ie.isIE() || ie.greaterOrEqualTo(10))
+	if(!ie.isIE() /*|| ie.greaterOrEqualTo(10)*/)
 		window.Precog.$.Http.setUseJsonp(false);
 
 
