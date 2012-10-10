@@ -11,7 +11,7 @@ function(createStore) {
             softTabs : true,
             disableClientCache : true,
             ioPanesVertical : true,
-            queryLimit : 1
+            queryLimit : 1000
         };
 
     return createStore(CONFIG_KEY, defaults);
