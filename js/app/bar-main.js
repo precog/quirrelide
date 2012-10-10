@@ -248,7 +248,7 @@ define([
                 },
                 options = {
                   width  : 500
-                  , height : 460
+                  , height : 440
                   , cancel : function() {
                     if(theme.current !== currentTheme) {
                       theme.set(currentTheme);
