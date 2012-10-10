@@ -3,7 +3,7 @@
 $apiKey  = @$_GET['apiKey'];
 $path    = @$_GET['path'];
 $service = @$_GET['analyticsService'];
-$version = @$_GET['version'];
+$version = 1;
 
 function error($error) {
 	die($error);
@@ -36,7 +36,7 @@ if(!$path) error("Invalid Path");
 if(substr($path, -1) != '/') $path .= "/";
 if(!$service) error("Invalid Analytic Service");
 if(substr($service, -1) != '/') $service .= "/";
-if(!$version) error("Invalid Inversion");
+if(!$version) error("Invalid Version");
 
 /*
 echo "<pre>";
