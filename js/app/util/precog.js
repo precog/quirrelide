@@ -48,11 +48,7 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
     if(!config.limit)
       config.limit = localConfig.get("queryLimit");
 
-    localConfig.monitor.bind("theme", function(_, value) {
-      console.log("theme", value);
-    });
     $(localConfig).on("queryLimit", function(_, value) {
-console.log("Query Limit Changed from " + config.limit + " TO " + value);
       config.limit = value;
     });
 
