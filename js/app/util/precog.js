@@ -3,12 +3,13 @@ define([
     , "app/util/md5"
     , "app/util/guid"
 	  , "app/util/ie"
+    , "app/util/config"
 //	, "app/util/uploadservice"
     , "https://api.reportgrid.com/js/precog.js"
 //    , "http://localhost/rg/js/precog.js"
 ],
 
-function(qs, md5, guid, ie /*, upload*/){
+function(qs, md5, guid, ie, localConfig /*, upload*/){
     var config   = window.Precog.$.Config,
         params   = ["apiKey", "analyticsService", "basePath", "limit", "theme"],
         contexts = [null],
@@ -45,7 +46,15 @@ function(qs, md5, guid, ie /*, upload*/){
     }
 
     if(!config.limit)
-      config.limit = 1000;
+      config.limit = localConfig.get("queryLimit");
+
+    localConfig.monitor.bind("theme", function(_, value) {
+      console.log("theme", value);
+    });
+    $(localConfig).on("queryLimit", function(_, value) {
+console.log("Query Limit Changed from " + config.limit + " TO " + value);
+      config.limit = value;
+    });
 
     var q = {
         ingest : function(path, data, type, progress, complete, error) {

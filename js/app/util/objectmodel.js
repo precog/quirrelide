@@ -73,6 +73,14 @@ function(createDispatcher) {
             map[name].reset();
           }
         }
+      },
+      hasChanged : function() {
+        for(name in map) {
+          if(map.hasOwnProperty(name) && !map[name].isDefault()) {
+            return true;
+          }
+        }
+        return false;
       }
     };
   }

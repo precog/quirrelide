@@ -10,7 +10,8 @@ function(createStore) {
             tabSize : 2,
             softTabs : true,
             disableClientCache : true,
-            ioPanesVertical : true
+            ioPanesVertical : true,
+            queryLimit : 1
         };
 
     return createStore(CONFIG_KEY, defaults);

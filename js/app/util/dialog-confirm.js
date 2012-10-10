@@ -47,15 +47,21 @@ function(tplDialog, ui, dom, createCaptcha) {
                     text : "Cancel",
                     click : function() {
                         $(this).dialog("close");
+                        close();
                         if(cancelHandler)
                           cancelHandler();
-                    }
+                    },
+                    ref : "cancel"
                 }]
             })
         ;
 
+        function close(e, ui) {
+          $(window).off("resize", reposition);
+        }
+
         elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
-        elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
+        elDialog.bind("dialogclose", close);
     }
 
     var inited = false,

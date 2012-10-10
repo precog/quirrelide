@@ -1,8 +1,7 @@
 <div>
     <dl class="labcoat-url-generator">
 
-        <dt class="header">Important Settings</dt>
-
+        <dt class="header">Account Settings</dt>
         <dt><label for="apiKey">API Key</label></dt>
         <dd class="ui-widget-content ui-corner-all">
             <input id="apiKey" value="" type="text" class="api-key">
@@ -15,6 +14,7 @@
             <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 
+        <dt class="header">User Preferences</dt>
         <dt><label for="limit">Limit</label></dt>
         <dd class="ui-widget-content ui-corner-all">
             <input id="limit" type="text" class="int">
@@ -27,32 +27,16 @@
             <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 
-        <dt class="header">Other Settings</dt>
-
+        <dt class="header">Server Settings</dt>
         <dt>Analytics Service</dt>
         <dd class="ui-widget-content ui-corner-all">
-            <span class="protocol"></span>://<input id="analyticsService" value="" type="text" class="url">
+            https://<input id="analyticsService" value="" type="text" class="url">
             <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 
         <dt>Labcoat Host</dt>
         <dd class="ui-widget-content ui-corner-all">
-            <span class="protocol"></span>://<input id="labcoatHost" value="" type="text" class="url">
-            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
-        </dd>
-
-        <dt><label for="protocol">Protocol</label></dt>
-        <dd class="ui-widget-content ui-corner-all">
-            <select id="protocol">
-                <option value="https">HTTPS</option>
-                <option value="http">HTTP</option>
-            </select>
-            <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
-        </dd>
-
-        <dt><label for="version">Version</label></dt>
-        <dd class="ui-widget-content ui-corner-all">
-            <input id="version" type="text" class="int">
+            https://<input id="labcoatHost" value="" type="text" class="url">
             <div class="input-error ui-state-error ui-corner-all" style="display:none"></div>
         </dd>
 

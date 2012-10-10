@@ -24,6 +24,13 @@ function(createDispatcher) {
         dispatcher.emit(this, "value.change", value, oldvalue);
         return true;
       },
+      setDefault : function(newvalue) {
+        var oldvalue = defaultValue;
+        defaultValue = filter(newvalue);
+        dispatcher.emit(this, "default.change", defaultValue, oldvalue);
+        this.set(newvalue);
+        return true;
+      },
       reset : function() {
         if(defaultValue === value) return false;
         if(this.set(defaultValue)) {
@@ -34,6 +41,9 @@ function(createDispatcher) {
       },
       get : function(alt) {
         return value !== null && typeof value !== "undefined" && value || alt;
+      },
+      getDefault : function() {
+        return defaultValue;
       },
       validate : function(value) {
         return validator(value) == null;
@@ -55,6 +65,9 @@ function(createDispatcher) {
       setFilter : function(newfilter) {
         filter = newfilter || function() { return null; };
         dispatcher.emit(this, "filter.change", newfilter);
+      },
+      isDefault : function() {
+        return value === defaultValue;
       }
     }
   }

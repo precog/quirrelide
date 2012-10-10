@@ -8,7 +8,8 @@ define([
     , "app/util/valuemodel"
     , "app/util/objectmodel"
     , "app/util/precog"
-], function(ui, tplToolbar, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, objectModel, precog) {
+    , "app/util/config"
+], function(ui, tplToolbar, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, objectModel, precog, config) {
     var ABOUT_LINK  = "http://precog.com/products/labcoat",
         BRAND_LINK  = "http://precog.com/products/labcoat",
         BRAND_CLASS = "pg-precog";
@@ -78,14 +79,6 @@ define([
       return trimFilter(value).toUpperCase();
     }
 
-    function toLower(value) {
-      return trimFilter(value).toLowerCase();
-    }
-
-    function updateProtocol(value) {
-      message.find(".protocol").text(value);
-    }
-
     function urlValidator(value) {
       if (!!value.match(/^((\/?[a-z0-9_\-.]+)+)\/?$/i)) {
         return null;
@@ -96,77 +89,62 @@ define([
 
     // add global settings
     var message = $(tplGlobalSettings),
-      settings = [{
-        name      : "limit",
-        extract   : extractFromConfig,
-        validator : intValidator(1, null),
-        filter    : trimFilter
-      }, {
-        name      : "theme",
-        extract   : function() { return theme.current || extractFromConfig.call(this); },
-        validator : function(value) {
-          return theme.list().map(function(el) { return el.token; }).indexOf(value) >= 0 ? null : "invalid theme";
-        },
-        callback : function(value) {
-          theme.set(value);
-        }
-      }, {
-        name      : "analyticsService",
-        extract   : function() {
-          var url = extractFromConfig.call(this);
-          url = url.split("://").pop();
-          return onlyTrailingSlash(url);
-        },
-        filter    : onlyTrailingSlash,
-        validator : urlValidator
-      }, {
-        name      : "apiKey",
-        extract   : extractFromConfig,
-        filter    : toUpper,
-        validator : function (value) {
-            if (!!value.match(/^([A-F0-9]{8})(-[A-F0-9]{4}){3}-([A-F0-9]{12})$/)) {
-              return null;
-            } else {
-              return "invalid token pattern";
+        qsSettings = [{
+            name      : "analyticsService",
+            extract   : function() {
+              var url = extractFromConfig.call(this);
+              url = url.split("://").pop();
+              return onlyTrailingSlash(url);
+            },
+            filter    : onlyTrailingSlash,
+            validator : urlValidator
+          }, {
+            name      : "apiKey",
+            extract   : extractFromConfig,
+            filter    : toUpper,
+            validator : function (value) {
+                if (!!value.match(/^([A-F0-9]{8})(-[A-F0-9]{4}){3}-([A-F0-9]{12})$/)) {
+                  return null;
+                } else {
+                  return "invalid token pattern";
+                }
+              }
+          }, {
+            name         : "basePath",
+            extract      : extractFromConfig,
+            defaultValue : "/",
+            filter       : ensureSlashes,
+            validator : function (value) {
+              if (!!value.match(/^(\/?([a-z0-9_\-]+)(\/[a-z0-9_\-]+)*\/?)$/i)) {
+                return null;
+              } else {
+                return "invalid path pattern";
+              }
             }
-          }
-      }, {
-        name         : "basePath",
-        extract      : extractFromConfig,
-        defaultValue : "/",
-        filter       : ensureSlashes,
-        validator : function (value) {
-          if (!!value.match(/^(\/?([a-z0-9_\-]+)(\/[a-z0-9_\-]+)*\/?)$/i)) {
-            return null;
-          } else {
-            return "invalid path pattern";
-          }
-        }
-      }, {
-        name      : "labcoatHost",
-        extract   : function() { return window.location.hostname + window.location.pathname; },
-        filter    : onlyTrailingSlash,
-        validator : urlValidator
-      }, {
-        name      : "version",
-        extract   : extractFromConfig,
-        validator : intValidator(1, null),
-        filter    : trimFilter
-      }, {
-        name      : "protocol",
-        extract   : function() { return window.location.protocol === "https:" ? "https" : "http"; },
-        callback  : updateProtocol,
-        filter    : toLower,
-        validator : function (value) {
-          if (["http", "https"].indexOf(value) >= 0) {
-            return null;
-          } else {
-            return "invalid protocol";
-          }
-        }
-      }];
+          }, {
+            name      : "labcoatHost",
+            extract   : function() { return window.location.hostname + window.location.pathname; },
+            filter    : onlyTrailingSlash,
+            validator : urlValidator
+          }],
+        userSettings = [{
+            name      : "limit",
+            extract   : extractFromConfig,
+            validator : intValidator(1, null),
+            filter    : trimFilter
+          }, {
+            name      : "theme",
+            extract   : function() { return theme.current || extractFromConfig.call(this); },
+            validator : function(value) {
+              return theme.list().map(function(el) { return el.token; }).indexOf(value) >= 0 ? null : "invalid theme";
+            },
+            callback : function(value) {
+              theme.set(value);
+            }
+         }];
 
-    var obmodel = objectModel(),
+    var qsModel = objectModel(),
+        userModel = objectModel(),
         output = message.find(".labcoatUrl");
 
     var $theme = message.find("#theme");
@@ -185,26 +163,17 @@ define([
     }
 
     function buildUrlSuccess() {
-      var labcoat = obmodel.get("protocol") + "://" + obmodel.get("labcoatHost");
+      var labcoat = "https://" + qsModel.get("labcoatHost");
       var params = [], t;
 
-      params.push("apiKey=" + encodeURIComponent(obmodel.get("apiKey")));
+      params.push("apiKey=" + encodeURIComponent(qsModel.get("apiKey")));
 
-      t = obmodel.get("protocol") + "://" + obmodel.get("analyticsService");
+      t = "https://" + qsModel.get("analyticsService");
       if(t !== labcoat)
         params.push("analyticsService=" + encodeURIComponent(t));
-      params.push("limit=" + encodeURIComponent(obmodel.get("limit")));
-      t = obmodel.get("basePath");
+      t = qsModel.get("basePath");
       if(t != "/")
         params.push("basePath=" + encodeURIComponent(t));
-      t = obmodel.get("version");
-      if(t != 1)
-        params.push("version=" + encodeURIComponent(t));
-
-      t = obmodel.get("theme");
-      if(t)
-        params.push("theme=" + encodeURIComponent(t));
-
       return labcoat + "?" + params.join("&");
     }
 
@@ -214,35 +183,42 @@ define([
       output.text("");
     }
 
-    $(settings).each(function(index, info) {
-      var model = valueModel(info.extract() || info.defaultValue, info.validator, info.filter);
-      obmodel.addField(info.name, model);
-      var input = message.find("#"+info.name);
-      input.val(model.get());
-      input.on("change", function() {
-        model.set(input.val());
-      });
-      model.on("validation.error", function(error, newvalue) {
-        input.parent().find(".input-error").html(error).show();
-      });
-      model.on("value.change", function(newvalue, oldvalue) {
-        input.val(newvalue);
-        input.parent().find(".input-error").hide();
-        if(info.callback) {
-          info.callback(newvalue);
-        }
-      });
-    });
-    obmodel.on("validation.error", changeUrlError);
-    obmodel.on("validation.success", changeUrlSuccess);
+    function wireValueModel(objectModel) {
+      return function(index, info) {
+        var model = valueModel(info.extract() || info.defaultValue, info.validator, info.filter);
+        objectModel.addField(info.name, model);
+        var input = message.find("#"+info.name);
+        input.val(model.get());
+        input.on("change", function() {
+          model.set(input.val());
+        });
+        model.on("validation.error", function(error, newvalue) {
+          input.parent().find(".input-error").html(error).show();
+        });
+        model.on("value.change", function(newvalue, oldvalue) {
+          input.val(newvalue);
+          input.parent().find(".input-error").hide();
+          if(info.callback) {
+            info.callback(newvalue);
+          }
+        });
+      }
+    }
 
-    updateProtocol(obmodel.get("protocol"));
-    if(obmodel.isValid())
+    $(qsSettings).each(wireValueModel(qsModel));
+    qsModel.on("validation.error", changeUrlError);
+    qsModel.on("validation.success", changeUrlSuccess);
+
+    $(userSettings).each(wireValueModel(userModel));
+
+    if(qsModel.isValid())
       changeUrlSuccess();
     else
       changeUrlError();
 
     return function(el) {
+
+
         el.append(tplToolbar);
         var right = el.find(".pg-toolbar-context");
 
@@ -256,24 +232,32 @@ define([
 
         ui.button(right, {
             icon : "ui-icon-gear",
-            description : "theme settings"
+            description : "application settings"
         }).click(function() {
             var currentTheme = theme.current,
-              title   = "Global Settings",
-              handler = function() {
-                if(obmodel.isValid())
-                  window.location = buildUrlSuccess();
-              },
-              options = {
-                width  : 500
-                , height : 500
-                , cancel : function() {
-                  if(theme.current !== currentTheme) {
-                    theme.set(currentTheme);
+                title   = "Application Settings",
+                handler = function() {
+                  if(!userModel.getField("limit").isDefault()) {
+                    var value = parseInt(userModel.get("limit"));
+                    config.set("queryLimit", value, true);
+                    $(config).trigger("queryLimit", value);
                   }
-                }
-              };
-            message.find("#theme").val(theme.current);
+                  if(qsModel.isValid() && qsModel.hasChanged()) {
+                    window.location = buildUrlSuccess();
+                  }
+                },
+                options = {
+                  width  : 500
+                  , height : 460
+                  , cancel : function() {
+                    if(theme.current !== currentTheme) {
+                      theme.set(currentTheme);
+                    }
+                  }
+                };
+//            message.find("#theme").val(theme.current);
+            userModel.getField("theme").setDefault(theme.current);
+            userModel.getField("limit").setDefault(config.get("queryLimit"));
             openDialog(title, message, handler, options);
           });
 
