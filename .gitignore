@@ -18,3 +18,9 @@
 css/.DS_Store
 
 .DS_Store
+
+.idea/jsLinters/jshint.xml
+
+.idea/jsLinters/jslint.xml
+
+.idea/libraries/sass_stdlib.xml

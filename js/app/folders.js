@@ -332,14 +332,19 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
                     if(paths.indexOf(virtual) < 0) paths.push(virtual);
                 });
                 paths.sort();
-                paths.forEach(function(subpath) {
-                    subpath = base + subpath;
-                    addFolder(subpath.split("/").pop(), subpath, function(){
-                        if(levels > 1) {
-                            loadAtPath(subpath, levels-1, this);
-                        }
-                    }, parent || -1);
-                });
+                function dequeue() {
+                  if(paths.length === 0)
+                    return;
+                  var p = base + paths.shift();
+                  addFolder(p.split("/").pop(), p, function(){
+                    if(levels > 1) {
+                      loadAtPath(p, levels-1, this);
+                    }
+                  }, parent || -1);
+                  setTimeout(dequeue, 0);
+                }
+
+              setTimeout(dequeue, 0);
             });
         }
 
