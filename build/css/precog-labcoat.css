@@ -546,6 +546,12 @@ html > body .ui-pnotify {
 .pg-queries .pg-queries ul .ui-button-text {
     padding: .2em 0.5em .2em 2.1em;
 }
+.pg-result .ui-state-error p {
+    margin-bottom: 6px;
+}
+.pg-result .ui-state-error pre {
+    font-size: 120%;
+}
 .ui-pnotify > .ui-widget.ui-pnotify-shadow {
     position: relative;
 }
