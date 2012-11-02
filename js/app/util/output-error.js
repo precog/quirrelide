@@ -27,7 +27,7 @@ function() {
         })
       }
 
-      return $message;
+      return $('<div class="error-container"></div>').append($message);
     }
 
     return {

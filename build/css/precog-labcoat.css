@@ -549,6 +549,12 @@ html > body .ui-pnotify {
 .pg-result .ui-state-error p {
     margin-bottom: 6px;
 }
+.pg-result .ui-state-error .error-container {
+    margin-top: 12px;
+}
+.pg-result .ui-state-error .error-container:first-child {
+    margin-top: 0px;
+}
 .pg-result .ui-state-error pre {
     font-size: 120%;
 }
