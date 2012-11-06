@@ -5,7 +5,8 @@ define([
 	  , "app/util/ie"
     , "app/util/config"
 //	, "app/util/uploadservice"
-    , "https://api.reportgrid.com/js/precog.js"
+    , "libs/precog/precog"
+//    , "https://api.reportgrid.com/js/precog.js"
 //    , "http://localhost/rg/js/precog.js"
 ],
 
