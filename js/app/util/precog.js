@@ -17,7 +17,7 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
         reprecog = /(require|precog|quirrel)[^.]*.js[?]/i;
 
 	if(!ie.isIE() /*|| ie.greaterOrEqualTo(10)*/)
-		window.Precog.$.Http.setUseJsonp(false);
+		window.Precog.$.Http.setUseJsonp(window.Precog.$.PageConfig.useJsonp === "true");
 
 
     var precog = ".precog.com",

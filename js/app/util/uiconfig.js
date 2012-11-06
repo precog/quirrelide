@@ -8,7 +8,5 @@ function() {
       disableDownload : $('head script[data-labcoat-disable-download]').attr("data-labcoat-disable-download") === "true"
   };
 
-console.log(config);
-
   return config;
 });

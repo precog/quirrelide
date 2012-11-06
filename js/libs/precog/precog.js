@@ -586,7 +586,7 @@ throw new SyntaxError('JSON.parse');};}}());
   $.Config.analyticsService = $.PageConfig.analyticsService || $.Config.analyticsService;
   $.Config.apiKey = $.PageConfig.apiKey || $.Config.apiKey;
   $.Config.version = $.PageConfig.version || $.Config.version;
-  $.Config.useJsonp = $.PageConfig.useJsonp || $.Config.useJsonp;
+  $.Config.useJsonp = ($.PageConfig.useJsonp || $.Config.useJsonp) === "true";
   $.Config.enableLog = $.PageConfig.enableLog || $.Config.enableLog;
 
   $.Http = function() {
