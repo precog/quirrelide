@@ -1,6 +1,7 @@
 define([
       "app/util/precog"
     , "app/util/storagemonitor"
+    , "app/util/uiconfig"
     , "app/util/ui"
     , "app/util/utils"
     , "app/util/notification"
@@ -16,7 +17,7 @@ define([
     , 'libs/jquery/jstree/jstree.themes'
 ],
 
-function(precog, createStore, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, humanize, tplToolbar){
+function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, humanize, tplToolbar){
 //    var UPLOAD_SERVICE = "upload.php",
     var DOWNLOAD_SERVICE = "download.php",
         STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
@@ -78,38 +79,50 @@ function(precog, createStore, ui,  utils, notification, openRequestInputDialog, 
             elRoot = el.find(".pg-tree").append('<div class="pg-root"></div>').find(".pg-root"),
             elFolders = el.find(".pg-tree").append('<div class="pg-structure"></div>').find(".pg-structure"),
             elUploader = el.append('<div style="display: none"><input name="files" type="file" multiple></div>').find('input[type=file]'),
-            contextButtons = [
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-new-folder",
-                    description : "create new folder",
-                    handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
-                }),
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-trash",
-                    handler : function() { requestNodeRemovalAt($(selectedNode).attr("data")); }
-                }),
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-query",
-                    description : "query data at path",
-                    handler : function() { triggerQuery(removeBasePath($(selectedNode).attr("data"))); }
-                }),
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-arrowthickstop-1-s",
-                    description : "download folder data",
-                    handler : function() { window.location.href = downloadUrl($(selectedNode).attr("data")); }
-                }),
-                ui.button(elContext, {
-                    text : false,
-                    icon : "ui-icon-arrowthickstop-1-n",
-                    description : "upload data to folder",
-                    handler : function() { uploadDialog($(selectedNode).attr("data")); }
-                })
-            ],
+            contextButtons = [],
             selectedNode;
+
+        if(!uiconfig.disableUpload) {
+          contextButtons.push(ui.button(elContext, {
+            text : false,
+            icon : "ui-icon-arrowthickstop-1-n",
+            description : "upload data to folder",
+            handler : function() { uploadDialog($(selectedNode).attr("data")); }
+          }));
+        }
+
+        if(!uiconfig.disableDownload) {
+          contextButtons.push(ui.button(elContext, {
+            text : false,
+            icon : "ui-icon-new-folder",
+            description : "create new folder",
+            handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
+          }));
+
+          contextButtons.push(ui.button(elContext, {
+            text : false,
+            icon : "ui-icon-trash",
+            handler : function() { requestNodeRemovalAt($(selectedNode).attr("data")); }
+          }));
+        }
+
+        if(!uiconfig.disableUpload) {
+          contextButtons.push(ui.button(elContext, {
+            text : false,
+            icon : "ui-icon-arrowthickstop-1-n",
+            description : "upload data to folder",
+            handler : function() { uploadDialog($(selectedNode).attr("data")); }
+          }));
+        }
+
+        contextButtons.push(
+          ui.button(elContext, {
+            text : false,
+            icon : "ui-icon-query",
+            description : "query data at path",
+            handler : function() { triggerQuery(removeBasePath($(selectedNode).attr("data"))); }
+          })
+        );
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");

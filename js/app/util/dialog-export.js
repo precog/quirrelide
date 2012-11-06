@@ -1,5 +1,6 @@
 define([
       "rtext!templates/dialog.export.html"
+    , "app/util/uiconfig"
     , "app/util/ui"
     , "app/util/dom"
     , "app/util/notification"
@@ -19,7 +20,7 @@ define([
     , "libs/jquery/zclip/jquery.zclip"
 ],
 
-function(tplDialog, ui, dom, notification) {
+function(tplDialog, uiconfig, ui, dom, notification) {
     var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
         elText, elDialog, elActions, elForm, clip, formCallback, currentAction;
 
@@ -31,6 +32,23 @@ function(tplDialog, ui, dom, notification) {
         elDialog.dialog("option", "position", "center");
     }
     function init() {
+        var buttons = [{
+          text : "Copy",
+          click : function() {
+            elDialog.dialog("close");
+            return true;
+          }
+        }];
+        if(!uiconfig.disableDownload) {
+          buttons.push({
+            text : "Download",
+            click : function() {
+              notification.quick("code downloaded");
+              elForm.submit();
+              elDialog.dialog("close");
+            }
+          });
+        }
         elDialog = $('body')
             .append(tplDialog)
             .find('.pg-dialog-export')
@@ -42,20 +60,7 @@ function(tplDialog, ui, dom, notification) {
                 , height : 480
                 , dialogClass : "pg-el"
                 , closeOnEscape: true
-                , buttons : [{
-                    text : "Copy",
-                    click : function() {
-                        elDialog.dialog("close");
-                        return true;
-                    }
-                }, {
-                    text : "Download",
-                    click : function() {
-                        notification.quick("code downloaded");
-                        elForm.submit();
-                        elDialog.dialog("close");
-                    }
-                }]
+                , buttons : buttons
             }),
         elActions = elDialog.find(".pg-actions"),
         elOptions = elDialog.find(".pg-options"),
