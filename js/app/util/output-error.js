@@ -12,7 +12,7 @@ function() {
     }
 
     function formatError(error, wrapper) {
-      var message = '<p>'+(error && escapeHtml("" + error.message || error))+'</p>';
+      var message = '<p>'+(error && escapeHtml(("undefined" !== typeof error.message) ? error.message : error))+'</p>';
       if("undefined" !== typeof error.lineNum) {
         message += '<p class="pg-position">Error at line '+error.lineNum+', column '+error.colNum+'</p>';
         message += '<pre>'+escapeHtml(error.detail)+'</pre>';
@@ -40,6 +40,8 @@ function() {
         update : function(errors, options, wrapper) {
           elError.find("*").remove();
           $(errors).each(function(){
+            if(!this.message && "string" !== typeof this)
+              return;
             elError.append(formatError(this, wrapper));
           });
         }

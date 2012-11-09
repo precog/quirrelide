@@ -141,6 +141,19 @@ $(function() {
 
     var executions = {};
     $(precog).on("execute", function(_, query, lastExecution, id) {
+        var workingid;
+        for(var key in executions) {
+          if(!executions.hasOwnProperty(key)) continue;
+            if(executions[key].name === editors.getName())
+            {
+              workingid = key;
+              break;
+            }
+        }
+        if(workingid) {
+          $(precog).trigger("abort", workingid);
+        }
+
         executions[id] = { query : query, name : editors.getName() };
         status.startRequest();
     });
@@ -170,6 +183,7 @@ $(function() {
       }
       ga.trackQueryExecution("success");
     });
+
     $(precog).on('failed', function(_, id, data) {
       data = data instanceof Array ? data[0] : data;
       var execution = executions[id];
@@ -185,6 +199,13 @@ $(function() {
       }
 
       ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
+    });
+
+    $(precog).on('aborted', function(_, id) {
+      var execution = executions[id];
+      delete executions[id];
+      status.endRequest(false);
+      ga.trackQueryExecution("aborted");
     });
 
     var execTimer;

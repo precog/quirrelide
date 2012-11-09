@@ -1,16 +1,58 @@
 define([
       "app/util/ui"
+    , "app/util/storage"
+    , "app/util/notification"
+    , "rtext!templates/content.tip.firstquery.html"
     , "rtext!templates/toolbar.status.html"
     , "rtext!templates/menu.editor.status.html"
 ],
 
-    function(ui, tplToolbar, tplMenu) {
+    function(ui, createStore, notification, tplFirstQuery, tplToolbar, tplMenu) {
+      var STORE_KEY = "pg-quirrel-query-tips",
+        store = createStore(STORE_KEY, {
+          firstquery : true
+        });
 
         return function(el, editor, layout) {
             var wrapper;
             el.append(tplToolbar);
 
-            var menu = ui.contextmenu(tplMenu);
+            var menu = ui.contextmenu(tplMenu),
+                noti;
+
+            function displayNotification(target) {
+              if(noti || !store.get("firstquery", true)) return;
+              noti = notification.tip("your first query!", {
+                  target : target
+                , voffset : -140
+                , text : tplFirstQuery
+                , after_close : function() {
+                  store.set("firstquery", false);
+                  noti.destroy();
+                  noti = null;
+                }
+              });
+              /*
+              function disableTip(name) {
+                return function() {
+                  store.set(name, false);
+                };
+              }
+
+              function displayPaneTips(layout) {
+                for(var i = 0; i < tips.length; i++) {
+                  var tip = tips[i];
+                  if(store.get(tip.store)) {
+                    notification.tip(tip.title, {
+                      target : tip.target(layout)
+                      , text : tip.text
+                      , after_close : disableTip(tip.store)
+                    });
+                  }
+                }
+              }
+              */
+            }
 
             el.find('.pg-editor-settings-trigger').click(function() {
                 if(menu.is(":visible")) {
@@ -96,6 +138,7 @@ define([
                     progress.killProgress = setInterval(function() { progress.update(); }, 50);
                     elExecutionTime.hide();
                     elProgressBar.show();
+                    displayNotification(elProgressBar);
                 },
                 update : function() {
                     var delta = new Date().getTime() - progress.startTime,

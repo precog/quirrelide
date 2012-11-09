@@ -27,6 +27,16 @@ function(require, ace, ui) {
             },
             exec: execute
         });
+
+        editor.commands.addCommand({
+            bindKey: {
+                win: 'Shift-Ctrl-Return',
+                mac: 'Shift-Ctrl-Return|Command-Ctrl-Return',
+                sender: 'editor|cli'
+            },
+            exec: executeSelected
+        });
+
         editor.setShowPrintMargin(false);
         sess = editor.getSession();
         sess.setUseWrapMode(true);

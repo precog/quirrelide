@@ -58,7 +58,7 @@ function(notification, ui, createStore, tplMain, tplCode, tplFileSystem, tplQuer
             var tip = tips[i];
             if(store.get(tip.store)) {
                 notification.tip(tip.title, {
-                    target : tip.target(layout)
+                      target : tip.target(layout)
                     , text : tip.text
                     , after_close : disableTip(tip.store)
                 });

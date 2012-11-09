@@ -53,7 +53,8 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
       config.limit = value;
     });
 
-    var q = {
+    var map = {},
+        q = {
         ingest : function(path, data, type, progress, complete, error) {
 //          if(config.useJsonp) {
 //            upload.ingest(path, data, type, progress, complete, error);
@@ -87,7 +88,10 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
             $(q).trigger("execute", [text, this.lastExecution, id]);
             var me = this,
                 start = new Date().getTime();
-            window.Precog.query(text, function(r, headers) {
+            map[id] = window.Precog.query(text, function(r, headers) {
+                if(!map[id]) {
+                  return;
+                }
                 me.lastExecution = new Date().getTime() - start;
                 var extra = null;
                 if("undefined" !== typeof options.skip) {
@@ -97,11 +101,16 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
                     count : headers["X-Quirrel-Count"] || 1000
                   };
                 }
+                delete map[id];
                 $(q).trigger("completed", [id, r, extra]);
             }, function(code, e) {
+                if(!map[id]) {
+                  return;
+                }
                 if("string" == typeof e) e = { message : e };
+                delete map[id];
                 $(q).trigger("failed", [id, e]);
-            }, params)
+            }, params); // || true;
         },
         paths : function(parent, callback) {
             window.Precog.children(parent, function(r) {
@@ -117,6 +126,14 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
         hash : md5(config.apiKey),
         cache : window.Precog.cache
     };
+
+    $(q).on("abort", function(_, id) {
+      if("undefined" === map[id]) return;
+      var xhr = (map[id] && map[id].abort) ? map[id] : null;
+      delete map[id];
+      if(xhr) xhr.abort();
+      $(q).trigger("aborted", id);
+    });
 
     return q;
 });
