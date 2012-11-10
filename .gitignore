@@ -24,3 +24,9 @@ css/.DS_Store
 .idea/jsLinters/jslint.xml
 
 .idea/libraries/sass_stdlib.xml
+/js/node.exe
+/js/uglifyjs
+/compiler.jar
+/js/compiler.jar
+/js/README
+/js/uglifyjs
