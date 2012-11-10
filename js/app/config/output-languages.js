@@ -2,16 +2,34 @@ define([
       "app/util/converters"
     , "app/util/precog"
     , "app/util/ui"
-    , "app/util/converters"
 ],
 
-function(convert, precog, ui, converters) {
+function(convert, precog, ui) {
     var apiKey = precog.config.apiKey,
-        service = precog.config.analyticsService
+        service = precog.config.analyticsService,
+        basePath = precog.config.basePath,
+        version = precog.config.version
     ;
+
+    if(basePath.substring(-1) === "/")
+      basePath = basePath.substr(0, basePath.length - 1);
+
+    if(basePath.substring(0, 1) === "/")
+      basePath = basePath.substr(1);
 
     function escapeQuotes(s) {
         return s.replace(/"/g, '\\"');
+    }
+
+    function urlEncode(query) {
+      return service
+        + "analytics/"
+        + (version ? "v" + version + "/" : "")
+        + "fs/"
+        + basePath
+        + "?apiKey=" + encodeURIComponent(apiKey)
+        + "&q=" + encodeURIComponent(convert.minifyQuirrel(query))
+      ;
     }
 
     return [{
@@ -19,7 +37,7 @@ function(convert, precog, ui, converters) {
         name : "Quirrel",
         handler : function(code, options) {
             if(options.compact)
-                return converters.minifyQuirrel(code);
+                return convert.minifyQuirrel(code);
             else
                 return "-- Quirrel query generated with Labcoat by Precog\n\n" + code.trim();
         },
@@ -76,5 +94,17 @@ function(convert, precog, ui, converters) {
                 '}\n?>'
                 ;
         }
+    }, {
+      token : "url",
+      name : "URL",
+      handler : function(code) {
+        return urlEncode(code);
+      }
+    }, {
+      token : "curl",
+      name : "cURL",
+      handler : function(code) {
+        return 'curl "'+escapeQuotes(urlEncode(code))+'"';
+      }
     }];
 });
