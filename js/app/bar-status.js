@@ -28,7 +28,7 @@ define([
                 , text : tplFirstQuery
                 , after_close : function() {
                   store.set("firstquery", false);
-                  noti.destroy();
+                  noti.remove();
                   noti = null;
                 }
               });

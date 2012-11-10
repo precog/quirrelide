@@ -85,15 +85,6 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
         if(!uiconfig.disableUpload) {
           contextButtons.push(ui.button(elContext, {
             text : false,
-            icon : "ui-icon-arrowthickstop-1-n",
-            description : "upload data to folder",
-            handler : function() { uploadDialog($(selectedNode).attr("data")); }
-          }));
-        }
-
-        if(!uiconfig.disableDownload) {
-          contextButtons.push(ui.button(elContext, {
-            text : false,
             icon : "ui-icon-new-folder",
             description : "create new folder",
             handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
@@ -106,15 +97,6 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
           }));
         }
 
-        if(!uiconfig.disableUpload) {
-          contextButtons.push(ui.button(elContext, {
-            text : false,
-            icon : "ui-icon-arrowthickstop-1-n",
-            description : "upload data to folder",
-            handler : function() { uploadDialog($(selectedNode).attr("data")); }
-          }));
-        }
-
         contextButtons.push(
           ui.button(elContext, {
             text : false,
@@ -123,6 +105,24 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             handler : function() { triggerQuery(removeBasePath($(selectedNode).attr("data"))); }
           })
         );
+
+        if(!uiconfig.disableDownload) {
+			contextButtons.push(ui.button(elContext, {
+				text : false,
+				icon : "ui-icon-arrowthickstop-1-s",
+				description : "download folder data",
+				handler : function() { window.location.href = downloadUrl($(selectedNode).attr("data")); }
+			}));
+        }
+		
+        if(!uiconfig.disableUpload) {
+          contextButtons.push(ui.button(elContext, {
+            text : false,
+            icon : "ui-icon-arrowthickstop-1-n",
+            description : "upload data to folder",
+            handler : function() { uploadDialog($(selectedNode).attr("data")); }
+          }));
+        }
 
         function refreshActions() {
             var path = selectedNode && $(selectedNode).attr("data");

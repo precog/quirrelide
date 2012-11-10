@@ -20,21 +20,23 @@ function(require, ace, ui) {
         }
 
         editor.commands.addCommand({
-            bindKey: {
-                win: 'Shift-Return',
-                mac: 'Shift-Return|Command-Return',
-                sender: 'editor|cli'
-            },
-            exec: execute
-        });
-
-        editor.commands.addCommand({
+			name : "executeSelection",
             bindKey: {
                 win: 'Shift-Ctrl-Return',
                 mac: 'Shift-Ctrl-Return|Command-Ctrl-Return',
                 sender: 'editor|cli'
             },
             exec: executeSelected
+        });
+
+        editor.commands.addCommand({
+			name : "executeAll",
+            bindKey: {
+                win: 'Shift-Return',
+                mac: 'Shift-Return|Command-Return',
+                sender: 'editor|cli'
+            },
+            exec: execute
         });
 
         editor.setShowPrintMargin(false);
