@@ -7,7 +7,7 @@ define([
 function(convert, precog, ui) {
     var apiKey = precog.config.apiKey,
         service = precog.config.analyticsService,
-        basePath = precog.config.basePath,
+        basePath = precog.config.basePath || "",
         version = precog.config.version
     ;
 
