@@ -25,8 +25,14 @@ css/.DS_Store
 
 .idea/libraries/sass_stdlib.xml
 /js/node.exe
+<<<<<<< HEAD
+/js/README
+/js/uglifyjs
+/js/compiler.jar
+=======
 /js/uglifyjs
 /compiler.jar
 /js/compiler.jar
 /js/README
 /js/uglifyjs
+>>>>>>> master
