@@ -110,7 +110,7 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
                 if("string" == typeof e) e = { message : e };
                 delete map[id];
                 $(q).trigger("failed", [id, e]);
-            }, params); // || true;
+            }, params) || true;
         },
         paths : function(parent, callback) {
             window.Precog.children(parent, function(r) {
