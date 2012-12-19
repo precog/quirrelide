@@ -56,14 +56,6 @@ function(convert, precog, ui) {
             }]);
         }
     }, {
-        token: "js",
-        name : "JavaScript",
-        handler : function(code) {
-            code = escapeQuotes(convert.minifyQuirrel(code));
-            return "// Quirrel query in JavaScript generated with Labcoat by Precog\n\n" +
-                'Precog.query("'+code+'",\n  function(data) { /* do something with the data */ },\n  function(error) { console.log(error); }\n);';
-        }
-    }, {
         token: "html",
         name : "HTML",
         handler : function(code) {
@@ -78,22 +70,66 @@ function(convert, precog, ui) {
                 ;
         }
     }, {
-        token: "php",
-        name : "PHP",
-        handler : function(code) {
-            code = escapeQuotes(convert.minifyQuirrel(code));
-            return '<?php\n\n' +
-                "// Quirrel query in PHP generated with Labcoat by Precog\n\n" +
-                'require_once("Precog.php");\n\n' +
-                '' +
-                '$precog = new PrecogAPI("'+apiKey+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +
-                'if(false === $precog) {\n' +
-                '  die($precog->errorMessage());\n' +
-                '} else {\n' +
-                '  // do something with $result here\n' +
-                '}\n?>'
-                ;
-        }
+      token: "js",
+      name : "JavaScript",
+      handler : function(code) {
+        code = escapeQuotes(convert.minifyQuirrel(code));
+        return "// Quirrel query in JavaScript generated with Labcoat by Precog\n\n" +
+          'Precog.query("'+code+'",\n  function(data) { /* do something with the data */ },\n  function(error) { console.log(error); }\n);';
+      }
+    }, {
+      token: "php",
+      name : "PHP",
+      handler : function(code) {
+        code = escapeQuotes(convert.minifyQuirrel(code));
+        return '<?php\n\n' +
+          "// Quirrel query in PHP generated with Labcoat by Precog\n\n" +
+          'require_once("Precog.php");\n\n' +
+          '' +
+          '$precog = new PrecogAPI("'+apiKey+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +
+          'if(false === $precog) {\n' +
+          '  die($precog->errorMessage());\n' +
+          '} else {\n' +
+          '  // do something with $result here\n' +
+          '}\n?>'
+          ;
+      }
+    }, {
+      token: "python",
+      name : "Python",
+      handler : function(code) {
+        code = escapeQuotes(convert.minifyQuirrel(code));
+        return 'api = precog.Precog("'+apiKey+'", "'+service+'")\n' +
+          'response = api.query("/'+basePath+'", "'+code+'")'
+          ;
+      }
+    }, {
+      token: "ruby",
+      name : "Ruby",
+      handler : function(code) {
+        code = escapeQuotes(convert.minifyQuirrel(code));
+        return 'api = Precog::Precog.new("'+apiKey+'", "'+service+'")\n' +
+          'response = api.query("/'+basePath+'", "'+code+'")'
+          ;
+      }
+    }, {
+      token: "java",
+      name : "Java",
+      handler : function(code) {
+        code = escapeQuotes(convert.minifyQuirrel(code));
+        return 'Client testClient = new Client("'+service+'", "'+apiKey+'");\n' +
+          'String result = testClient.query(new Path("/'+basePath+'"), "'+code+'");'
+          ;
+      }
+    }, {
+      token: "cs",
+      name : "C#",
+      handler : function(code) {
+        code = escapeQuotes(convert.minifyQuirrel(code));
+        return 'PrecogClient api = ServiceStack.CreatePrecogClient( new Uri("'+service+'"), "'+apiKey+'");\n' +
+          'string[] result = api.Query<string[]>("/'+basePath+'", "'+code+'");'
+          ;
+      }
     }, {
       token : "url",
       name : "URL",
