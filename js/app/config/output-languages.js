@@ -32,6 +32,10 @@ function(convert, precog, ui) {
       ;
     }
 
+    function removeProtocol(url) {
+      return url.split("//").pop();
+    }
+
     return [{
         token: "qrl",
         name : "Quirrel",
@@ -99,7 +103,8 @@ function(convert, precog, ui) {
       name : "Python",
       handler : function(code) {
         code = escapeQuotes(convert.minifyQuirrel(code));
-        return 'api = precog.Precog("'+apiKey+'", "'+service+'")\n' +
+        service = removeProtocol(service);
+        return 'api = precog.Precog("'+apiKey+'", "'+service+'", 443)\n' +
           'response = api.query("/'+basePath+'", "'+code+'")'
           ;
       }
@@ -108,7 +113,8 @@ function(convert, precog, ui) {
       name : "Ruby",
       handler : function(code) {
         code = escapeQuotes(convert.minifyQuirrel(code));
-        return 'api = Precog::Precog.new("'+apiKey+'", "'+service+'")\n' +
+        service = removeProtocol(service);
+        return 'api = Precog::Precog.new("'+apiKey+'", "'+service+'", 443)\n' +
           'response = api.query("/'+basePath+'", "'+code+'")'
           ;
       }
@@ -117,7 +123,12 @@ function(convert, precog, ui) {
       name : "Java",
       handler : function(code) {
         code = escapeQuotes(convert.minifyQuirrel(code));
-        return 'Client testClient = new Client("'+service+'", "'+apiKey+'");\n' +
+        service = removeProtocol(service);
+        return
+          '// import com.precog.api.Client;\n' +
+          '// import com.precog.api.Path;\n' +
+          '// import com.precog.api.ServiceBuilder;\n\n' +
+          'Client testClient = new Client(ServiceBuilder.service("'+service+'"), "'+apiKey+'");\n' +
           'String result = testClient.query(new Path("/'+basePath+'"), "'+code+'");'
           ;
       }
@@ -126,7 +137,9 @@ function(convert, precog, ui) {
       name : "C#",
       handler : function(code) {
         code = escapeQuotes(convert.minifyQuirrel(code));
-        return 'PrecogClient api = ServiceStack.CreatePrecogClient( new Uri("'+service+'"), "'+apiKey+'");\n' +
+        return
+          '// using Precog.Client;\n\n' +
+          'PrecogClient api = ServiceStack.CreatePrecogClient( new Uri("'+service+'"), "'+apiKey+'");\n' +
           'string[] result = api.Query<string[]>("/'+basePath+'", "'+code+'");'
           ;
       }
