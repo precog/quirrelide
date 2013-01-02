@@ -24,10 +24,11 @@ function(convert, precog, ui) {
     function urlEncode(query) {
       return service
         + "analytics/"
-        + (version ? "v" + version + "/" : "")
+        + (version && version !== false && version !== "false" ? "v" + version + "/" : "")
         + "fs/"
         + basePath
         + "?apiKey=" + encodeURIComponent(apiKey)
+        + (version === false || version === "false" ? "&version=false" : "")
         + "&q=" + encodeURIComponent(convert.minifyQuirrel(query))
       ;
     }
