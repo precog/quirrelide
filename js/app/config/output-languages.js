@@ -28,7 +28,6 @@ function(convert, precog, ui) {
         + "fs/"
         + basePath
         + "?apiKey=" + encodeURIComponent(apiKey)
-        + (version === false || version === "false" ? "&version=false" : "")
         + "&q=" + encodeURIComponent(convert.minifyQuirrel(query))
       ;
     }
@@ -68,7 +67,8 @@ function(convert, precog, ui) {
         name : "HTML",
         handler : function(code) {
             code = escapeQuotes(convert.minifyQuirrel(code));
-            return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?apiKey='+apiKey+'&analyticsService='+service+'"></script>\n' +
+            var url = 'http://api.reportgrid.com/js/precog.js?apiKey='+apiKey+(version === false || version === "false" ? "&version=false" : "")+'&analyticsService='+service';
+            return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="'+url+'"></script>\n' +
                 "<script>\n" +
                 "function init() {\n" +
                 "  // Quirrel query in JavaScript generated with Labcoat by Precog\n" +
