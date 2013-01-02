@@ -64,7 +64,7 @@ function() {
         create : function(data) {
             var value = data[0],
                 columns = [];
-            if("object" === typeof value) {
+            if(value !== null && "object" === typeof value) {
                 for(var key in value) {
                     var v = value[key];
                     if(!value.hasOwnProperty(key) || key === "#id")
