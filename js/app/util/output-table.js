@@ -53,7 +53,7 @@ function(jsonmodel) {
                 }
             } else {
                 for(var i = 0; i < data.length; i++) {
-                    result.push({ value : data[i], "#id" : "#" + i });
+                    result.push({ value : null === data[i] ? "[null]" : value, "#id" : "#" + i });
                 }
             }
             return result;
