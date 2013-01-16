@@ -22,7 +22,7 @@ define([
 
 function(tplDialog, uiconfig, ui, dom, notification) {
     var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
-        elText, elDialog, elActions, elForm, clip, formCallback, currentAction;
+        elText, elDialog, elActions, elForm, clip, formCallback, exportCallback, currentAction;
 
     function selectCode() {
         setTimeout(function() { dom.selectText(elText.get(0)); }, 100);
@@ -36,6 +36,7 @@ function(tplDialog, uiconfig, ui, dom, notification) {
           text : "Copy",
           click : function() {
             elDialog.dialog("close");
+            if(exportCallback) exportCallback();
             return true;
           }
         }];
@@ -45,6 +46,7 @@ function(tplDialog, uiconfig, ui, dom, notification) {
             click : function() {
               notification.quick("code downloaded");
               elForm.submit();
+              if(exportCallback) exportCallback();
               elDialog.dialog("close");
             }
           });
@@ -84,8 +86,9 @@ function(tplDialog, uiconfig, ui, dom, notification) {
     }
 
     var inited = false;
-    return function(title, actions, code, selected, callback) {
+    return function(title, actions, code, selected, callback, exportHandler) {
         formCallback = callback;
+        exportCallback = exportHandler;
         if(!inited) {
             init();
             inited = true;

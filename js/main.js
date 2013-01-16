@@ -70,6 +70,7 @@ require([
 function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs, ga, pardot) {
 $(function() {
 
+
     precog.cache.disable();
 
     var queries,
@@ -119,9 +120,15 @@ $(function() {
 
     var support = buildSupport(layout.getSupport());
 
-    support.addPanel('tutorial', 'https://quirrel.precog.com/tutorial.html');
-    support.addPanel('reference', 'https://quirrel.precog.com/reference.html');
-    support.addPanel('IRC channel', 'https://api.precog.com:9090/?channels=#quirrel');
+    support.addPanel('tutorial', 'https://quirrel.precog.com/tutorial.html', function() {
+      pardot.track_page("support_tutorial");
+    });
+    support.addPanel('reference', 'https://quirrel.precog.com/reference.html', function() {
+      pardot.track_page("support_reference");
+    });
+    support.addPanel('IRC channel', 'https://api.precog.com:9090/?channels=#quirrel', function() {
+      pardot.track_page("support_irc");
+    });
 
     $(layout).on('resizeCodeEditor', function() {
         output.resize();
@@ -159,6 +166,24 @@ $(function() {
         status.startRequest();
     });
 
+    function is_example_query(name) {
+      return (/^examples\//).test(name);
+    }
+
+    function is_custom_query(info) {
+      var is_query_load = function(q) {
+        var path = /^\s*\/(\/[a-z0-9-_.]+)+\s*$/i,
+            load = /^\s*load\s*\(\s*"[^"]+"\s*\)\s*$/i;
+          return path.test(q) || load.test(q);
+      };
+
+      if(precog.is_demo()) {
+        return !(is_example_query(info.name) || is_query_load(info.query));
+      } else {
+        return !is_query_load(info.query);
+      }
+    }
+
     $(precog).on("completed", function(_, id, data, extra) {
       var execution = executions[id];
       delete executions[id];
@@ -182,6 +207,7 @@ $(function() {
           editors.setOutputResult(data, index);
         }
       }
+      pardot.track_page("quirrel_success_"+(is_custom_query(execution)?"custom":"default"));
       ga.trackQueryExecution("success");
     });
 
@@ -199,6 +225,7 @@ $(function() {
           editors.setOutputResult(data, index);
       }
 
+//      pardot.track_form("quirrel_failure_"+(is_custom_query(execution)?"custom":"default"), );
       ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
 
@@ -239,6 +266,7 @@ console.log(JSON.stringify(pagination));
 
     $(editors).on('saved', function(_, data) {
         queries.querySave(data.name, data.code);
+        pardot.track_page("query_saved");
     });
 
     sync(editor, editors, config);
@@ -258,9 +286,20 @@ console.log(JSON.stringify(pagination));
         editor.triggerExecute();
     });
 
+    $(folders).on("uploadComplete", function() {
+        pardot.track_page("upload_success");
+    });
+
+    $(folders).on("uploadError", function() {
+        pardot.track_page("upload_failure");
+    });
+
+
     queries = buildQueries(layout.getQueries());
     $(queries).on('requestopenquery', function(_, data) {
         editors.open(data.name, data.code);
+      console.log(data);
+        pardot.track_page("load_query_"+(precog.is_demo() && is_example_query(data.name)?"default":"custom"));
     });
     $(queries).on('removed', function(_, name) {
         var index = editors.getIndexByName(name);
@@ -338,6 +377,10 @@ console.log(JSON.stringify(pagination));
         if(editorbar.historyPanelIsOpen()) {
             refreshHistoryList();
         }
+    });
+
+    $(editorbar).on("exportCode", function() {
+      pardot.track_page("download_code");
     });
 
     var tips = buildTips(layout);
