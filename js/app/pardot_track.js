@@ -1,33 +1,32 @@
 define([
-
+  // TODO needs cookie for email
+  "app/util/iframesubmit"
 ],
 
-function() {
-    var INTERACTION = "interaction",
-        wrapper,
-        queue = [];
+function(submit) {
+  var PAGE_ACTION = "actions/",
+      FORM_ACTION = "/",
+      wrapper,
+      queue = [],
+      email;
 
-    function processQueue() {
-        if(queue.length === 0) return;
-        if("undefined" === typeof _gaq) {
-            clearInterval(this.timer);
-            this.timer = setTimeout(function() { processQueue(); }, 1000);
-            return;
+  function retrieve_email() {
+
+  }
+
+  return wrapper = {
+    track_page : function(action) {
+      submit({
+        action : PAGE_ACTION + action,
+        method : "get",
+        complete : function() {
+          console.log("Page Action Done: " + PAGE_ACTION + action);
         }
-        var item = queue.shift();
-        _gaq.push(['_trackEvent', item.category, item.action, item.label, item.value]);
-        processQueue();
+      });
+    },
+    track_form : function(action, params, user_message) {
+      // TODO retrieve email
+      // TODO
     }
-
-    function enqueue(category, action, label, value) {
-        queue.push({ category : category, action : action, label : label, value : value });
-        processQueue();
-    }
-
-    return wrapper = {
-        track : function(type, params) {
-//            console.log(category, action, label, value);
-            enqueue(category, action, label, value);
-        }
-    };
+  };
 });

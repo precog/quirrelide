@@ -151,7 +151,9 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
             icon : "ui-icon-arrowthickstop-1-s",
             description : "download query code",
             handler : function() {
-                openExportDialog("Download Query", exportLanguages, editors.getCode());
+                openExportDialog("Download Query", exportLanguages, editors.getCode(), null, null, function() {
+                  $(wrapper).trigger("exportCode");
+                });
             }
         });
 

@@ -284,11 +284,11 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                 else
                     return "select a file";
             }, function(_, files) {
-				if(files) {
-					for(var i = 0; i < files.length; i++) {
-						uploadFile(files[i], path);
-					}
-				}
+              if(files) {
+                for(var i = 0; i < files.length; i++) {
+                  uploadFile(files[i], path);
+                }
+              }
             }, "file");
         }
 
@@ -438,16 +438,20 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                   "</li></ul>";
               }
               noty.progressError(message);
+              $(wrapper).trigger("uploadError");
             } else {
               message = 'all of the ' + humanize.numberFormat(e.total, 0) + ' events have been queued correctly and are now in the process to be ingested';
               noty.progressComplete(message);
+              $(wrapper).trigger("uploadComplete");
             }
           }
           function error(e) {
             noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + JSON.stringify(e));
+            $(wrapper).trigger("uploadError");
           }
 
           precog.ingest(path, data, extension, progress, complete, error);
+          $(wrapper).trigger("uploadStart");
         }
         function traverseFiles (files, path) {
             if (typeof files !== "undefined") {
