@@ -3,19 +3,6 @@ define([
 ],
 
 function() {
-    function quoteSplitter(s) {
-        var parts = [],
-            pos = 0;
-        while(pos >= 0) {
-            var npos = s.indexOf(s, pos);
-            if(npos < 0) {
-                // no quotes found
-
-            }
-        }
-
-        return parts;
-    }
     return {
         jsonToCsv : function(json) {
             if(!json) return "";

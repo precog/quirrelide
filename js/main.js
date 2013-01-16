@@ -64,9 +64,10 @@ require([
     , 'app/util/querystring'
     , 'app/eggmanager'
     , 'app/gatrack'
+    , 'app/pardot_track'
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs, ga) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs, ga, pardot) {
 $(function() {
 
     precog.cache.disable();

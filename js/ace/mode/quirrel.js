@@ -28,8 +28,7 @@ define(function(require, exports, module) {
 
             if (outdent) {
                 var deleteRange = new Range(0, 0, 0, 0);
-                for (var i=startRow; i<= endRow; i++)
-                {
+                for (var i=startRow; i<= endRow; i++) {
                     var line = doc.getLine(i);
                     var m = line.match(re);
                     deleteRange.start.row = i;
