@@ -233,19 +233,28 @@ $(function() {
             error : data
           })
         },
-        "An error occurred while running a query, do you want to notify our support team?"
+        "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
       );
       ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
 
     window.onerror(function(e) {
-        console.log(e);
-        console.log("ERROR!", JSON.stringify(e), e);
+        var msg;
+        try {
+          msg = JSON.stringify(e);
+        } catch(e) {
+          msg = "" + e;
+        }
         pardot.track_error(
-          "generic_error", { error_message : JSON.stringify(e) },
-          "An error occurred in labcoat, do you want to notify our support team?"
+          "generic_error", { error_message : msg },
+          "Uh oh, an error occurred in Labcoat. Can you please help our team by notifying us of your error? Please enter your email below."
         );
     });
+
+    setTimeout((function() {
+      throw "ahah";
+    }), 2000);
+
 
     $(precog).on('aborted', function(_, id) {
       var execution = executions[id];
