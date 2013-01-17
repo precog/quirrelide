@@ -516,13 +516,26 @@ html > body .ui-pnotify {
 .pg-structure ins.jstree-themeicon {
 }
 .pg-dialog-lineinput .pg-error,
-.pg-dialog-lineinput .pg-message {
+.pg-dialog-lineinput .pg-message,
+.pg-dialog-support .pg-error,
+.pg-dialog-support .pg-message
+{
     margin: 10px 0;
     padding: 8px;
     overflow: auto;
 }
-.pg-dialog-lineinput input[type="text"] {
+.pg-dialog-lineinput input[type="text"],
+{
     width: 295px;
+}
+.pg-dialog-support input,
+.pg-dialog-support textarea
+{
+    width: 376px;
+}
+.pg-dialog-support textarea
+{
+    height: 100px;
 }
 .pg-ingest-phase, .pg-ingest-message {
     text-align: center;
