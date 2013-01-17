@@ -225,8 +225,26 @@ $(function() {
           editors.setOutputResult(data, index);
       }
 
-//      pardot.track_form("quirrel_failure_"+(is_custom_query(execution)?"custom":"default"), );
+      pardot.track_error(
+        "quirrel_failure_"+(is_custom_query(execution)?"custom":"default"),
+        {
+          error_message : JSON.stringify({
+            query : execution.query,
+            error : data
+          })
+        },
+        "An error occurred while running a query, do you want to notify our support team?"
+      );
       ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
+    });
+
+    window.onerror(function(e) {
+        console.log(e);
+        console.log("ERROR!", JSON.stringify(e), e);
+        pardot.track_error(
+          "generic_error", { error_message : JSON.stringify(e) },
+          "An error occurred in labcoat, do you want to notify our support team?"
+        );
     });
 
     $(precog).on('aborted', function(_, id) {
