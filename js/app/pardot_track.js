@@ -21,7 +21,7 @@ function(submit, displaySupport) {
   return wrapper = {
     track_page : function(action) {
       submit({
-        action : (action_map[action] || action),
+        action : PAGE_ACTION + (action_map[action] || action),
         method : "get",
         complete : function() {
 //          console.log("Page Action Done: " + PAGE_ACTION + action);
