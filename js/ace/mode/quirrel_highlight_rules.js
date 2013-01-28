@@ -13,7 +13,7 @@ function(require, exports, module) {
         );
 
         var builtinConstants = lang.arrayToMap(
-            ("true|false|null").split("|")
+            ("true|false|null|undefined").split("|")
         );
 
         var builtinFunctions = lang.arrayToMap(
