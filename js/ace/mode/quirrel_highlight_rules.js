@@ -13,97 +13,106 @@ function(require, exports, module) {
         );
 
         var builtinConstants = lang.arrayToMap(
-            ("true|false|null|undefined").split("|")
+            ("true|false|undefined|null").split("|")
         );
 
         var builtinFunctions = lang.arrayToMap(
             ("count|distinct|load|max|mean|geometricMean|sumSq|variance|median|min|mode|stdDev|sum").split("|")
         );
+
+        var identifier = "[A-Za-z_][A-Za-z0-9_']*";
  
-        var start = [{
-                token : "comment",
-                regex : "--.*$"
+        var start = [
+            {
+              token : "constant.language",
+              regex : "import",
+              next  : "import"
+            },
+            {
+              token : "comment",
+              regex : "--.*$"
             }, {
-                token : "comment",
-                regex  : '\\(-',
-                merge : true,
-                next : "comment"
+              token : "comment",
+              regex  : '\\(-',
+              merge : true,
+              next : "comment"
             }, {
-                token : "string",           // " string
-                regex : '"(?:[^\n\r\\\\"]|\\\\.)*"'
+              token : "variable",
+              regex : "['][A-Za-z][A-Za-z_0-9]*"
             }, {
-                token : "constant.numeric", // float
-                regex : "[0-9]+(?:\\\\.[0-9]+)?(?:[eE][0-9]+)?"
+              token : "identifier",
+              regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]\\s*(?=:[^=])'
             }, {
-                token : "variable",
-                regex : "'[a-zA-Z_0-9]['a-zA-Z_0-9]*\\b"
+              token : "identifier",
+              regex : '[`](?:(?:\\\\.)|(?:[^`\\\\]))*?[`]\\s*(?=:[^=])'
             }, {
-                token : "string",
-                regex : "/(?:/[a-zA-Z_0-9-]+)+\\b"
+              token : "string",
+              regex : '"(?:\\\\"|[^"])*"'
             }, {
-                token : "keyword.operator",
-                regex : "~|:=|\\+|\\/|\\-|\\*|&|\\||<|>|<=|=>|!=|<>|=|!|neg\\b"
+              token : "string",
+              regex : '`[^`]*`'
             }, {
-                token : function(value) {
-                    if (keywords.hasOwnProperty(value))
-                        return "keyword";
-                    else if (builtinConstants.hasOwnProperty(value))
-                        return "constant.language";
-                    else if (builtinFunctions.hasOwnProperty(value))
-                        return "support.function";
-                    else
-                        return "identifier";
-                },
-                regex : "([a-zA-Z]['a-zA-Z_0-9]*|_['a-zA-Z_0-9]+)\\b"
+              token : "string",
+              regex : "/(?:/[a-zA-Z_0-9-]+)+\\b"
             }, {
-                token : "invalid",
-                regex : "//"
+              token : "constant.numeric", // float
+              regex : "[0-9]+(?:\\\\.[0-9]+)?(?:[eE][0-9]+)?"
             }, {
-                token : "identifier",
-                regex : "\\{",
-                next : "object-start"
+              token : "keyword.operator",
+              regex : "~|:=|\\+|\\/|\\-|\\*|&|\\||<|>|<=|=>|!=|<>|=|!|neg|union\\b"
             }, {
-                token : "identifier",
-                regex : '`(?:[^`\\\\]|\\\\.)+`'
+              token : ["support.function", "paren.lparen"],
+              regex : "("+identifier + ")(?:\\s*)([(])"
+            }, {
+              token : function(value) {
+                if (keywords.hasOwnProperty(value))
+                  return "keyword";
+                else if (builtinConstants.hasOwnProperty(value))
+                  return "constant.language";
+                else if (builtinFunctions.hasOwnProperty(value))
+                  return "support.function";
+                else
+                  return "identifier";
+              },
+              regex : "(?:[a-zA-Z]['a-zA-Z_0-9]*\\b)"
+            }, {
+              token : "paren.lparen",
+              regex : "[([{]"
+            }, {
+              token : "paren.rparen",
+              regex : "[)}\\]]"
+            }, {
+              token: "punctuation.operator",
+              regex: "[,]"
             }
         ];
         this.$rules = {
-            "start" : start,
-            "comment" : [
-                {
-                    token : "comment", // closing comment
-                    regex : ".*?-\\)",
-                    next : "start"
-                }, {
-                    token : "comment", // comment spanning whole line
-                    merge : true,
-                    regex : ".+"
-                }
-            ],
-            "object-start" : [ {
-                token : "entity.name.function",
-                regex :  '(?:[a-zA-Z_][a-zA-Z_0-9]*|`(?:[^`\\\\]|\\\\.)+`|"(?:[^"\\\\]|\\\\.)+"):',
-                next : "object-contents"
+          "start" : start,
+          "import" : [
+            {
+              token : "support.function",
+              regex : "\\s*(?:[*]|[a-z0-9_]+)(?:\\s*$|\\s+)",
+              next  : "start"
             }, {
-              token : "identifier",
-              regex : '\\}',
-              next : "start"
+              token : "support.function",
+              regex : "\\s*[a-z0-9_]+\\s*"
+            }, {
+              token : "keyword.operator",
+              regex : "[:]{2}"
             }
-        ],
-			
-			// TODO if we have nested objects, we will abort the state stack prematurely
-			"object-contents" : start.concat([{
-				token : "identifier",
-				regex : ',',
-				next : "object-start"
-			}, {
-                token : "identifier",
-                regex : '\\}',
-                next : "start"
-            }])
-        };
-        
-//        this.$rules = rules;
+          ],
+          "comment" : [
+            {
+              token : "comment", // closing comment
+              regex : ".*?-\\)",
+              next : "start"
+            }, {
+              token : "comment", // comment spanning whole line
+              merge : true,
+              regex : ".+"
+            }
+          ]
+      };
     };
 
     oop.inherits(QuirrelHighlightRules, TextHighlightRules);
