@@ -31,12 +31,15 @@ function(tplDialog, uiconfig, ui, dom, notification) {
     function reposition() {
         elDialog.dialog("option", "position", "center");
     }
+
     function init() {
         var buttons = [{
           text : "Copy",
           click : function() {
-            elDialog.dialog("close");
-            if(exportCallback) exportCallback();
+//            setTimeout(function() {
+              elDialog.dialog("close");
+              if(exportCallback) exportCallback();
+//            }, 2000);
             return true;
           }
         }];
@@ -139,7 +142,8 @@ function(tplDialog, uiconfig, ui, dom, notification) {
                 .zclip({
                     path:'js/libs/jquery/zclip/ZeroClipboard.swf',
                     copy:function(){
-                        return ""+elText.val();
+                        var text = ""+elText.val();
+                        return text;
                     },
                     afterCopy : function() {
                         notification.quick("copied to clipboard");
