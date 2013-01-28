@@ -251,11 +251,6 @@ $(function() {
         );
     });
 
-    setTimeout((function() {
-      throw "ahah";
-    }), 2000);
-
-
     $(precog).on('aborted', function(_, id) {
       var execution = executions[id];
       delete executions[id];

@@ -73,7 +73,7 @@
                     });
 
                     clip.addEventListener('complete', function (client, text) {
-
+                        text = decodeURIComponent(text);
                         if ($.isFunction(settings.afterCopy)) {
                             
                             o.trigger('zClip_afterCopy');
