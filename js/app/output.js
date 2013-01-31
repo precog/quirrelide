@@ -85,6 +85,10 @@ console.log("INTERCEPT PAGINATION");
 console.log("INTERCEPT SORT");
             $(wrapper).trigger("sortChanged", sort);
           });
+
+          $(format).on("exportToBuilder", function() {
+            $(wrapper).trigger("exportToBuilder");
+          });
         });
 
 
