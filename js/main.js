@@ -10,7 +10,7 @@ requirejs.config({
 //        , 'libs/jquery/ui/jquery.ui.tooltip' : ['libs/jquery/ui/jquery.ui.position']
         , 'libs/jquery/ui/jquery.ui.resizable' : ['libs/jquery/ui/jquery.ui.mouse']
         , 'libs/jquery/ui/jquery.ui.button' : ['libs/jquery/ui/jquery.ui.widget']
-        , 'libs/jquery/ui/jquery.ui.sortable' : ['libs/jquery/ui/jquery.ui.widget']
+        , 'libs/jquery/ui/jquery.ui.sortable' : ['libs/jquery/ui/jquery.ui.widget', 'libs/jquery/ui/jquery.ui.mouse', 'libs/jquery/ui/jquery.ui.core']
         , 'libs/jquery/ui/jquery.ui.draggable' : ['libs/jquery/ui/jquery.ui.mouse']
         , 'libs/jquery/ui/jquery.ui.droppable' : ['libs/jquery/ui/jquery.ui.draggable']
         , 'libs/jquery/ui/jquery.ui.dialog' : [
@@ -65,11 +65,26 @@ require([
     , 'app/eggmanager'
     , 'app/gatrack'
     , 'app/pardot_track'
+    , "app/util/converters"
+
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs, ga, pardot) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs, ga, pardot, convert) {
+function buildUrl(query) {
+  var version  = precog.config.version,
+      basePath = precog.config.basePath,
+      service  = precog.config.analyticsService,
+      apiKey   = precog.config.apiKey;
+  return service
+    + "analytics/"
+    + (version && version !== false && version !== "false" ? "v" + version + "/" : "")
+    + "fs/"
+    + basePath
+    + "?apiKey=" + encodeURIComponent(apiKey)
+    + "&q=" + encodeURIComponent(convert.minifyQuirrel(query))
+    ;
+}
 $(function() {
-
 
     precog.cache.disable();
 
@@ -145,6 +160,12 @@ $(function() {
 
     $(output).on('typeChanged', function(_, type) {
         editors.setOutputType(type);
+    });
+
+    $(output).on('exportToBuilder', function() {
+      var code = editor.get(),
+          path = "/labcoat/" + editors.getName();
+      window.open("http://builder.reportgrid.com/?data-name="+encodeURIComponent(path)+"&data-source="+encodeURIComponent(buildUrl(code)));
     });
 
     var executions = {};

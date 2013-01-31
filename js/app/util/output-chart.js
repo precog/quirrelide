@@ -22,7 +22,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
     var spaces = 2,
         toolbar, options, currentData;
 
-    var noti, model, optionButton, params;
+    var noti, model, optionButton, builderButton, params;
 
     function delayedRender() {
         clearInterval(this.k);
@@ -201,6 +201,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                 elChart.html('<div class="pg-message ui-content ui-state-highlight ui-corner-all">The dataset doesn\'t contain enough values to build a chart.</div>');
                 // disable options
                 if(optionButton) optionButton.button("disable");
+                if(builderButton) builderButton.button("disable");
                 return;
             }
 
@@ -208,6 +209,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
             model = jsonmodel.create(data);
             // enable options
             if(optionButton) optionButton.button("enable");
+            if(builderButton) builderButton.button("enable");
 
             refresh();
         },
@@ -229,6 +231,15 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                     text : true,
                     handler : selectOption("Chart Options"),
                     disabled : true
+                });
+
+                builderButton = ui.button(toolbar, {
+                  label : "export to builder",
+                  text : true,
+                  handler : function() {
+                    $(wrapper).trigger("exportToBuilder");
+                  },
+                  disabled : true
                 });
 /*
                 ui.button(toolbar, {
