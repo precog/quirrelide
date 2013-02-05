@@ -124,6 +124,16 @@
 .pg-mainbar .pg-toolbar-actions {
 }
 
+.pg-results.ui-widget-content {
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 0;
+}
+
+.pg-results .slick-header-column:first-child {
+    border-left: 0;
+}
+
 
 .pg-statusbar .pg-toolbar-actions {
     font-weight: normal;
