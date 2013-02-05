@@ -60,6 +60,7 @@ require([
     , 'app/queries'
     , 'app/support'
     , 'app/startup-tips'
+    , 'app/results'
     , 'app/util/precog'
     , 'app/util/querystring'
     , 'app/eggmanager'
@@ -69,7 +70,7 @@ require([
 
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, precog, qs, eastereggs, ga, pardot, convert) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert) {
 function buildUrl(query) {
   var version  = precog.config.version,
       basePath = precog.config.basePath,
@@ -168,6 +169,12 @@ $(function() {
       window.open("http://builder.reportgrid.com/?data-name="+encodeURIComponent(path)+"&data-source="+encodeURIComponent(buildUrl(code)));
     });
 
+    var results = buildResults(layout.getResults());
+
+    $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
+      results.update(errors, warnings);
+    });
+
     var executions = {};
     $(precog).on("execute", function(_, query, lastExecution, id) {
         var workingid;
@@ -205,7 +212,7 @@ $(function() {
       }
     }
 
-    $(precog).on("completed", function(_, id, data, extra) {
+    $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
       var execution = executions[id];
       delete executions[id];
       history.save(execution.name, execution.query, data); // TODO CHECK HOW PAGINATION AFFECTS THE BEHAVIOR OF HISTORY
@@ -259,7 +266,9 @@ $(function() {
       ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
 
-    window.onerror(function(e) {
+    (function() {
+      var old = window.onerror;
+      window.onerror = function(e) {
         var msg;
         try {
           msg = JSON.stringify(e);
@@ -270,7 +279,10 @@ $(function() {
           "generic_error", { error_message : msg },
           "Uh oh, an error occurred in Labcoat. Can you please help our team by notifying us of your error? Please enter your email below."
         );
-    });
+        if(old)
+          old(e);
+      };
+    })();
 
     $(precog).on('aborted', function(_, id) {
       var execution = executions[id];

@@ -96,7 +96,7 @@ define([
         layouts.push(container.find('.pg-main').layout({
             defaults : defaults,
             south : {
-                  size : "15%"
+                  size : 100
                 , initClosed : true
             }
         }));
@@ -207,6 +207,7 @@ define([
             getSystem     : function() { return container.find('.pg-folders'); },
             getQueries    : function() { return container.find('.pg-queries'); },
             getSupport    : function() { return container.find('.pg-support'); },
+            getResults    : function() { return container.find('.pg-results'); },
             setIoVertical : buildIO,
             isIoVertical  : function() { return isvertical; }
         };
