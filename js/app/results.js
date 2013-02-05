@@ -21,8 +21,15 @@ function() {
           , multiColumnSort: true
         },
         model = [
-          {id: "type", name: "Type", field: "type", width : 120, resizable: false},
-          {id: "msg", name: "Message", field: "msg"}
+//          { id: "type", name: "Type", field: "type", width : 120, resizable: false},
+          { id: "nline", name: "L", field: "nline", width : 25, resizable : false},
+          { id: "ncol", name: "C", field: "ncol", width : 25, resizable : false},
+          { id: "message", name: "Message", field: "message", width : 80, resizable : false},
+          { id: "detail", name: "Detail", field: "detail"},
+          { id: "line", name: "Code Line", field: "line"},
+          { id: "timestamp", name: "Timestamp", field: "timestamp", width : 150, resizable : false}
+
+//          { id: "linemessage", name: "Message", field: "linemessage"}
         ],
         layout = $el.parentsUntil("ui-layout-center").layout(),
         grid;
@@ -35,7 +42,21 @@ function() {
       layout.close("south");
     }
 
-console.log();
+    function transform(type, id, msg) {
+      return {
+        "#id"       : id,
+        type        : type,
+        message     : msg.message,
+        timestamp   : new Date(msg.timestamp).toLocaleString(),
+        nline       : msg.position.lineNum,
+        ncol        : msg.position.colNum,
+        detail      : msg.position.detail,
+        line        : msg.position.line,
+        linemessage : msg.position.message
+      };
+    }
+
+//TODO add grid refresh on resize
     dataView.onRowsChanged.subscribe(function (e, args) {
       if(!grid) return;
       grid.invalidateRows(args.rows);
@@ -48,14 +69,15 @@ console.log();
 
     return wrapper = {
       update : function(errors, warnings) {
-        var messages =
-          errors.map(function(error) {
-            return { type : "error", msg : error };
-          }).concat(
-            warnings.map(function(warning) {
-              return { type : "warning", msg : warning };
-            })
-          );
+        var counter = 0,
+            messages =
+              errors.map(function(msg) {
+                return transform("error", ++counter, msg);
+              }).concat(
+                warnings.map(function(msg) {
+                  return transform("warning", ++counter, msg);
+                })
+              );
         console.log("errors", errors);
         console.log("warnings", warnings);
 
