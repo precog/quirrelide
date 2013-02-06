@@ -340,6 +340,14 @@ html > body .ui-pnotify {
 }
 .pg-mainbar .pg-toolbar-actions {
 }
+.pg-results.ui-widget-content {
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 0;
+}
+.pg-results .slick-header-column:first-child {
+    border-left: 0;
+}
 .pg-statusbar .pg-toolbar-actions {
     font-weight: normal;
     font-size: 93%;
@@ -695,10 +703,20 @@ html > body .ui-pnotify {
 .pg-labcoat .pg-toolbar-context .pg-toolbar-result-type button {
     padding: 0;
 }
-.pg-labcoat .pg-table .ui-state-default {
+.pg-labcoat .pg-table .ui-state-default,
+.pg-labcoat .pg-results .ui-state-default
+{
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
+}
+.pg-labcoat .pg-results .result-icon
+{
+  margin-top: 4px;
+}
+.pg-labcoat .pg-results .inline-code
+{
+    font-family: ;
 }
 .pg-labcoat .jstree .pg-tree-leaf {
     background-position:0 0;

@@ -84,11 +84,11 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
                 params.sortOn = options.sort.map(function(v) { return v.field; });
                 params.sortOrder = options.sort[0].asc ? "asc" : "desc";
               }
-
+              params.format = "detailed";
               $(q).trigger("execute", [text, this.lastExecution, id]);
               var me = this,
                   start = new Date().getTime();
-              map[id] = window.Precog.query(text, function(r, headers) {
+              map[id] = window.Precog.query(text, function(data, errors, warnings, headers) {
                   if(!map[id]) {
                     return;
                   }
@@ -102,7 +102,7 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
                     };
                   }
                   delete map[id];
-                  $(q).trigger("completed", [id, r, extra]);
+                  $(q).trigger("completed", [id, data, errors, warnings, extra]);
               }, function(code, e) {
                   if(!map[id]) {
                     return;
