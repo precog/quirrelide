@@ -33,9 +33,9 @@ function() {
           , multiColumnSort: true
         },
         model = [
-          { id: "message", name: " ", field: "message", width : 24, resizable : false, formatter : message_type_formatter },
-          { id: "nline", name: "L", field: "nline", width : 25, resizable : false},
-          { id: "ncol", name: "C", field: "ncol", width : 25, resizable : false},
+          { id: "message", name: " ", field: "message", width : 25, resizable : false, formatter : message_type_formatter, cssClass : "centered" },
+          { id: "nline", name: "L", field: "nline", width : 25, resizable : false, cssClass : "centered" },
+          { id: "ncol", name: "C", field: "ncol", width : 25, resizable : false, cssClass : "centered" },
           { id: "detail", name: "Detail", field: "detail"},
           { id: "line", name: "Line", field: "line", formatter : code_formatter},
           { id: "timestamp", name: "Timestamp", field: "timestamp", width : 150, resizable : false}
