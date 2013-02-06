@@ -54,6 +54,8 @@ function() {
     }
 
     function transform(type, id, msg) {
+      if(!msg.position)
+        return null;
       return {
         "#id"       : id,
         type        : type,
@@ -103,7 +105,9 @@ function() {
                 warnings.map(function(msg) {
                   return transform("warning", ++counter, msg);
                 })
-              );
+              ).filter(function(o) {
+                  return !!o;
+              });
 
         messages.sort(function(a, b) {
           return a.nline - b.nline;
