@@ -722,6 +722,9 @@ html > body .ui-pnotify {
     background-position:0 0;
     background-image: url(images/file.png);
 }
+.pg-labcoat .centered {
+    text-align: center;
+}
 .ui-pnotify .pg-easter {
     text-align: center;
     font-size: 120%;
