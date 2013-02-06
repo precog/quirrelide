@@ -106,6 +106,13 @@ function(require, ace, ui) {
         orientButton(vertical);
         runselected.hide();
 
+        var annotations = [];
+        function removeAnnotations() {
+          annotations = [];
+          sess.setAnnotations(annotations);
+          sess.removeListener("change", removeAnnotations);
+        }
+
         wrapper = {
             get : function() {
                 return sess.getValue(); //editor.getSession()
@@ -147,17 +154,19 @@ function(require, ace, ui) {
             highlightSyntax : function(row, column, text, type) {
                 // https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/javascript.js
                 // https://groups.google.com/forum/?fromgroups#!topic/ace-discuss/joAFrXwWLX8
-                sess.setAnnotations([{
-                    row : row,
-                    column : column,
-                    text : text,
-                    type : type
-                }]);
-                function removeAnnotations() {
-                    sess.setAnnotations([]);
-                    sess.removeListener("change", removeAnnotations);
-                }
-                sess.on("change", removeAnnotations);
+
+                if(annotations.length == 0)
+                    sess.on("change", removeAnnotations);
+                annotations.push({
+                  row : row,
+                  column : column,
+                  text : text,
+                  type : type
+                });
+                sess.setAnnotations(annotations);
+            },
+            resetHighlightSyntax : function() {
+              removeAnnotations();
             },
             setCursorPosition : function(row, column) {
                 editor.navigateTo(row, column);

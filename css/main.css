@@ -585,10 +585,22 @@
     padding: 0;
 }
 
-.pg-labcoat .pg-table .ui-state-default {
+.pg-labcoat .pg-table .ui-state-default,
+.pg-labcoat .pg-results .ui-state-default
+{
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
+}
+
+.pg-labcoat .pg-results .result-icon
+{
+  margin-top: 4px;
+}
+
+.pg-labcoat .pg-results .inline-code
+{
+    font-family: ;
 }
 
 .pg-labcoat .jstree .pg-tree-leaf {

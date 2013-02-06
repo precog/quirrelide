@@ -92,11 +92,11 @@ define([
             north : toolbarDouble
         }));
 
-        // console separation
+        // results separation
         layouts.push(container.find('.pg-main').layout({
             defaults : defaults,
             south : {
-                  size : 100
+                  size : 114
                 , initClosed : true
             }
         }));

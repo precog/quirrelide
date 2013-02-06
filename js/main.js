@@ -149,9 +149,11 @@ $(function() {
     $(layout).on('resizeCodeEditor', function() {
         output.resize();
         support.resize();
+        results.resize();
     });
 
     $(output).on('syntaxError', function(_, pos) {
+        editor.resetHighlightSyntax();
         editor.highlightSyntax(pos.line - 1, pos.column - 1, pos.text, 'error');
     });
 
@@ -170,6 +172,18 @@ $(function() {
     });
 
     var results = buildResults(layout.getResults());
+
+    $(results).on('resetHighlightSyntax', function() {
+        editor.resetHighlightSyntax();
+    });
+
+    $(results).on('highlightSyntax', function(_, pos) {
+        editor.highlightSyntax(pos.line - 1, pos.column - 1, pos.text, pos.type);
+    });
+
+    $(results).on('goto', function(_, pos) {
+        editor.setCursorPosition(pos.line - 1, pos.column - 1);
+    });
 
     $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
       results.update(errors, warnings);
