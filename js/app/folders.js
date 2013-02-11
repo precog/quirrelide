@@ -17,9 +17,21 @@ define([
     , 'libs/jquery/jstree/jstree.themes'
 ],
 
+/*
+TODO:
+  * don't select "other node"
+  * don't enable actions for "other node"
+  * load more nodes on dblclick
+  * remove "other node" if reached max load
+  * check loading for sub folders for "other node"
+  * check behavior for refresh with "other node"
+  * prohibit saving a query with a conflicting name for "other node"
+*/
+
 function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, humanize, tplToolbar){
 //    var UPLOAD_SERVICE = "upload.php",
     var DOWNLOAD_SERVICE = "download.php",
+        LOAD_MORE_LABEL = "[load more]",
         STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
         basePath = precog.config.basePath || "/",
         store = createStore(STORE_KEY, { virtuals : { }});
@@ -144,13 +156,30 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
         elDescription.html("file system");
         var tree = elFolders.jstree({
             plugins : [
-                "themes", "sort", "ui"
+                "themes", "sort", "ui", "types"
             ],
             ui : {
                   select_limit : 1
                 , selected_parent_close : "deselect"
                 , select_multiple_modifier : false
                 , select_range_modifier : false
+            },
+            types : {
+              more : {
+                valid_children : "none"
+              },
+              folder : {
+                valid_children : ["folder", "more"]
+              }
+            },
+            sort : function (a, b) {
+              var va = this.get_text(a, true),
+                  vb = this.get_text(b, true);
+              if(va === LOAD_MORE_LABEL)
+                return 1;
+              else if(vb == LOAD_MORE_LABEL)
+                return -1;
+              return va === vb ? 0 : (va > vb ? 1 : -1);
             }
         });
         elRoot.html('<div class="jstree jstree-default"><a href="#" data="'+basePath+'"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
@@ -200,7 +229,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             var p = normalizePath(("/" === path ? "/" : path + "/") + name);
             if(map[p]) return; // node already exists in the tree
             map[p] = true;
-            addFolder(name, p, null, parent);
+            addNodeFolder(name, p, null, parent);
         }
 
         function findNode(path) {
@@ -299,7 +328,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                 + "&path=" + encodeURIComponent(path);
         }
 
-        function addFolder(name, path, callback, parent) {
+        function addNodeFolder(name, path, callback, parent) {
             if(!parent) parent = -1;
             return tree.jstree(
                   "create_node"
@@ -308,7 +337,8 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                     "title" : name
                     , data : path
                     , "li_attr" : {
-                        data : path
+                        data : path,
+                        rel : "folder"
                     }
                 }
                 , "last"
@@ -319,10 +349,72 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                     });
                     wireFileUpload(el, path);
                     if(callback)
-                        callback.apply(el, [path]);
+                        callback.apply(el, [path, el]);
                     return false;
                 }
             );
+        }
+
+        function nodeFromData(data) {
+          var r = data.rslt;
+          return $(r.obj[0]);
+        }
+
+        function nodeType(node) {
+          return node.attr("rel");
+        }
+
+        tree.bind("create_node.jstree", function(e, data) {
+          var node = nodeFromData(data),
+              type = nodeType(node);
+          if(type === "more") {
+            tree.jstree("set_icon", node, 'pg-tree-more');
+          }
+        });
+
+        tree.bind("select_node.jstree", function(e, data) {
+          var node = nodeFromData(data),
+              type = nodeType(node);
+          if(type === "more") {
+            tree.jstree("deselect_node", node);
+          }
+        });
+
+        tree.bind("hover_node.jstree", function(e, data) {
+          var node = nodeFromData(data),
+              type = nodeType(node);
+          if(type === "more") {
+            tree.jstree("dehover_node", node);
+          }
+        });
+
+        function addNodeMore(name, path, callback, parent) {
+          if(!parent) parent = -1;
+          return tree.jstree(
+            "create_node"
+            , parent
+            , {
+              "title" : name
+              , data : path
+              , rel : "more"
+              , "li_attr" : {
+                data : path,
+                rel : "more"
+              }
+            }
+            , "last"
+            , function(el) {
+              $(el).click(function() {
+                var p = path.split("/").slice(0, -1).join("/");
+                map[p].page++;
+                loadPaths(p, 2);
+                tree.jstree("delete_node", el);
+              });
+              if(callback)
+                callback.apply(el, [path, el]);
+              return false;
+            }
+          );
         }
 
         function removeFolder(path) {
@@ -332,32 +424,51 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             tree.jstree("delete_node", node);
         }
 
-        function loadAtPath(path, levels, parent) {
+        var page_size = 15;
+
+        function loadPaths(path, levels) {
+
+          var parent = findNode(path);
+
+          var base = "/" === path ? "" : path;
+          var pos = map[path].page * page_size,
+              paths = map[path].paths.slice(pos, pos + page_size);
+          function dequeue() {
+            if(paths.length === 0) {
+              if(map[path] && ((1 + map[path].page) * page_size) < map[path].paths.length) {
+                var p = path + "/" + LOAD_MORE_LABEL;
+                addNodeMore(LOAD_MORE_LABEL, p,
+                  function(p, node) {},
+                  parent || -1);
+              }
+              return;
+            }
+            var p = base + paths.shift();
+            addNodeFolder(p.split("/").pop(), p, function(){
+              if(levels > 1) {
+                loadAtPath(p, levels-1);
+              }
+            }, parent || -1);
+            setTimeout(dequeue, 0);
+          }
+
+          setTimeout(dequeue, 0);
+        }
+
+        function loadAtPath(path, levels) {
             if("undefined" === typeof levels)
                 levels = 1;
             path = normalizePath(path);
             map[path] = true;
+            var virtuals = getVirtualPaths(path)
             precog.paths(removeBasePath(path), function(paths){
-                var base = "/" === path ? "" : path,
-                    virtuals = getVirtualPaths(path);
                 $.each(virtuals, function(i, virtual) {
-                    if(virtual.substr(0,1) !== '/') virtual = '/' + virtual;
-                    if(paths.indexOf(virtual) < 0) paths.push(virtual);
+                  if(virtual.substr(0,1) !== '/') virtual = '/' + virtual;
+                  if(paths.indexOf(virtual) < 0) paths.push(virtual);
                 });
                 paths.sort();
-                function dequeue() {
-                  if(paths.length === 0)
-                    return;
-                  var p = base + paths.shift();
-                  addFolder(p.split("/").pop(), p, function(){
-                    if(levels > 1) {
-                      loadAtPath(p, levels-1, this);
-                    }
-                  }, parent || -1);
-                  setTimeout(dequeue, 0);
-                }
-
-              setTimeout(dequeue, 0);
+                map[path] = { paths : paths, page : 0 };
+                loadPaths(path, levels);
             });
         }
 
