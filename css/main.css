@@ -598,14 +598,14 @@
   margin-top: 4px;
 }
 
-.pg-labcoat .pg-results .inline-code
-{
-    font-family: ;
-}
-
 .pg-labcoat .jstree .pg-tree-leaf {
     background-position:0 0;
     background-image: url(images/file.png);
+}
+
+.pg-labcoat .jstree .pg-tree-more {
+    background-position:0 0;
+    background-image: url(images/more.png);
 }
 
 .pg-labcoat .centered {
