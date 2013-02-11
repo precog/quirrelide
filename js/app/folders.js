@@ -456,7 +456,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             setTimeout(dequeue, 0);
           }
 
-          setTimeout(dequeue, 0);
+          dequeue();
         }
 
         function loadAtPath(path, levels) {
