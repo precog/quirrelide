@@ -19,12 +19,16 @@ define([
 
 /*
 TODO:
-  * don't select "other node"
-  * don't enable actions for "other node"
-  * load more nodes on dblclick
-  * remove "other node" if reached max load
-  * check loading for sub folders for "other node"
-  * check behavior for refresh with "other node"
+  * display "events node" for non-empty folders
+  * add "events node" after upload (force refresh at path?)
+  * on dblclick "events node" load query
+  * on "events node" selection:
+    * deactivate create folder
+    * deactivate delete folder
+    * deactivate upload
+    * deactivate download
+  * on "folder node" selection:
+    * deactivate execute query
   * prohibit saving a query with a conflicting name for "other node"
 */
 

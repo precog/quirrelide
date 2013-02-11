@@ -32,6 +32,7 @@ cp -f ../css/images/logo-precog-black.svg ../build/css/images/logo-precog-black.
 cp -f ../css/images/logo-gridgain-white.svg ../build/css/images/logo-gridgain-white.svg
 cp -f ../css/images/logo-gridgain-black.svg ../build/css/images/logo-gridgain-black.svg
 cp -f ../css/images/file.png ../build/css/images/file.png
+cp -f ../css/images/more.png ../build/css/images/more.png
 cp -r -f libs/jquery/jstree/themes/default ../build/themes
 
 cp -f libs/jquery/zclip/ZeroClipboard.swf ../build/js/libs/jquery/zclip/ZeroClipboard.swf
