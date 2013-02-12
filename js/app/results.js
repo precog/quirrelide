@@ -115,6 +115,8 @@ function() {
 
         if(messages.length)
           open_pane();
+        else
+          close_pane();
 
         dataView.setItems([], "#id"); // forces correct refreshes of data
 

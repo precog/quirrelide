@@ -193,11 +193,17 @@ function(precog, md5, createStore, utils) {
             setDirty : function(index) {
                 this.setField("dirty", true, index);
             },
-            getOutputResult : function(index) {
-                return this.getField("output.result", null, index);
+            getOutputData : function(index) {
+              return this.getField("output.result", null, index);
             },
-            setOutputResult : function(result, index) {
-                this.setField("output.result", result, index);
+            setOutputData : function(result, index) {
+              this.setField("output.result", result, index);
+            },
+            getOutputResults : function(index) {
+              return this.getField("output.results", null, index);
+            },
+            setOutputResults : function(results, index) {
+              this.setField("output.results", results, index);
             },
             getOutputType : function(index) {
                 return this.getField("output.type", null, index);

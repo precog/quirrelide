@@ -114,7 +114,6 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
           },
           paths : function(parent, callback) {
               window.Precog.retrieveMetadata(parent, function(r) {
-                console.log(r);
                  var paths = r.children.map(function(path) {
                                return path.substr(-1) === '/' && path.substr(0, path.length-1) || path;
                              }).sort(),

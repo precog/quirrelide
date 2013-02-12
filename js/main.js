@@ -185,10 +185,6 @@ $(function() {
         editor.setCursorPosition(pos.line - 1, pos.column - 1);
     });
 
-    $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
-      results.update(errors, warnings);
-    });
-
     var executions = {};
     $(precog).on("execute", function(_, query, lastExecution, id) {
         var workingid;
@@ -228,14 +224,14 @@ $(function() {
 
     $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
       var execution = executions[id];
-      delete executions[id];
       history.save(execution.name, execution.query, data); // TODO CHECK HOW PAGINATION AFFECTS THE BEHAVIOR OF HISTORY
       status.endRequest(true);
       if(editors.getName() === execution.name) {
         output.setOutput(data, null, editors.getOutputOptions()); // TODO ADD HERE OUTPUT OPTIONS AND REMOVE REFERENCES TO DEFAULT TABLE
+        results.update(errors, warnings);
         // TODO SET OUTPUT OPTIONS FOR PAGINATION
-        editors.setOutputResult(data);
-
+        editors.setOutputData(data);
+        editors.setOutputResults({ errors : errors, warnings : warnings });
         if(editorbar.historyPanelIsOpen()) {
           refreshHistoryList();
         }
@@ -246,7 +242,8 @@ $(function() {
           if(currenttype === "message" || currenttype === "error")
             editors.setOutputType("table", index);
           // TODO SET OUTPUT OPTIONS FOR PAGINATION
-          editors.setOutputResult(data, index);
+          editors.setOutputData(data, index);
+          editors.setOutputResults({ errors : errors, warnings : warnings }, index);
         }
       }
       pardot.track_page("quirrel_success_"+(is_custom_query(execution)?"custom":"default"));
@@ -260,11 +257,11 @@ $(function() {
       status.endRequest(false);
       if(editors.getName() === execution.name) {
         output.setOutput(data, 'error', editors.getOutputOptions());
-        editors.setOutputResult(data);
+        editors.setOutputData(data);
       } else {
         var index = editors.getIndexByName(execution.name);
         if(index >= 0)
-          editors.setOutputResult(data, index);
+          editors.setOutputData(data, index);
       }
 
       pardot.track_error(
@@ -327,10 +324,15 @@ console.log(JSON.stringify(pagination));
     });
 */
     $(editors).on('activated', function(_, index) {
-        var result  = editors.getOutputResult(),
-            type    = editors.getOutputType(),
-            options = editors.getOutputOptions();
-        output.setOutput(result, type, options);
+        var data     = editors.getOutputData(),
+            type     = editors.getOutputType(),
+            options  = editors.getOutputOptions(),
+            oresults = editors.getOutputResults() || { errors : [], warnings : []};
+        output.setOutput(data, type, options);
+
+console.log(oresults);
+
+        results.update(oresults.errors, oresults.warnings);
     });
 
     $(editors).on('saved', function(_, data) {

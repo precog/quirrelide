@@ -40,7 +40,7 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
             description : "download query result",
             handler : function() {
                 var format = last && map[last.current].preferredDownloadFormat(lastOptions);
-                openDialog("Download Results", exportLanguages, editors.getOutputResult(), format, downloadCallback);
+                openDialog("Download Results", exportLanguages, editors.getOutputData(), format, downloadCallback);
             }
         });
 

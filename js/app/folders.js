@@ -29,7 +29,7 @@ TODO:
     * deactivate download
   * on "folder node" selection:
     * deactivate execute query
-  * prohibit saving a query with a conflicting name for "other node"
+  * prohibit saving a query with a conflicting name for "other node" or "events node"
 */
 
 function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInputDialog, openConfirmDialog, humanize, tplToolbar){
