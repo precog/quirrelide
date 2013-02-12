@@ -38,7 +38,7 @@ function() {
           { id: "ncol", name: "C", field: "ncol", width : 25, resizable : false, cssClass : "centered" },
           { id: "detail", name: "Detail", field: "detail"},
           { id: "line", name: "Line", field: "line", formatter : code_formatter},
-          { id: "timestamp", name: "Timestamp", field: "timestamp", width : 150, resizable : false}
+          { id: "timestamp", name: "Timestamp", field: "timestamp", width : 170, resizable : false}
         ],
         layout = $el.parentsUntil("ui-layout-center").layout(),
         grid;
@@ -124,18 +124,20 @@ function() {
         dataView.setItems(messages, "#id");
         dataView.endUpdate();
 
-        var i = messages.length,
+        setTimeout(function() {
+          var i = messages.length,
             item;
-        $(wrapper).trigger("resetHighlightSyntax");
-        while(--i >= 0) {
-          item = messages[i];
-          $(wrapper).trigger("highlightSyntax", {
-            line : item.nline,
-            column : item.ncol,
-            text : item.detail,
-            type : item.type
-          });
-        }
+          $(wrapper).trigger("resetHighlightSyntax");
+          while(--i >= 0) {
+            item = messages[i];
+            $(wrapper).trigger("highlightSyntax", {
+              line : item.nline,
+              column : item.ncol,
+              text : item.detail,
+              type : item.type
+            });
+          }
+        }, 100);
       },
       resize : reduced_resize
     };

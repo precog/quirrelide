@@ -250,20 +250,42 @@ $(function() {
       ga.trackQueryExecution("success");
     });
 
+    function convertErrorToResultErrors(e) {
+      var t = e.detail;
+      e.detail = e.message;
+      e.message = t;
+      return [{
+        message : "error",
+        position : e,
+        timestamp : +new Date()
+      }];
+    }
+
     $(precog).on('failed', function(_, id, data) {
       data = data instanceof Array ? data[0] : data;
       var execution = executions[id];
       delete executions[id];
       status.endRequest(false);
+
+
+      console.log(data);
+
+      var errors = convertErrorToResultErrors(data);
       if(editors.getName() === execution.name) {
         output.setOutput(data, 'error', editors.getOutputOptions());
+        results.update(errors, []);
         editors.setOutputData(data);
+        editors.setOutputResults({ errors : errors, warnings : [] });
       } else {
         var index = editors.getIndexByName(execution.name);
-        if(index >= 0)
+        if(index >= 0) {
           editors.setOutputData(data, index);
+          editors.setOutputResults({ errors : errors, warnings : warnings }, index);
+        }
       }
 
+/*
+  TODO Restore
       pardot.track_error(
         "quirrel_failure_"+(is_custom_query(execution)?"custom":"default"),
         {
@@ -274,6 +296,8 @@ $(function() {
         },
         "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
       );
+*/
+
       ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
 
@@ -329,8 +353,6 @@ console.log(JSON.stringify(pagination));
             options  = editors.getOutputOptions(),
             oresults = editors.getOutputResults() || { errors : [], warnings : []};
         output.setOutput(data, type, options);
-
-console.log(oresults);
 
         results.update(oresults.errors, oresults.warnings);
     });

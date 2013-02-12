@@ -4,13 +4,13 @@ define([
 
 function() {
 
-    var elPanel = $('<div class="ui-widget"><div class="ui-content ui-state-error ui-corner-all"></div></div>'),
+    var elPanel = $('<div class="ui-widget"><div class="ui-content"></div></div>'),
         elError = elPanel.find('.ui-state-error');
 
     function escapeHtml(s) {
         return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
-
+/*
     function formatError(error, wrapper) {
       var message = '<p>'+(error && escapeHtml(("undefined" !== typeof error.message) ? error.message : error))+'</p>';
       if("undefined" !== typeof error.lineNum) {
@@ -29,7 +29,7 @@ function() {
 
       return $('<div class="error-container"></div>').append($message);
     }
-
+*/
     return {
         type : "error",
         name : "Error",
@@ -42,7 +42,7 @@ function() {
           $(errors).each(function(){
             if(!this.message && "string" !== typeof this)
               return;
-            elError.append(formatError(this, wrapper));
+//            elError.append(formatError(this, wrapper));
           });
         }
     };
