@@ -67,10 +67,11 @@ require([
     , 'app/gatrack'
     , 'app/pardot_track'
     , "app/util/converters"
+    , "app/util/notification"
 
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification) {
 function buildUrl(query) {
   var version  = precog.config.version,
       basePath = precog.config.basePath,
@@ -266,7 +267,7 @@ $(function() {
         name : editors.getName(),
         query : editors.getCode()
       };
-      pardot.track_error(
+      if(pardot.track_error(
         "quirrel_failure_"+(is_custom_query(info)?"custom":"default"),
         {
           error_message : JSON.stringify({
@@ -275,7 +276,12 @@ $(function() {
           })
         },
         "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
-      );
+      )) {
+        notification.success("Your report has been submitted!", {
+            hide : true
+          , history : true
+        });
+      }
     });
 
     $(precog).on('failed', function(_, id, data) {
@@ -284,8 +290,6 @@ $(function() {
       delete executions[id];
       status.endRequest(false);
 
-
-      console.log(data);
 
       var errors = convertErrorToResultErrors(data);
       if(editors.getName() === execution.name) {
