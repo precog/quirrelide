@@ -18,6 +18,13 @@ function() {
     return '<img src="'+src+'" alt="'+value+'" class="result-icon">';
   }
 
+  function report_formatter(r, c, value, cell, item) {
+    if(value !== "report") {
+      return null;
+    }
+    return '<a href="#" class="report">report</a>';
+  }
+
   function code_formatter(r, c, value, cell, item) {
     return '<span class="inline-code ace_editor">'+value+'</span>';
   }
@@ -38,7 +45,8 @@ function() {
           { id: "ncol", name: "C", field: "ncol", width : 25, resizable : false, cssClass : "centered" },
           { id: "detail", name: "Detail", field: "detail"},
           { id: "line", name: "Line", field: "line", formatter : code_formatter},
-          { id: "timestamp", name: "Timestamp", field: "timestamp", width : 170, resizable : false}
+          { id: "timestamp", name: "Timestamp", field: "timestamp", width : 170, resizable : false},
+          { id: "report", name: "", field: "report", width : 100, resizable : false, formatter : report_formatter }
         ],
         layout = $el.parentsUntil("ui-layout-center").layout(),
         grid;
@@ -56,7 +64,7 @@ function() {
     function transform(type, id, msg) {
       if(!msg.position)
         return null;
-      return {
+      var o = {
         "#id"       : id,
         type        : type,
         message     : msg.message,
@@ -67,6 +75,10 @@ function() {
         line        : msg.position.line,
         linemessage : msg.position.message
       };
+      if(type === "error") {
+        o.report = "report"
+      }
+      return o;
     }
 
     function reduced_resize() {
@@ -87,7 +99,11 @@ function() {
             line   = data.nline,
             column = data.ncol,
             type   = data.type;
-        $(wrapper).trigger("goto", { line : line, column : column, type : type });
+        if(model[cell.cell].id === "report" && data.report === "report") {
+          $(wrapper).trigger("report", data);
+        } else {
+          $(wrapper).trigger("goto", { line : line, column : column, type : type });
+        }
       });
     });
 
@@ -126,7 +142,7 @@ function() {
 
         setTimeout(function() {
           var i = messages.length,
-            item;
+              item;
           $(wrapper).trigger("resetHighlightSyntax");
           while(--i >= 0) {
             item = messages[i];

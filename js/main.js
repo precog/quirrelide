@@ -261,6 +261,23 @@ $(function() {
       }];
     }
 
+    $(results).on("report", function(_, error) {
+      var info = {
+        name : editors.getName(),
+        query : editors.getCode()
+      };
+      pardot.track_error(
+        "quirrel_failure_"+(is_custom_query(info)?"custom":"default"),
+        {
+          error_message : JSON.stringify({
+            query : info.query,
+            error : error
+          })
+        },
+        "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
+      );
+    });
+
     $(precog).on('failed', function(_, id, data) {
       data = data instanceof Array ? data[0] : data;
       var execution = executions[id];
@@ -283,7 +300,6 @@ $(function() {
           editors.setOutputResults({ errors : errors, warnings : warnings }, index);
         }
       }
-
 /*
   TODO Restore
       pardot.track_error(
