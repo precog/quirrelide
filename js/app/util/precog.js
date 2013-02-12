@@ -113,6 +113,17 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
               }, params) || true;
           },
           paths : function(parent, callback) {
+              window.Precog.retrieveMetadata(parent, function(r) {
+                console.log(r);
+                 var paths = r.children.map(function(path) {
+                               return path.substr(-1) === '/' && path.substr(0, path.length-1) || path;
+                             }).sort(),
+                     has_records = r.structure && r.structure.children.length > 0;
+                  callback(paths, has_records);
+              }, function(code, e) {
+                throw "Unable To Query Path API";
+              });
+            /*
               window.Precog.children(parent, function(r) {
                   callback(r.map(function(path) {
                       return path.substr(-1) === '/' && path.substr(0, path.length-1) || path;
@@ -120,6 +131,7 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
               }, function(code, e) {
                   throw "Unable To Query Path API";
               })
+              */
           },
           is_demo : function() {
             var domains = ["labcoat.precog.com", "demo.precog.com"],

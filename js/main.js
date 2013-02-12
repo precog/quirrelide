@@ -345,7 +345,7 @@ console.log(JSON.stringify(pagination));
     $(folders).on('querypath', function(e, path) {
         if(path.substr(0, 1) !== "/")
           path = "/" + path;
-        var q = 'load("' + path.replace(/"/g, '\"') + '")';
+        var q = '/' + path.replace(/"/g, '\"');
         if(editors.getCode().trim() == '') {
             editor.set(q);
         } else {
