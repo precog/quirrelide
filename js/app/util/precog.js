@@ -62,14 +62,18 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
               window.Precog.ingest(path, data, type, complete, error, { progress : progress });
   //          }
           },
-          deletePath : function(path, callback) {
-            window.Precog.deletePath(path, function(r) {
-              if(callback) callback(true);
-            }, function(code, e) {
-              if(callback)
-                 callback(false);
-              else
-                throw "Unable To Delete Path";
+          deletePath : function(path, recursive, callback) {
+            window.Precog.deletePath(path,
+              function(r) {
+                callback && callback(true);
+              },
+              function(code, e) {
+                if(callback)
+                   callback(false);
+                else
+                  throw "Unable To Delete Path";
+              }, {
+              recursive : recursive
             });
           },
           query : function(text, options) {

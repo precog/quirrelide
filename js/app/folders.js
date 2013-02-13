@@ -19,16 +19,6 @@ define([
 
 /*
 TODO:
-  * display "events node" for non-empty folders
-  * add "events node" after upload (force refresh at path?)
-  * on dblclick "events node" load query
-  * on "events node" selection:
-    * deactivate create folder
-    * deactivate delete folder
-    * deactivate upload
-    * deactivate download
-  * on "folder node" selection:
-    * deactivate execute query
   * prohibit saving a query with a conflicting name for "other node" or "events node"
 */
 
@@ -37,8 +27,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
     var DOWNLOAD_SERVICE = "download.php",
         LOAD_MORE_LABEL  = "[load more]",
         LOAD_MORE_NODE   = "[more]",
-        RECORDS_LABEL    = "data: ?",
-        RECORDS_LABEL_T  = "data: %0",
+        RECORDS_LABEL  = "data: %0",
         RECORDS_NODE     = "[records]",
         STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
         basePath = precog.config.basePath || "/",
@@ -89,6 +78,15 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
       }
     }
 
+    function removeRecordsNodeFromPath(path) {
+      var test = "/"+RECORDS_NODE,
+          len  = test.length;
+      if(path.substr(-len) === test) {
+        return path.substr(0, path.length - len);
+      }
+      return path;
+    }
+
     return function(el) {
         var wrapper, map;
 
@@ -100,62 +98,77 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             elFolders = el.find(".pg-tree").append('<div class="pg-structure"></div>').find(".pg-structure"),
             elUploader = el.append('<div style="display: none"><input name="files" type="file" multiple></div>').find('input[type=file]'),
             contextButtons = [],
-            selectedNode;
+            selectedNode,
+            btnFolderCreate,
+            btnFolderRemove,
+            btnFolderQuery,
+            btnFolderDownload,
+            btnFolderUpload;
 
         if(!uiconfig.disableUpload) {
-          contextButtons.push(ui.button(elContext, {
+          contextButtons.push(btnFolderCreate = ui.button(elContext, {
             text : false,
             icon : "ui-icon-new-folder",
             description : "create new folder",
-            handler : function() { requestNodeCreationAt($(selectedNode).attr("data")); }
+            handler : function() { requestNodeCreationAt(removeRecordsNodeFromPath($(selectedNode).attr("data"))); }
           }));
 
-          contextButtons.push(ui.button(elContext, {
+          contextButtons.push(btnFolderRemove = ui.button(elContext, {
             text : false,
             icon : "ui-icon-trash",
-            description : "remove folder",
-            handler : function() { requestNodeRemovalAt($(selectedNode).attr("data")); }
+            description : "remove data",
+            handler : function() {
+              var path  = $(selectedNode).attr("data"),
+                  npath = removeRecordsNodeFromPath(path);
+              requestNodeRemovalAt(npath, path === npath);
+            }
           }));
         }
 
         contextButtons.push(
-          ui.button(elContext, {
+          btnFolderQuery = ui.button(elContext, {
             text : false,
             icon : "ui-icon-query",
             description : "query data at path",
-            handler : function() { triggerQuery(removeBasePath($(selectedNode).attr("data"))); }
+            handler : function() { triggerQuery(removeRecordsNodeFromPath(removeBasePath($(selectedNode).attr("data")))); }
           })
         );
 
         if(!uiconfig.disableDownload) {
-			contextButtons.push(ui.button(elContext, {
-				text : false,
-				icon : "ui-icon-arrowthickstop-1-s",
-				description : "download folder data",
-				handler : function() { window.location.href = downloadUrl($(selectedNode).attr("data")); }
-			}));
+          contextButtons.push(btnFolderDownload = ui.button(elContext, {
+            text : false,
+            icon : "ui-icon-arrowthickstop-1-s",
+            description : "download folder data",
+            handler : function() { window.location.href = downloadUrl(removeRecordsNodeFromPath($(selectedNode).attr("data"))); }
+          }));
         }
 		
         if(!uiconfig.disableUpload) {
-          contextButtons.push(ui.button(elContext, {
+          contextButtons.push(btnFolderUpload = ui.button(elContext, {
             text : false,
             icon : "ui-icon-arrowthickstop-1-n",
             description : "upload data to folder",
-            handler : function() { uploadDialog($(selectedNode).attr("data")); }
+            handler : function() { uploadDialog(removeRecordsNodeFromPath($(selectedNode).attr("data"))); }
           }));
         }
 
         function refreshActions() {
-            var path = selectedNode && $(selectedNode).attr("data");
+            var path = selectedNode && $(selectedNode).attr("data"),
+                type = selectedNode && $(selectedNode).attr("rel");
+
             $.each(contextButtons, function() {
                 $(this).button("disable");
             });
             if(path) {
-                $(contextButtons[0]).button("enable");
-                if(path !== "/") {
-                    $.each(contextButtons, function() {
-                        $(this).button("enable");
-                    });
+                if(type == "folder")
+                  btnFolderCreate.button("enable");
+                if(path !== "/" && type === "folder") {
+                  if(btnFolderDownload) btnFolderDownload.button("enable");
+                  if(btnFolderUpload) btnFolderUpload.button("enable");
+                } else if(type === "records") {
+                  btnFolderRemove.button("enable");
+                  btnFolderQuery.button("enable");
+                  if(btnFolderUpload) btnFolderUpload.button("enable");
                 }
             }
         }
@@ -182,13 +195,18 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
               }
             },
             sort : function (a, b) {
-              var va = $(a).attr("data").split("/").pop(),
-                  vb = $(b).attr("data").split("/").pop();
-              if(va === LOAD_MORE_NODE)
-                return 1;
-              else if(vb == LOAD_MORE_NODE)
+              var ta = $(a).attr("rel"),
+                  tb = $(b).attr("rel");
+              if(ta === tb) {
+                return ReportGrid.compare($(a).attr("data").split("/").pop(), $(b).attr("data").split("/").pop());
+              }
+              if(ta === "folder")
                 return -1;
-              return va === vb ? 0 : (va > vb ? 1 : -1);
+              if(tb === "folder")
+                return 1;
+              if(ta === "records")
+                return -1;
+              return 1;
             }
         });
         elRoot.html('<div class="jstree jstree-default"><a href="#" data="'+basePath+'"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
@@ -296,19 +314,22 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
           return path;
         }
 
-        function requestNodeRemovalAt(path) {
-            var p = path.substr(0, basePath.length) === basePath ? "/" + path.substr(basePath.length) : path,
-                title   = "Delete Folder",
-                message = "Are you sure you want to delete the folder at: <i>"+path+"</i> and all of its content?<br>This operation cannot be undone!";
+        function requestNodeRemovalAt(path, recursive) {
+            var p = removeBasePath(path),
+                title   = "Delete " + recursive ? "Folder" : "Data",
+                message = recursive
+                    ? "Are you sure you want to delete the folder at: <i>"+path+"</i> and all of its content?<br>This operation cannot be undone!"
+                    : "Are you sure you want to delete the data at: <i>"+path+"</i>?<br>This operation cannot be undone!";
             openConfirmDialog(
                 title,
                 message,
                 function() {
-                    precog.deletePath(p, function(success) {
-                      if(success)
-                        removeNode(path);
-                      else
+                    precog.deletePath(p, recursive, function(success) {
+                      if(success) {
+                        removeNode(path + (recursive ? "" : "/"+RECORDS_NODE));
+                      } else {
                         alert("an error occurred deleting the path " + path);
+                      }
                     });
                 },
                 { captcha : true }
@@ -431,7 +452,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
           );
         }
 
-        function countRecords(path) {
+        function countRecords(path, callback) {
           var node  = findNode(path + "/" + RECORDS_NODE),
               qp    = (function() {
                         var p = removeBasePath(path);
@@ -440,22 +461,29 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                         return p;
                       })(),
               query = 'count(/'+qp+')';
+
           if(node) {
             window.Precog.query(query, function(r) {
-              var count = window.ReportGrid.format(r[0]);
-              tree.jstree("set_text", node, RECORDS_LABEL_T.replace("%0", count));
+              var count = (callback && callback(r[0])) || window.ReportGrid.format(r[0]);
+              tree.jstree("set_text", node, RECORDS_LABEL.replace("%0", count));
+
             })
           };
         }
 
         function addNodeRecords(path, callback) {
           var parent = findNode(path) || -1,
-              npath  = path + "/" + RECORDS_NODE;
+              npath  = path + "/" + RECORDS_NODE,
+              el     = findNode(npath);
+          if(el) {
+            callback && callback.apply(el, [npath, el]);
+            return;
+          }
           return tree.jstree(
             "create_node"
             , parent
             , {
-              "title" : RECORDS_LABEL
+              "title" : RECORDS_LABEL.replace("%0", "?")
               , data : npath
               , rel : "records"
               , "li_attr" : {
@@ -465,12 +493,11 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             }
             , "last"
             , function(el) {
-//              countRecords(path);
               $(el).dblclick(function() {
-                triggerQuery(qp);
+                triggerQuery(removeBasePath(path));
               });
               if(callback)
-                callback.apply(el, [npath, el]);
+                callback && callback.apply(el, [npath, el]);
               return false;
             }
           );
@@ -556,6 +583,34 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             e.preventDefault(); return false;
         });
 
+        function recordsUploded(path) {
+          if(path.substr(0, 1) !== "/")
+            path = "/" + path;
+          path = normalizePath((basePath.substr(-1) == "/" ? basePath.substr(0, basePath.length - 1) : basePath) + path);
+          var start   = -1,
+              retries = 3;
+console.log(path);
+          function poll() {
+            countRecords(path, function(count) {
+              console.log("counting", count);
+              if(count === start) {
+                retries--;
+              }
+              if(retries === 0)
+                return ReportGrid.format(count);
+              start = count;
+              poll();
+              return "<i>"+ReportGrid.format(count) + "+</i>";
+            });
+          }
+
+          addNodeRecords(path, function() {
+console.log(path);
+            tree.jstree("open_node", findNode(path));
+            poll();
+          });
+        }
+
         function uploadFile(file, path) {
           if(!file) return;
           var filename = file.fileName || file.name,
@@ -575,12 +630,14 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             noty.progressStep(e.loaded/ e.total);
             noty.el.find(".pg-message").html("uploaded " + humanize.filesize(e.loaded) + " of " + humanize.filesize(e.total));
           }
+
           function complete(e) {
             if(e.failed > 0) {
               if(e.ingested === 0) {
                 message = 'All of the ' + humanize.numberFormat(e.total, 0) + ' events failed to be stored.';
               } else {
                 message = humanize.numberFormat(e.ingested, 0) + ' events have been stored correctly, ' + humanize.numberFormat(e.failed, 0) + ' failed to be stored.';
+                recordsUploded(path);
               }
               if(e.skipped) {
                 message += "<br>Skipped " + humanize.numberFormat(e.skipped, 0) + " events (the ingest process stops after "+humanize.numberFormat(e.failed, 0)+" errors)."
@@ -613,6 +670,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
               message = 'all of the ' + humanize.numberFormat(e.total, 0) + ' events have been queued correctly and are now in the process to be ingested';
               noty.progressComplete(message);
               $(wrapper).trigger("uploadComplete");
+              recordsUploded(path);
             }
           }
           function error(e) {
