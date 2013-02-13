@@ -1,5 +1,6 @@
 define([
       "rtext!templates/layout.full.html"
+    , "app/util/storagemonitor"
 
     , 'libs/jquery/ui/jquery.ui.core'
     , 'libs/jquery/ui/jquery.ui.position'
@@ -12,8 +13,11 @@ define([
     , 'libs/jquery/layout/jquery.layout'
 ],
 
- function(template) {
-    var toolbarMainHeight = 38,
+ function(template, createStore) {
+   var STORE_KEY = "pg-labcoat-layout",
+       store = createStore(STORE_KEY, { support : false });
+
+   var toolbarMainHeight = 38,
         toolbarHeight = 36,
         doubleBar = 50,
         statusbarHeight = 24;
@@ -108,8 +112,14 @@ define([
                   size : "40%"
                 , maxSize : 800
                 , minSize : 305 // "240px"
-                , initClosed : false
+                , initClosed : store.get("support")
                 , maskIframesOnResize : true
+                , onclose : function() {
+                  store.set("support", true);
+                }
+                , onopen : function() {
+                  store.set("support", false);
+                }
             }
         }));
 
