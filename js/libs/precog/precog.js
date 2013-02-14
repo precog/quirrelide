@@ -1031,7 +1031,6 @@ throw new SyntaxError('JSON.parse');};}}());
         };
 
     if(!parameters.apiKey) throw Error("apiKey not specified");
-
     http.remove(
       Util.actionUrl("ingest", "async/fs", options) + Util.actionPath(path, options),
       Util.createCallbacks(success, failure, description),

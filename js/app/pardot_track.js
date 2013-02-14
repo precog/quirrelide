@@ -37,6 +37,7 @@ function(submit, displaySupport) {
           params.error_message = r;
           wrapper.track_error(action, params, user_message);
         });
+        return false;
       } else {
         params.email = email;
         submit({
@@ -47,6 +48,7 @@ function(submit, displaySupport) {
 //            console.log("Form Submit: " + action);
           }
         });
+        return true;
       }
     }
   };

@@ -67,10 +67,11 @@ require([
     , 'app/gatrack'
     , 'app/pardot_track'
     , "app/util/converters"
+    , "app/util/notification"
 
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification) {
 function buildUrl(query) {
   var version  = precog.config.version,
       basePath = precog.config.basePath,
@@ -185,10 +186,6 @@ $(function() {
         editor.setCursorPosition(pos.line - 1, pos.column - 1);
     });
 
-    $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
-      results.update(errors, warnings);
-    });
-
     var executions = {};
     $(precog).on("execute", function(_, query, lastExecution, id) {
         var workingid;
@@ -228,14 +225,14 @@ $(function() {
 
     $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
       var execution = executions[id];
-      delete executions[id];
       history.save(execution.name, execution.query, data); // TODO CHECK HOW PAGINATION AFFECTS THE BEHAVIOR OF HISTORY
       status.endRequest(true);
       if(editors.getName() === execution.name) {
         output.setOutput(data, null, editors.getOutputOptions()); // TODO ADD HERE OUTPUT OPTIONS AND REMOVE REFERENCES TO DEFAULT TABLE
+        results.update(errors, warnings);
         // TODO SET OUTPUT OPTIONS FOR PAGINATION
-        editors.setOutputResult(data);
-
+        editors.setOutputData(data);
+        editors.setOutputResults({ errors : errors, warnings : warnings });
         if(editorbar.historyPanelIsOpen()) {
           refreshHistoryList();
         }
@@ -246,11 +243,45 @@ $(function() {
           if(currenttype === "message" || currenttype === "error")
             editors.setOutputType("table", index);
           // TODO SET OUTPUT OPTIONS FOR PAGINATION
-          editors.setOutputResult(data, index);
+          editors.setOutputData(data, index);
+          editors.setOutputResults({ errors : errors, warnings : warnings }, index);
         }
       }
       pardot.track_page("quirrel_success_"+(is_custom_query(execution)?"custom":"default"));
       ga.trackQueryExecution("success");
+    });
+
+    function convertErrorToResultErrors(e) {
+      var t = e.detail;
+      e.detail = e.message;
+      e.message = t;
+      return [{
+        message : "error",
+        position : e,
+        timestamp : +new Date()
+      }];
+    }
+
+    $(results).on("report", function(_, error) {
+      var info = {
+        name : editors.getName(),
+        query : editors.getCode()
+      };
+      if(pardot.track_error(
+        "quirrel_failure_"+(is_custom_query(info)?"custom":"default"),
+        {
+          error_message : JSON.stringify({
+            query : info.query,
+            error : error
+          })
+        },
+        "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
+      )) {
+        notification.success("Your report has been submitted!", {
+            hide : true
+          , history : true
+        });
+      }
     });
 
     $(precog).on('failed', function(_, id, data) {
@@ -258,15 +289,23 @@ $(function() {
       var execution = executions[id];
       delete executions[id];
       status.endRequest(false);
+
+
+      var errors = convertErrorToResultErrors(data);
       if(editors.getName() === execution.name) {
         output.setOutput(data, 'error', editors.getOutputOptions());
-        editors.setOutputResult(data);
+        results.update(errors, []);
+        editors.setOutputData(data);
+        editors.setOutputResults({ errors : errors, warnings : [] });
       } else {
         var index = editors.getIndexByName(execution.name);
-        if(index >= 0)
-          editors.setOutputResult(data, index);
+        if(index >= 0) {
+          editors.setOutputData(data, index);
+          editors.setOutputResults({ errors : errors, warnings : warnings }, index);
+        }
       }
-
+/*
+  TODO Restore
       pardot.track_error(
         "quirrel_failure_"+(is_custom_query(execution)?"custom":"default"),
         {
@@ -277,6 +316,8 @@ $(function() {
         },
         "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
       );
+*/
+
       ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
     });
 
@@ -327,10 +368,13 @@ console.log(JSON.stringify(pagination));
     });
 */
     $(editors).on('activated', function(_, index) {
-        var result  = editors.getOutputResult(),
-            type    = editors.getOutputType(),
-            options = editors.getOutputOptions();
-        output.setOutput(result, type, options);
+        var data     = editors.getOutputData(),
+            type     = editors.getOutputType(),
+            options  = editors.getOutputOptions(),
+            oresults = editors.getOutputResults() || { errors : [], warnings : []};
+        output.setOutput(data, type, options);
+
+        results.update(oresults.errors, oresults.warnings);
     });
 
     $(editors).on('saved', function(_, data) {
@@ -345,7 +389,7 @@ console.log(JSON.stringify(pagination));
     $(folders).on('querypath', function(e, path) {
         if(path.substr(0, 1) !== "/")
           path = "/" + path;
-        var q = 'load("' + path.replace(/"/g, '\"') + '")';
+        var q = '/' + path.replace(/"/g, '\"');
         if(editors.getCode().trim() == '') {
             editor.set(q);
         } else {
