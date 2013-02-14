@@ -160,7 +160,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                 $(this).button("disable");
             });
             if(path) {
-                if(type == "folder")
+                if(type === "folder")
                   btnFolderCreate.button("enable");
                 if(path !== "/" && type === "folder") {
                   if(btnFolderDownload) btnFolderDownload.button("enable");
@@ -209,7 +209,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
               return 1;
             }
         });
-        elRoot.html('<div class="jstree jstree-default"><a href="#" data="'+basePath+'"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
+        elRoot.html('<div class="jstree jstree-default"><a href="#" data="'+basePath+'" rel="folder"><ins class="jstree-icon jstree-themeicon"> </ins>/</a></div>');
         elRoot.find('a')
             .mouseenter(function(){
                 $(this).addClass("jstree-hovered");
