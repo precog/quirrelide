@@ -589,10 +589,8 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
           path = normalizePath((basePath.substr(-1) == "/" ? basePath.substr(0, basePath.length - 1) : basePath) + path);
           var start   = -1,
               retries = 3;
-console.log(path);
           function poll() {
             countRecords(path, function(count) {
-              console.log("counting", count);
               if(count === start) {
                 retries--;
               }
@@ -605,7 +603,6 @@ console.log(path);
           }
 
           addNodeRecords(path, function() {
-console.log(path);
             tree.jstree("open_node", findNode(path));
             poll();
           });
