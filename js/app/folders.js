@@ -79,6 +79,8 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
     }
 
     function removeRecordsNodeFromPath(path) {
+      if(path.substr(-1) === "/")
+        path = path.substr(0, path.length-1);
       var test = "/"+RECORDS_NODE,
           len  = test.length;
       if(path.substr(-len) === test) {
