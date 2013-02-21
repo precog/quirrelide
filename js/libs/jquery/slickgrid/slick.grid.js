@@ -883,7 +883,7 @@ if (typeof Slick === "undefined") {
         }
 
         if (!stylesheet) {
-          throw new Error("Cannot find stylesheet.");
+          return null;
         }
 
         // find and cache column CSS rules
@@ -1053,6 +1053,11 @@ if (typeof Slick === "undefined") {
         w = columns[i].width;
 
         rule = getColumnCssRules(i);
+        if(null === rule) {
+          console.log("RETRY");
+          setTimeout(applyColumnWidths, 1000);
+          return;
+        }
         rule.left.style.left = x + "px";
         rule.right.style.right = (canvasWidth - x - w) + "px";
 
