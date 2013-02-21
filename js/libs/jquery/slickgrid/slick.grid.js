@@ -1054,7 +1054,6 @@ if (typeof Slick === "undefined") {
 
         rule = getColumnCssRules(i);
         if(null === rule) {
-          console.log("RETRY");
           setTimeout(applyColumnWidths, 1000);
           return;
         }
