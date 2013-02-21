@@ -40,7 +40,7 @@ function() {
           , multiColumnSort: true
         },
         model = [
-          { id: "message", name: " ", field: "message", width : 25, resizable : false, formatter : message_type_formatter, cssClass : "centered" },
+          { id: "type", name: " ", field: "type", width : 25, resizable : false, formatter : message_type_formatter, cssClass : "centered" },
           { id: "nline", name: "L", field: "nline", width : 25, resizable : false, cssClass : "centered" },
           { id: "ncol", name: "C", field: "ncol", width : 25, resizable : false, cssClass : "centered" },
           { id: "detail", name: "Detail", field: "detail"},
@@ -64,16 +64,27 @@ function() {
     function transform(type, id, msg) {
       if(!msg.position)
         return null;
+
+      var position = msg.position.detail
+        ? msg.position.detail
+        : {
+            lineNum : msg.position.line,
+            colNum  : msg.position.column,
+            detail  : msg.message.split("\n").shift(),
+            line    : msg.position.text,
+            message : msg.message
+          };
+
       var o = {
         "#id"       : id,
         type        : type,
         message     : msg.message,
         timestamp   : new Date(msg.timestamp).toLocaleString(),
-        nline       : msg.position.lineNum,
-        ncol        : msg.position.colNum,
-        detail      : msg.position.detail,
-        line        : msg.position.line,
-        linemessage : msg.position.message
+        nline       : position.lineNum,
+        ncol        : position.colNum,
+        detail      : position.detail,
+        line        : position.line,
+        linemessage : position.message
       };
       if(type === "error") {
         o.report = "report"
