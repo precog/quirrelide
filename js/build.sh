@@ -49,4 +49,4 @@ node r.js -o cssIn=../css/jquery/ui/gray/jquery-ui.css out=../build/css/jquery/u
 # MINIFY JS
 ~/bin/uglifyjs -o ../build/js/require-jquery.js require-jquery.js
 node r.js -o app.build.js
-node --stack_size=100000 ~/bin/uglifyjs -o ../build/js/precog-labcoat.js ../build/js/precog-labcoat.js
+node --stack_size=100000 /usr/local/lib/node_modules/uglify-js/bin/uglifyjs -o ../build/js/precog-labcoat.js ../build/js/precog-labcoat.js
