@@ -81,11 +81,16 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
     function removeRecordsNodeFromPath(path) {
       if(path.substr(-1) === "/")
         path = path.substr(0, path.length-1);
+      if(path.substr(0, 1) !== "/")
+        path = "/" + path;
       var test = "/"+RECORDS_NODE,
           len  = test.length;
       if(path.substr(-len) === test) {
-        return path.substr(0, path.length - len);
+        path = path.substr(0, path.length - len);
       }
+      if(path == "")
+        path = "/";
+      console.log(path);
       return path;
     }
 
@@ -462,7 +467,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                           p = "/" + p;
                         return p;
                       })(),
-              query = 'count(/'+qp+')';
+              query = 'count(load("'+qp+'"))';
 
           if(node) {
             window.Precog.query(query, function(r) {
@@ -554,8 +559,11 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                 paths.sort();
                 map[path] = { paths : paths, page : 0 };
                 loadPaths(path, levels);
+
                 if(has_records) {
-                  addNodeRecords(path);
+                  addNodeRecords(path, removeBasePath(path) === "/"
+                    ? function() { countRecords(path); }
+                    : null);
                 }
             });
         }

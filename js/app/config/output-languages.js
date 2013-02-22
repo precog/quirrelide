@@ -74,8 +74,7 @@ function(convert, precog, ui) {
                 "  // Quirrel query in JavaScript generated with Labcoat by Precog\n" +
                 '  Precog.query("'+code+'",\n    function(data) {\n      /* do something with the data */\n      console.log(data);\n    },\n    function(error) { console.log(error); }\n  );\n' +
                 "}\n" +
-                '</script>\n</head>\n<body onload="init()">\n</body>\n</html>'
-                ;
+                "</script>\n</head>\n<body onload=\"init()\">\n</body>\n</html>";
         }
     }, {
       token: "js",
