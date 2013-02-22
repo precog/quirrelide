@@ -234,7 +234,7 @@ function(jsonmodel, ui, notification, tplOptionsPanel) {
                 });
 
                 builderButton = ui.button(toolbar, {
-                  label : "export to builder",
+                  label : "export to ReportGrid",
                   text : true,
                   handler : function() {
                     $(wrapper).trigger("exportToBuilder");

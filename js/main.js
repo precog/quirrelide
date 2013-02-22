@@ -77,6 +77,16 @@ function buildUrl(query) {
       basePath = precog.config.basePath,
       service  = precog.config.analyticsService,
       apiKey   = precog.config.apiKey;
+
+  if(!basePath) {
+    basePath = "";
+  } else {
+    if(basePath.substring(-1) === "/")
+      basePath = basePath.substr(0, basePath.length - 1);
+    if(basePath.substring(0, 1) === "/")
+      basePath = basePath.substr(1);
+  }
+
   return service
     + "analytics/"
     + (version && version !== false && version !== "false" ? "v" + version + "/" : "")
