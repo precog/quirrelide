@@ -67,7 +67,7 @@ function(convert, precog, ui) {
         name : "HTML",
         handler : function(code) {
             code = escapeQuotes(convert.minifyQuirrel(code));
-            var url = 'http://api.reportgrid.com/js/precog.js?apiKey='+apiKey+(version === false || version === "false" ? "&version=false" : "")+'&analyticsService='+service;
+            var url = 'http://api.reportgrid.com/js/precog.js?apiKey='+apiKey+(version === false || version === "false" ? "&version=false" : "")+(basePath?"&basePath="+encodeURIComponent(basePath):"")+'&analyticsService='+service;
             return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="'+url+'"></script>\n' +
                 "<script>\n" +
                 "function init() {\n" +
