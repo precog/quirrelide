@@ -397,16 +397,18 @@ console.log(JSON.stringify(pagination));
     var folders = buildFolders(layout.getSystem());
 
     $(folders).on('querypath', function(e, path) {
-        if(path.substr(0, 1) !== "/")
-          path = "/" + path;
-        var q = '/' + path.replace(/"/g, '\"');
-        if(editors.getCode().trim() == '') {
-            editor.set(q);
-        } else {
-            editors.add({ code : q });
-            editors.activate(editors.count()-1);
-        }
-        editor.triggerExecute();
+      if(path.substr(0, 1) !== "/")
+        path = "/" + path;
+      var q = '/' + path.replace(/"/g, '\"');
+      if(q === "//")
+        q = 'load("/")';
+      if(editors.getCode().trim() == '') {
+          editor.set(q);
+      } else {
+          editors.add({ code : q });
+          editors.activate(editors.count()-1);
+      }
+      editor.triggerExecute();
     });
 
     $(folders).on("uploadComplete", function() {
