@@ -94,7 +94,7 @@ function(convert, precog, ui) {
           "// Quirrel query in PHP generated with Labcoat by Precog\n\n" +
           'require_once("Precog.php");\n\n' +
           '' +
-          '$precog = new PrecogAPI("'+apiKey+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +
+          '$precog = new PrecogAPI("'+apiKey+'", "/'+(basePath?basePath+"/":"")+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +
           'if(false === $precog) {\n' +
           '  die($precog->errorMessage());\n' +
           '} else {\n' +
