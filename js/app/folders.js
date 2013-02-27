@@ -238,9 +238,15 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
 
         tree.bind("open_node.jstree", function(e, data) {
             var $el   = $(data.rslt.obj),
-                paths = $el.find("li");
+                paths = $el.find("li[rel=\"folder\"]"),
+                node = nodeFromData(data),
+                type = nodeType(node),
+                path = $el.attr("data");
 
-            countRecords($el.attr("data"));
+            if($el.find("li[rel=\"records\"]").length) {
+              countRecords(path);
+            }
+
 
             paths.each(function(i, el){
                 var path = normalizePath($(el).attr("data"));
