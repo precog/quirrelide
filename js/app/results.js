@@ -54,7 +54,7 @@ function() {
 
 
     function open_pane() {
-      layout.open("south");
+      layout.open("south", false, false, true);
     }
 
     function close_pane() {
