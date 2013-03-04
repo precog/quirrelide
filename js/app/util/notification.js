@@ -121,25 +121,35 @@ function(dom) {
                 n = this.success(title, o);
 
             function position() {
-                var pos = $(el).offset(),
-                    vw  = $(el).outerWidth(),
-                    ww  = n.outerWidth();
+                var left, top;
+                if(o.x) {
+                  left = o.x - n.outerWidth() / 2 + o.hoffset;
+                  top  = o.y;
+                } else {
+                  var pos = $(el).offset(),
+                      vw  = $(el).outerWidth(),
+                      ww  = n.outerWidth();
+                  left = (vw - ww) / 2 + pos.left;
+                  top = pos.top;
+                }
 
-                var left = (vw - ww) / 2 + pos.left;
                 if(left < o.hoffset)
-                    left = o.hoffset;
+                  left = o.hoffset;
                 else if(left + ww + o.hoffset > $(window).width())
-                    left = $(window).width() - o.hoffset - ww;
+                  left = $(window).width() - o.hoffset - ww;
+
                 n.css({
-                    left : left+"px",
-                    top  : (pos.top + o.voffset)+"px"
+                  left : left+"px",
+                  top : (top + o.voffset)+"px"
                 });
             }
 
-            $(window).on("resize", position);
+            if(!o.x) {
+              $(window).on("resize", position);
 
-            function remove_resize() {
+              function remove_resize() {
                 $(window).off("resize", position);
+              }
             }
 
             var old = o.before_close;

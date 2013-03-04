@@ -68,10 +68,11 @@ require([
     , 'app/pardot_track'
     , "app/util/converters"
     , "app/util/notification"
+    , "app/editortips"
 
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification) {
+function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
 function buildUrl(query) {
   var version  = precog.config.version,
       basePath = precog.config.basePath,
@@ -140,6 +141,13 @@ $(function() {
     $(editor).on('tabSizeChanged', function(_, value) {
         config.set('tabSize', value);
     });
+
+    (function() {
+      var tips = editortips();
+      $(editor).on("mouseovertext", function(_, coords, pos) {
+        tips.displayTip(coords, pos, editor.get());
+      });
+    })();
 
     var status = buildBarStatus(layout.getStatusBar(), editor, layout);
 
