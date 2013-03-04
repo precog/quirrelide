@@ -62,7 +62,7 @@ function(require, exports, module) {
               regex : "~|:=|\\+|\\/|\\-|\\*|&|\\||<|>|<=|=>|!=|<>|=|!|neg|union\\b"
             }, {
               token : ["support.function", "paren.lparen"],
-              regex : "("+identifier + ")(?:\\s*)([(])"
+              regex : "("+identifier + ")(\\s*[(])"
             }, {
               token : function(value) {
                 if (keywords.hasOwnProperty(value))

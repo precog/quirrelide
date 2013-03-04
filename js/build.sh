@@ -37,6 +37,8 @@ cp -r -f libs/jquery/jstree/themes/default ../build/themes
 
 cp -f libs/jquery/zclip/ZeroClipboard.swf ../build/js/libs/jquery/zclip/ZeroClipboard.swf
 
+cp -f ../reference.json ../build/reference.json
+
 # MINIFY CSS
 node r.js -o cssIn=../css/main.css out=../build/css/precog-labcoat.css
 node r.js -o cssIn=../css/generator.css out=../build/css/precog-link.css

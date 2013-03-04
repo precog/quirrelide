@@ -113,6 +113,30 @@ function(require, ace, ui) {
           sess.removeListener("change", removeAnnotations);
         }
 
+        // TOOLTIP LOGIC
+        (function() {
+          var timer,
+              renderer = editor.renderer,
+              $content = $(el).find(".ace_content"),
+              coords = {};
+
+          function findWord() {
+            var pos = $.extend({}, renderer.screenToTextCoordinates(coords.x, coords.y));
+            $(wrapper).trigger("mouseovertext", [coords, pos]);
+          }
+
+          $content.on("mousemove", function(e) {
+            coords.x = e.clientX;
+            coords.y = e.clientY;
+            clearInterval(timer);
+            timer = setTimeout(findWord, 500);
+          });
+
+          $content.on("mouseexit", function() {
+            clearInterval(timer);
+          })
+        })();
+
         wrapper = {
             get : function() {
                 return sess.getValue(); //editor.getSession()
