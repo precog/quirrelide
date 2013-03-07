@@ -227,6 +227,8 @@ throw new SyntaxError('JSON.parse');};}}());
         var value = '';
         if (split.length >= 2) {
           value = decodeURIComponent(split[1]);
+          if(value.substr(-1) === "#")
+            value = value.substr(0, value.length - 1);
         }
         parameters[key] = value;
       }

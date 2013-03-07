@@ -556,7 +556,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                 levels = 1;
             path = normalizePath(path);
             map[path] = true;
-            var virtuals = getVirtualPaths(path)
+            var virtuals = getVirtualPaths(path || "/")
             precog.paths(removeBasePath(path), function(paths, has_records){
                 $.each(virtuals, function(i, virtual) {
                   if(virtual.substr(0,1) !== '/') virtual = '/' + virtual;
@@ -645,7 +645,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
           }
 
           function complete(e) {
-            if(e.failed > 0) {
+            if(e.failed) {
               if(e.ingested === 0) {
                 message = 'All of the ' + humanize.numberFormat(e.total, 0) + ' events failed to be stored.';
               } else {
@@ -680,7 +680,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
               noty.progressError(message);
               $(wrapper).trigger("uploadError");
             } else {
-              message = 'all of the ' + humanize.numberFormat(e.total, 0) + ' events have been queued correctly and are now in the process to be ingested';
+              message = 'all of the ' + humanize.numberFormat(e.total || e.ingested, 0) + ' events have been queued correctly and are now in the process to be ingested';
               noty.progressComplete(message);
               $(wrapper).trigger("uploadComplete");
               recordsUploded(path);
