@@ -90,7 +90,6 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
       }
       if(path == "")
         path = "/";
-      console.log(path);
       return path;
     }
 

@@ -12,6 +12,9 @@ function(notification) {
   }
 
   $.get(REFERENCE_URL).then(function(data) {
+    // avoid issues when the header Content-Type: application/json is missing
+    if("string" === typeof data)
+      data = JSON.parse(data);
     reference = {};
     data.forEach(function(item) {
       if(item.type)
