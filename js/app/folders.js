@@ -166,7 +166,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                 $(this).button("disable");
             });
             if(path) {
-                if(type === "folder")
+                if(type === "folder" && btnFolderCreate)
                   btnFolderCreate.button("enable");
                 if(path !== "/" && type === "folder") {
                   if(btnFolderDownload) btnFolderDownload.button("enable");
@@ -464,7 +464,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
           );
         }
 
-        function countRecords(path, callback) {
+        function countRecords(path, callback, records) {
           var node  = findNode(path + "/" + RECORDS_NODE),
               qp    = (function() {
                         var p = removeBasePath(path);
@@ -474,32 +474,45 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                       })(),
               query = 'count(load("'+qp+'"))';
 
-          if(node) {
-            window.Precog.query(query, function(r) {
-              var count = (callback && callback(r[0])) || window.ReportGrid.format(r[0]);
-              tree.jstree("set_text", node, RECORDS_LABEL.replace("%0", count));
+          function set(result) {
+            var count = (callback && callback(result)) || window.ReportGrid.format(result);
+            tree.jstree("set_text", node, RECORDS_LABEL.replace("%0", count));
+          }
 
-            })
+          if(node) {
+            if(!records && node != -1)
+              records = parseInt($(node).attr("data-records"));
+
+            if(records) {
+              set(records);
+            } else {
+              window.Precog.query(query, function(r) {
+                set(r[0]);
+              });
+            }
           };
         }
 
-        function addNodeRecords(path, callback) {
+        function addNodeRecords(path, callback, records) {
+          records = records || 0;
           var parent = findNode(path) || -1,
               npath  = path + "/" + RECORDS_NODE,
               el     = findNode(npath);
           if(el) {
-            callback && callback.apply(el, [npath, el]);
+            callback && callback.apply(el, [npath, el, records]);
             return;
           }
+          var count = records && window.ReportGrid.format(records) || "?";
           return tree.jstree(
             "create_node"
             , parent
             , {
-              "title" : RECORDS_LABEL.replace("%0", "?")
+              "title" : RECORDS_LABEL.replace("%0", count)
               , data : npath
               , rel : "records"
               , "li_attr" : {
                 data : npath,
+                "data-records" : records,
                 rel : "records"
               }
             }
@@ -556,7 +569,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             path = normalizePath(path);
             map[path] = true;
             var virtuals = getVirtualPaths(path || "/")
-            precog.paths(removeBasePath(path), function(paths, has_records){
+            precog.paths(removeBasePath(path), function(paths, has_records, records){
                 $.each(virtuals, function(i, virtual) {
                   if(virtual.substr(0,1) !== '/') virtual = '/' + virtual;
                   if(paths.indexOf(virtual) < 0) paths.push(virtual);
@@ -567,8 +580,10 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
 
                 if(has_records) {
                   addNodeRecords(path, removeBasePath(path) === "/"
-                    ? function() { countRecords(path); }
-                    : null);
+                    ? function() { countRecords(path, null, records); }
+                    : null,
+                    records
+                  );
                 }
             });
         }
