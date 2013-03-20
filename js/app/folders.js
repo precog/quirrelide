@@ -69,6 +69,15 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
       return path;
     }
 
+    function ensureSlashes(path) {
+      path = path.replace(/\/+/g, "/");
+      if(path.substr(-1) !== "/")
+        path += "/";
+      if(path.substr(0, 1) !== "/")
+        path += "/" + path;
+      return path;
+    }
+
     function removeVirtualPath(path) {
       path = normalizePath(path).substr(1);
       var parts = path.split("/");
@@ -265,7 +274,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             // create path in config
             setVirtualPath(path, name);
             // traverse the tree from the root to path
-            var parent = path === basePath ? -1 : findNode(path);
+            var parent = path === basePath || ensureSlashes(path) === basePath ? -1 : findNode(path);
             if(!parent) return;
             // create visual node
             var p = normalizePath(("/" === path ? "/" : path + "/") + name);
