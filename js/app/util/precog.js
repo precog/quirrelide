@@ -124,8 +124,8 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
                                   path = '/' + path;
                                return path;
                              }).sort(),
-                     has_records = r.structure && r.structure.children.length > 0;
-                  callback(paths, has_records);
+                     has_records = r.size || r.structure && r.structure.children.length > 0;
+                  callback(paths, has_records, r.size);
               }, function(code, e) {
                 throw "Unable To Query Path API";
               });
