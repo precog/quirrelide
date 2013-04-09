@@ -1,0 +1,84 @@
+<div class="pg-dialog-account">
+    <div>
+        <form action="login">
+            <div>
+                <div class="row">
+                    <div class="field left">
+                        <p>
+                            <label>
+                                <input type="radio" class="choose-ui" name="choose-ui" value="login">
+                                I have an existing account
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input type="radio" class="choose-ui" name="choose-ui" value="create">
+                                I need to create a new account
+                            </label>
+                        </p>
+                    </div>
+                    <div class="field right content-right">
+                        <button class="try-demo ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Try Demo!</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="form">
+                <div class="row">
+                    <div class="field left">
+                        <label for="account-email">Email</label>
+                        <div class="control"><input type="email" name="account-email" id="account-email"></div>
+                        <div class="error account-email ui-content ui-state-error ui-corner-all"></div>
+                    </div>
+                    <div class="field right">
+                        <label for="account-password">Password</label>
+                        <div class="control"><input type="password" name="account-password" id="account-password"></div>
+                        <div class="error account-password ui-content ui-state-error ui-corner-all"></div>
+                    </div>
+                </div>
+                <div class="create">
+                    <div class="row">
+                        <div class="field left">
+                            <label for="account-name">Name</label>
+                            <div class="control"><input type="text" name="account-name" id="account-name"></div>
+                            <div class="error account-name ui-content ui-state-error ui-corner-all"></div>
+                        </div>
+                        <div class="field right">
+                            <label for="account-confirm-password">Confirm Password</label>
+                            <div class="control"><input type="password" name="account-confirm-password" id="account-confirm-password"></div>
+                            <div class="error account-confirm-password ui-content ui-state-error ui-corner-all"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field left">
+                            <label for="account-company">Company</label>
+                            <div class="control"><input type="text" name="account-company" id="account-company"></div>
+                            <div class="error account-company ui-content ui-state-error ui-corner-all"></div>
+                        </div>
+                        <div class="field right">
+                            <label for="account-title">Title</label>
+                            <div class="control"><input type="text" name="account-title" id="account-title"></div>
+                            <div class="error account-title ui-content ui-state-error ui-corner-all"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field right content-right action">
+                            <div class="control"><button disabled class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="submit" name="account-create" id="account-create"><span class="ui-button-text">Create Account</span></button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="recover">
+                    <div class="row">
+                        <div class="field right">
+                            <div class="control"><a href="#" class="reset small">Forgot your password? Click to reset.</a></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field right content-right action">
+                            <div class="control"><button disabled class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="submit" name="account-login" id="account-login"><span class="ui-button-text">Login</span></button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
