@@ -638,7 +638,6 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                 return ReportGrid.format(count);
               start = count;
               var span = (+new Date()) - startTime;
-console.log(span);
               setTimeout(poll, 2000 - span);
               return "<i>"+ReportGrid.format(count) + "+</i>";
             }, false);
