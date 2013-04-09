@@ -442,7 +442,9 @@ throw new SyntaxError('JSON.parse');};}}());
         if (request.readyState === 4) {
           if (request.status === 200 || request.status === 202 || request.status === 204 || request.status === "OK" || request.code === "NoContent") {
             if (request.responseText !== null && request.responseText.length > 0) {
-              success(JSON.parse(this.responseText), headers);
+              var txt = this.responseText,
+                  json = JSON.parse(txt);
+              success(json, headers);
             }
             else {
               success(undefined, headers);
