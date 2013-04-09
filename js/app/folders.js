@@ -489,7 +489,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
           }
 
           if(node) {
-            if(!records && node != -1)
+            if(typeof records == "undefined" && node != -1)
               records = parseInt($(node).attr("data-records"));
 
             if(records) {
@@ -629,6 +629,7 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
           var start   = -1,
               retries = 3;
           function poll() {
+            var startTime = +new Date();
             countRecords(path, function(count) {
               if(count === start) {
                 retries--;
@@ -636,9 +637,11 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
               if(retries === 0)
                 return ReportGrid.format(count);
               start = count;
-              poll();
+              var span = (+new Date()) - startTime;
+console.log(span);
+              setTimeout(poll, 2000 - span);
               return "<i>"+ReportGrid.format(count) + "+</i>";
-            });
+            }, false);
           }
 
           addNodeRecords(path, function() {

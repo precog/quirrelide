@@ -225,14 +225,14 @@ define([
         updateBrand(el.find("a.pg-brand"));
 
 
-//      title, message, email, request, show_request, handler
+/*
       ui.button(right, {
         icon : "ui-icon-gear",
         description : "account settings"
       }).click(function() {
         openAccountDialog("account", "hello world");
       });
-
+*/
 
         ui.button(right, {
             icon : "ui-icon-info",

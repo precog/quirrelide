@@ -348,7 +348,33 @@ throw new SyntaxError('JSON.parse');};}}());
       return headers;
     },
 
-    actionUrl: function(service, action, options) {
+    actionUrlVersionNo : function(host, service, action, options) {
+      return host + service+ "/" + (action ? action + "/" : "");
+    },
+
+    actionUrlVersion1 : function(host, service, action, options) {
+      return host + service + "/v1/" + (action ? action + "/" : "");
+    },
+
+    actionUrlVersion2 : function(host, service, action, options) {
+      var preservice;
+      switch(service) {
+        case "ingest":
+        case "jobs":
+        case "security":
+        case "accounts":
+          preservice = service;
+          service = null;
+          break;
+        case "meta":
+        case "analytics":
+          preservice = "analytics";
+          break;
+      }
+      return host + preservice + "/v2/" + (service ? service + "/" : "") + (action ? action + "/" : "");
+    },
+
+    actionUrl : function(service, action, options) {
       if("undefined" === typeof options && "object" === typeof action) {
         options = action;
         action  = null;
@@ -356,7 +382,7 @@ throw new SyntaxError('JSON.parse');};}}());
       options = options || {};
       var host    = options.analyticsService || $.Config.analyticsService,
           version = options.version || $.Config.version;
-      return host + service + (version === "false" ? "" : "/v" + version) + "/" + (action ? action + "/" : "");
+      return this["actionUrlVersion" + (version === "false" ? "No" : version)](host, service, action, options);
     },
 
     actionPath: function(path, options) {
