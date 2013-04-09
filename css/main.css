@@ -390,6 +390,60 @@
     height: 100px;
 }
 
+.pg-dialog-account .ui-dialog-titlebar-close {
+    display: none;
+}
+
+.pg-dialog-account .field
+{
+    width: 235px;
+}
+
+
+.pg-dialog-account .field input[type="text"],
+.pg-dialog-account .field input[type="email"],
+.pg-dialog-account .field input[type="password"]
+{
+    width: 230px;
+}
+
+.pg-dialog-account .field .error
+{
+    display: none;
+    padding: 0.5em 1em;
+}
+
+.pg-dialog-account .field.left
+{
+    float: left;
+}
+
+.pg-dialog-account .field.right
+{
+
+    float: right;
+}
+
+.pg-dialog-account .row
+{
+    clear: both;
+}
+
+.pg-dialog-account .content-right
+{
+    text-align: right;
+}
+
+.pg-dialog-account .action
+{
+    margin-top: 20px;
+}
+
+.pg-dialog-account .small
+{
+    font-size: 93%;
+}
+
 .pg-ingest-phase, .pg-ingest-message {
     text-align: center;
 }

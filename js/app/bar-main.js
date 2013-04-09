@@ -4,12 +4,13 @@ define([
     , "app/util/fullscreen"
     , "app/theme"
     , "app/util/dialog-confirm"
+    , "app/util/dialog-account"
     , "rtext!templates/dialog.global.settings.html"
     , "app/util/valuemodel"
     , "app/util/objectmodel"
     , "app/util/precog"
     , "app/util/config"
-], function(ui, tplToolbar, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, objectModel, precog, config) {
+], function(ui, tplToolbar, fullscreen, theme, openDialog, openAccountDialog, tplGlobalSettings, valueModel, objectModel, precog, config) {
     var ABOUT_LINK  = "http://precog.com/products/labcoat",
         BRAND_LINK  = "http://precog.com/products/labcoat",
         BRAND_CLASS = "pg-precog";
@@ -218,11 +219,21 @@ define([
 
     return function(el) {
 
-
         el.append(tplToolbar);
         var right = el.find(".pg-toolbar-context");
 
         updateBrand(el.find("a.pg-brand"));
+
+
+//      title, message, email, request, show_request, handler
+      ui.button(right, {
+        icon : "ui-icon-gear",
+        description : "account settings"
+      }).click(function() {
+        openAccountDialog("account", "hello world");
+      });
+
+
         ui.button(right, {
             icon : "ui-icon-info",
             description : "about Labcoat"
