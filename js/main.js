@@ -47,6 +47,7 @@ requirejs.config({
 require([
       'app/util/config'
     , 'app/layout'
+    , "app/util/dialog-account"
     , 'app/editors'
     , 'app/history'
     , 'app/bar-main'
@@ -72,32 +73,32 @@ require([
 
 ],
 
-function(config, createLayout, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
-function buildUrl(query) {
-  var version  = precog.config.version,
-      basePath = precog.config.basePath,
-      service  = precog.config.analyticsService,
-      apiKey   = precog.config.apiKey;
+function(config, createLayout, openAccountDialog, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
+  function buildUrl(query) {
+    var version  = precog.config.version,
+        basePath = precog.config.basePath,
+        service  = precog.config.analyticsService,
+        apiKey   = precog.config.apiKey;
 
-  if(!basePath) {
-    basePath = "";
-  } else {
-    if(basePath.substring(-1) === "/")
-      basePath = basePath.substr(0, basePath.length - 1);
-    if(basePath.substring(0, 1) === "/")
-      basePath = basePath.substr(1);
+    if(!basePath) {
+      basePath = "";
+    } else {
+      if(basePath.substring(-1) === "/")
+        basePath = basePath.substr(0, basePath.length - 1);
+      if(basePath.substring(0, 1) === "/")
+        basePath = basePath.substr(1);
+    }
+
+    return service
+      + "analytics/"
+      + (version && version !== false && version !== "false" ? "v" + version + "/" : "")
+      + "fs/"
+      + basePath
+      + "?apiKey=" + encodeURIComponent(apiKey)
+      + "&q=" + encodeURIComponent(convert.minifyQuirrel(query))
+      ;
   }
-
-  return service
-    + "analytics/"
-    + (version && version !== false && version !== "false" ? "v" + version + "/" : "")
-    + "fs/"
-    + basePath
-    + "?apiKey=" + encodeURIComponent(apiKey)
-    + "&q=" + encodeURIComponent(convert.minifyQuirrel(query))
-    ;
-}
-$(function() {
+  $(function() {
 
     precog.cache.disable();
 
@@ -117,103 +118,108 @@ $(function() {
         config.set('theme', name);
     });
 
-    var editor = buildEditor(layout.getCodeEditor(), config.get('ioPanesVertical'));
-    editor.setTabSize(config.get('tabSize'));
-    editor.setUseSoftTabs(config.get('softTabs'));
+    function init() {
+      precog.calculateHash();
 
-    $(layout).on('resizeCodeEditor', function() {
+      var editor = buildEditor(layout.getCodeEditor(), config.get('ioPanesVertical'));
+      editor.setTabSize(config.get('tabSize'));
+      editor.setUseSoftTabs(config.get('softTabs'));
+
+      $(layout).on('resizeCodeEditor', function() {
         editor.resize();
-    });
+      });
 
-    $(layout).on('ioOrientationChanged', function(_, vertical) {
+      $(layout).on('ioOrientationChanged', function(_, vertical) {
         config.set('ioPanesVertical', vertical);
         editor.orientButton(vertical);
-    });
-
-    $(theme).on('change', function(e, name) {
-        editor.setTheme(theme.getEditorTheme(name, editor.engine()));
-    });
-
-    $(editor).on('useSoftTabsChanged', function(_, value) {
-        config.set('softTabs', value);
-    });
-
-    $(editor).on('tabSizeChanged', function(_, value) {
-        config.set('tabSize', value);
-    });
-
-    (function() {
-      var tips = editortips();
-      $(editor).on("mouseovertext", function(_, coords, pos) {
-        tips.displayTip(coords, pos, editor.get());
       });
-    })();
 
-    var status = buildBarStatus(layout.getStatusBar(), editor, layout);
+      $(theme).on('change', function(e, name) {
+        editor.setTheme(theme.getEditorTheme(name, editor.engine()));
+      });
 
-    var output = buildOutput(layout.getOutput(), editors); // TODO editors should not be passed here
+      $(editor).on('useSoftTabsChanged', function(_, value) {
+        config.set('softTabs', value);
+      });
 
-    var support = buildSupport(layout.getSupport());
+      $(editor).on('tabSizeChanged', function(_, value) {
+        config.set('tabSize', value);
+      });
 
-    support.addPanel('tutorial', 'https://quirrel.precog.com/tutorial.html', function() {
-      pardot.track_page("support_tutorial");
-    });
-    support.addPanel('reference', 'https://quirrel.precog.com/reference.html', function() {
-      pardot.track_page("support_reference");
-    });
-    support.addPanel('IRC channel', 'https://api.precog.com:9090/?channels=#quirrel', function() {
-      pardot.track_page("support_irc");
-    });
 
-    $(layout).on('resizeCodeEditor', function() {
+
+      (function() {
+        var tips = editortips();
+        $(editor).on("mouseovertext", function(_, coords, pos) {
+          tips.displayTip(coords, pos, editor.get());
+        });
+      })();
+
+      var status = buildBarStatus(layout.getStatusBar(), editor, layout);
+
+      var output = buildOutput(layout.getOutput(), editors); // TODO editors should not be passed here
+
+      var support = buildSupport(layout.getSupport());
+
+      support.addPanel('tutorial', 'https://quirrel.precog.com/tutorial.html', function() {
+        pardot.track_page("support_tutorial");
+      });
+      support.addPanel('reference', 'https://quirrel.precog.com/reference.html', function() {
+        pardot.track_page("support_reference");
+      });
+      support.addPanel('IRC channel', 'https://api.precog.com:9090/?channels=#quirrel', function() {
+        pardot.track_page("support_irc");
+      });
+
+      $(layout).on('resizeCodeEditor', function() {
         output.resize();
         support.resize();
         results.resize();
-    });
+      });
 
-    $(output).on('syntaxError', function(_, pos) {
+      $(output).on('syntaxError', function(_, pos) {
         editor.resetHighlightSyntax();
         editor.highlightSyntax(pos.line - 1, pos.column - 1, pos.text, 'error');
-    });
+      });
 
-    $(output).on('requestCursorChange', function(_, pos) {
+      $(output).on('requestCursorChange', function(_, pos) {
         editor.setCursorPosition(pos.line - 1, pos.column - 1);
-    });
+      });
 
-    $(output).on('typeChanged', function(_, type) {
+      $(output).on('typeChanged', function(_, type) {
         editors.setOutputType(type);
-    });
+      });
 
-    $(output).on('exportToBuilder', function() {
-      var code = editor.get(),
+      $(output).on('exportToBuilder', function() {
+        var code = editor.get(),
           path = "/labcoat/" + editors.getName();
-      window.open("http://builder.reportgrid.com/?data-name="+encodeURIComponent(path)+"&data-source="+encodeURIComponent(buildUrl(code)));
-    });
+        window.open("http://builder.reportgrid.com/?data-name="+encodeURIComponent(path)+"&data-source="+encodeURIComponent(buildUrl(code)));
+      });
 
-    var results = buildResults(layout.getResults());
+      var results = buildResults(layout.getResults());
 
-    $(results).on('resetHighlightSyntax', function() {
+      $(results).on('resetHighlightSyntax', function() {
         editor.resetHighlightSyntax();
-    });
+      });
 
-    $(results).on('highlightSyntax', function(_, pos) {
+      $(results).on('highlightSyntax', function(_, pos) {
         editor.highlightSyntax(pos.line - 1, pos.column - 1, pos.text, pos.type);
-    });
+      });
 
-    $(results).on('goto', function(_, pos) {
+      $(results).on('goto', function(_, pos) {
         editor.setCursorPosition(pos.line - 1, pos.column - 1);
-    });
+      });
 
-    var executions = {};
-    $(precog).on("execute", function(_, query, lastExecution, id) {
+      var executions = {};
+      $(precog).on("execute", function(_, query, lastExecution, id) {
         var workingid;
         for(var key in executions) {
           if(!executions.hasOwnProperty(key)) continue;
-            if(executions[key].name === editors.getName())
-            {
-              workingid = key;
-              break;
-            }
+          if(executions[key].name === editors.getName())
+          {
+            workingid = key;
+            break;
+          }
         }
         if(workingid) {
           $(precog).trigger("abort", workingid);
@@ -221,341 +227,351 @@ $(function() {
 
         executions[id] = { query : query, name : editors.getName() };
         status.startRequest();
-    });
+      });
 
-    function is_example_query(name) {
-      return (/^examples\//).test(name);
-    }
+      function is_example_query(name) {
+        return (/^examples\//).test(name);
+      }
 
-    function is_custom_query(info) {
-      var is_query_load = function(q) {
-        var path = /^\s*\/(\/[a-z0-9-_.]+)+\s*$/i,
+      function is_custom_query(info) {
+        var is_query_load = function(q) {
+          var path = /^\s*\/(\/[a-z0-9-_.]+)+\s*$/i,
             load = /^\s*load\s*\(\s*"[^"]+"\s*\)\s*$/i;
           return path.test(q) || load.test(q);
-      };
+        };
 
-      if(precog.is_demo()) {
-        return !(is_example_query(info.name) || is_query_load(info.query));
-      } else {
-        return !is_query_load(info.query);
-      }
-    }
-
-    $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
-      var execution = executions[id];
-      history.save(execution.name, execution.query, data); // TODO CHECK HOW PAGINATION AFFECTS THE BEHAVIOR OF HISTORY
-      status.endRequest(true);
-      if(editors.getName() === execution.name) {
-        output.setOutput(data, null, editors.getOutputOptions()); // TODO ADD HERE OUTPUT OPTIONS AND REMOVE REFERENCES TO DEFAULT TABLE
-        results.update(errors, warnings);
-        // TODO SET OUTPUT OPTIONS FOR PAGINATION
-        editors.setOutputData(data);
-        editors.setOutputResults({ errors : errors, warnings : warnings });
-        if(editorbar.historyPanelIsOpen()) {
-          refreshHistoryList();
+        if(precog.is_demo()) {
+          return !(is_example_query(info.name) || is_query_load(info.query));
+        } else {
+          return !is_query_load(info.query);
         }
-      } else {
-        var index = editors.getIndexByName(execution.name);
-        if(index >= 0) {
-          var currenttype = editors.getOutputType(index);
-          if(currenttype === "message" || currenttype === "error")
-            editors.setOutputType("table", index);
+      }
+
+      $(precog).on("completed", function(_, id, data, errors, warnings, extra) {
+        var execution = executions[id];
+        history.save(execution.name, execution.query, data); // TODO CHECK HOW PAGINATION AFFECTS THE BEHAVIOR OF HISTORY
+        status.endRequest(true);
+        if(editors.getName() === execution.name) {
+          output.setOutput(data, null, editors.getOutputOptions()); // TODO ADD HERE OUTPUT OPTIONS AND REMOVE REFERENCES TO DEFAULT TABLE
+          results.update(errors, warnings);
           // TODO SET OUTPUT OPTIONS FOR PAGINATION
-          editors.setOutputData(data, index);
-          editors.setOutputResults({ errors : errors, warnings : warnings }, index);
+          editors.setOutputData(data);
+          editors.setOutputResults({ errors : errors, warnings : warnings });
+          if(editorbar.historyPanelIsOpen()) {
+            refreshHistoryList();
+          }
+        } else {
+          var index = editors.getIndexByName(execution.name);
+          if(index >= 0) {
+            var currenttype = editors.getOutputType(index);
+            if(currenttype === "message" || currenttype === "error")
+              editors.setOutputType("table", index);
+            // TODO SET OUTPUT OPTIONS FOR PAGINATION
+            editors.setOutputData(data, index);
+            editors.setOutputResults({ errors : errors, warnings : warnings }, index);
+          }
         }
+        pardot.track_page("quirrel_success_"+(is_custom_query(execution)?"custom":"default"));
+        ga.trackQueryExecution("success");
+      });
+
+      function convertErrorToResultErrors(e) {
+        var t = e.detail;
+        e.detail = e.message;
+        e.message = t;
+        return [{
+          message : "error",
+          position : e,
+          timestamp : +new Date()
+        }];
       }
-      pardot.track_page("quirrel_success_"+(is_custom_query(execution)?"custom":"default"));
-      ga.trackQueryExecution("success");
-    });
 
-    function convertErrorToResultErrors(e) {
-      var t = e.detail;
-      e.detail = e.message;
-      e.message = t;
-      return [{
-        message : "error",
-        position : e,
-        timestamp : +new Date()
-      }];
-    }
-
-    $(results).on("report", function(_, error) {
-      var info = {
-        name : editors.getName(),
-        query : editors.getCode()
-      };
-      if(pardot.track_error(
-        "quirrel_failure_"+(is_custom_query(info)?"custom":"default"),
-        {
-          error_message : JSON.stringify({
-            query : info.query,
-            error : error
-          })
-        },
-        "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
-      )) {
-        notification.success("Your report has been submitted!", {
+      $(results).on("report", function(_, error) {
+        var info = {
+          name : editors.getName(),
+          query : editors.getCode()
+        };
+        if(pardot.track_error(
+          "quirrel_failure_"+(is_custom_query(info)?"custom":"default"),
+          {
+            error_message : JSON.stringify({
+              query : info.query,
+              error : error
+            })
+          },
+          "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
+        )) {
+          notification.success("Your report has been submitted!", {
             hide : true
-          , history : true
-        });
-      }
-    });
-
-    $(precog).on('failed', function(_, id, data) {
-      data = data instanceof Array ? data[0] : data;
-      var execution = executions[id];
-      delete executions[id];
-      status.endRequest(false);
-
-
-      var errors = convertErrorToResultErrors(data);
-      if(editors.getName() === execution.name) {
-        output.setOutput(data, 'error', editors.getOutputOptions());
-        results.update(errors, []);
-        editors.setOutputData(data);
-        editors.setOutputResults({ errors : errors, warnings : [] });
-      } else {
-        var index = editors.getIndexByName(execution.name);
-        if(index >= 0) {
-          editors.setOutputData(data, index);
-          editors.setOutputResults({ errors : errors, warnings : warnings }, index);
+            , history : true
+          });
         }
-      }
-/*
-  TODO Restore
-      pardot.track_error(
-        "quirrel_failure_"+(is_custom_query(execution)?"custom":"default"),
-        {
-          error_message : JSON.stringify({
-            query : execution.query,
-            error : data
-          })
-        },
-        "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
-      );
-*/
+      });
 
-      ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
-    });
+      $(precog).on('failed', function(_, id, data) {
+        data = data instanceof Array ? data[0] : data;
+        var execution = executions[id];
+        delete executions[id];
+        status.endRequest(false);
 
-    (function() {
-      var old = window.onerror;
-      window.onerror = function(e) {
-        var msg;
-        try {
-          msg = JSON.stringify(e);
-        } catch(e) {
-          msg = "" + e;
+
+        var errors = convertErrorToResultErrors(data);
+        if(editors.getName() === execution.name) {
+          output.setOutput(data, 'error', editors.getOutputOptions());
+          results.update(errors, []);
+          editors.setOutputData(data);
+          editors.setOutputResults({ errors : errors, warnings : [] });
+        } else {
+          var index = editors.getIndexByName(execution.name);
+          if(index >= 0) {
+            editors.setOutputData(data, index);
+            editors.setOutputResults({ errors : errors, warnings : warnings }, index);
+          }
         }
-        pardot.track_error(
-          "generic_error", { error_message : msg },
-          "Uh oh, an error occurred in Labcoat. Can you please help our team by notifying us of your error? Please enter your email below."
-        );
-        if(old)
-          old(e);
-      };
-    })();
+        /*
+         TODO Restore
+         pardot.track_error(
+         "quirrel_failure_"+(is_custom_query(execution)?"custom":"default"),
+         {
+         error_message : JSON.stringify({
+         query : execution.query,
+         error : data
+         })
+         },
+         "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
+         );
+         */
 
-    $(precog).on('aborted', function(_, id) {
-      var execution = executions[id];
-      delete executions[id];
-      status.endRequest(false);
-      ga.trackQueryExecution("aborted");
-    });
+        ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
+      });
 
-    var execTimer;
-    $(editor).on("execute", function(_, code) {
-      if(eastereggs.easterEgg(code)) return;
+      (function() {
+        var old = window.onerror;
+        window.onerror = function(e) {
+          var msg;
+          try {
+            msg = JSON.stringify(e);
+          } catch(e) {
+            msg = "" + e;
+          }
+          pardot.track_error(
+            "generic_error", { error_message : msg },
+            "Uh oh, an error occurred in Labcoat. Can you please help our team by notifying us of your error? Please enter your email below."
+          );
+          if(old)
+            old(e);
+        };
+      })();
 
-      clearInterval(execTimer);
-      execTimer = setTimeout(function() {
-        var pagination = output.paginationOptions();
-//        precog.query(code, pagination);
-        precog.query(code);
-      }, 0);
-    });
-/*
-    $(output).on("paginationChanged", function(_) {
-      clearInterval(execTimer);
-      execTimer = setTimeout(function() {
-        var pagination = output.paginationOptions();
-console.log(JSON.stringify(pagination));
-        precog.query(editor.get(), pagination);
-      }, 0);
-    });
-*/
-    $(editors).on('activated', function(_, index) {
+      $(precog).on('aborted', function(_, id) {
+        var execution = executions[id];
+        delete executions[id];
+        status.endRequest(false);
+        ga.trackQueryExecution("aborted");
+      });
+
+      var execTimer;
+      $(editor).on("execute", function(_, code) {
+        if(eastereggs.easterEgg(code)) return;
+
+        clearInterval(execTimer);
+        execTimer = setTimeout(function() {
+          var pagination = output.paginationOptions();
+          //        precog.query(code, pagination);
+          precog.query(code);
+        }, 0);
+      });
+      /*
+       $(output).on("paginationChanged", function(_) {
+       clearInterval(execTimer);
+       execTimer = setTimeout(function() {
+       var pagination = output.paginationOptions();
+       console.log(JSON.stringify(pagination));
+       precog.query(editor.get(), pagination);
+       }, 0);
+       });
+       */
+      $(editors).on('activated', function(_, index) {
         var data     = editors.getOutputData(),
-            type     = editors.getOutputType(),
-            options  = editors.getOutputOptions(),
-            oresults = editors.getOutputResults() || { errors : [], warnings : []};
+          type     = editors.getOutputType(),
+          options  = editors.getOutputOptions(),
+          oresults = editors.getOutputResults() || { errors : [], warnings : []};
         output.setOutput(data, type, options);
 
         results.update(oresults.errors, oresults.warnings);
-    });
+      });
 
-    $(editors).on('saved', function(_, data) {
+      $(editors).on('saved', function(_, data) {
         queries.querySave(data.name, data.code);
         pardot.track_page("query_saved");
-    });
+      });
 
-    sync(editor, editors, config);
+      sync(editor, editors, config);
 
-    var folders = buildFolders(layout.getSystem());
+      var folders = buildFolders(layout.getSystem());
 
-    $(folders).on('querypath', function(e, path) {
-      if(path.substr(0, 1) !== "/")
-        path = "/" + path;
-      var q = '/' + path.replace(/"/g, '\"');
-      if(q === "//")
-        q = 'load("/")';
-      if(editors.getCode().trim() == '') {
+      $(folders).on('querypath', function(e, path) {
+        if(path.substr(0, 1) !== "/")
+          path = "/" + path;
+        var q = '/' + path.replace(/"/g, '\"');
+        if(q === "//")
+          q = 'load("/")';
+        if(editors.getCode().trim() == '') {
           editor.set(q);
-      } else {
+        } else {
           editors.add({ code : q });
           editors.activate(editors.count()-1);
-      }
-      editor.triggerExecute();
-    });
+        }
+        editor.triggerExecute();
+      });
 
-    $(folders).on("uploadComplete", function() {
+      $(folders).on("uploadComplete", function() {
         pardot.track_page("upload_success");
-    });
+      });
 
-    $(folders).on("uploadError", function() {
+      $(folders).on("uploadError", function() {
         pardot.track_page("upload_failure");
-    });
+      });
 
 
-    queries = buildQueries(layout.getQueries());
-    $(queries).on('requestopenquery', function(_, data) {
+      queries = buildQueries(layout.getQueries());
+      $(queries).on('requestopenquery', function(_, data) {
         editors.open(data.name, data.code);
-      console.log(data);
+        console.log(data);
         pardot.track_page("load_query_"+(precog.is_demo() && is_example_query(data.name)?"default":"custom"));
-    });
-    $(queries).on('removed', function(_, name) {
+      });
+      $(queries).on('removed', function(_, name) {
         var index = editors.getIndexByName(name);
         if(index >= 0) {
-            editorbar.invalidateTab(index);
+          editorbar.invalidateTab(index);
         }
-    });
+      });
 
-    var editorbar = buildBarEditor(layout.getBarEditor(), queries, editor);
+      var editorbar = buildBarEditor(layout.getBarEditor(), queries, editor);
 
-    $(editors).on('saved', function(e, editor){
+      $(editors).on('saved', function(e, editor){
         var index = editors.getIndexById(editor.id);
         if(index < 0) return;
         editorbar.changeTabName(index, editor.name);
-    });
+      });
 
-    $(editors).on("added", function(e, editor) {
+      $(editors).on("added", function(e, editor) {
         editorbar.addTab(editor.name, !!editor.dirty);
-    });
+      });
 
-    $(editors).on('removed', function(e, name) {
+      $(editors).on('removed', function(e, name) {
         editorbar.removeTabByName(name);
-    });
+      });
 
-    var invalidationSuspended = true;
-    function currentTabInvalidator() {
+      var invalidationSuspended = true;
+      function currentTabInvalidator() {
         if(invalidationSuspended) return;
         editors.setDirty();
         editorbar.invalidateTab(editors.current());
-    }
+      }
 
-    $(editor).on('change', currentTabInvalidator);
+      $(editor).on('change', currentTabInvalidator);
 
-    $(editors).on('activated', function(e, index) {
+      $(editors).on('activated', function(e, index) {
         editorbar.activateTab(index);
         clearInterval(this.k);
         this.k = setTimeout(function() {
-            invalidationSuspended = false;
+          invalidationSuspended = false;
         }, 1000);
         if(editorbar.historyPanelIsOpen()) {
-            refreshHistoryList();
+          refreshHistoryList();
         }
-    });
+      });
 
-    function refreshHistoryList() {
+      function refreshHistoryList() {
         var data = history.revisions(editors.getName());
         editorbar.displayHistoryList(data);
-    }
+      }
 
-    $(editors).on('deactivated', function(e, index) {
+      $(editors).on('deactivated', function(e, index) {
         invalidationSuspended = true;
-    });
+      });
 
-    $(editors).on('removed', function(e, name) {
+      $(editors).on('removed', function(e, name) {
         if(!queries.queryExist(name))
-            history.remove(name);
-    });
+          history.remove(name);
+      });
 
-    $(editorbar).on('requesthistorylist', refreshHistoryList);
+      $(editorbar).on('requesthistorylist', refreshHistoryList);
 
-    $(editorbar).on('requestopenrevision', function(e, info) {
+      $(editorbar).on('requestopenrevision', function(e, info) {
         var name = editors.getName(),
-            data = history.load(name, info.index);
+          data = history.load(name, info.index);
         if(info.usenewtab) {
-            editors.add({ code : data.code, output : { result : data.data } });
-            editors.activate(editors.count()-1);
+          editors.add({ code : data.code, output : { result : data.data } });
+          editors.activate(editors.count()-1);
         } else {
-            editor.set(data.code);
+          editor.set(data.code);
         }
         output.setOutput(data.data, null, editors.getOutputOptions());
-    });
+      });
 
-    $(editorbar).on('tabrenamed', function(e, data) {
+      $(editorbar).on('tabrenamed', function(e, data) {
         history.rename(data.oldname, data.newname);
         if(editorbar.historyPanelIsOpen()) {
-            refreshHistoryList();
+          refreshHistoryList();
         }
-    });
+      });
 
-    $(editorbar).on("exportCode", function() {
-      pardot.track_page("download_code");
-    });
+      $(editorbar).on("exportCode", function() {
+        pardot.track_page("download_code");
+      });
 
-    var tips = buildTips(layout);
+      var tips = buildTips(layout);
 
-    editors.load();
+      editors.load();
 
 
-    var query = qs.get('q');
+      var query = qs.get('q');
 
-    function editorcontains(q) {
+      function editorcontains(q) {
         for(var i = 0; i < editors.count(); i++) {
-            if(editors.getCode(i) === q)
-                return true;
+          if(editors.getCode(i) === q)
+            return true;
         }
         return false
-    }
+      }
 
-    if(!editors.count() || (query && !editorcontains(query))) {
+      if(!editors.count() || (query && !editorcontains(query))) {
         editors.add(query && { code : query });
-    }
-    setTimeout(function() {
+      }
+      setTimeout(function() {
         editors.activate(editors.count()-1); // prevents bug in safari
 
         $(output).on('optionsChanged', function(_, options) {
-            editors.setOutputOptions(options);
+          editors.setOutputOptions(options);
         });
 
         theme.set(precog.config.theme || config.get('theme', 'gray'));
 
         config.monitor.bind('theme', function(e, name) {
-            theme.set(name);
+          theme.set(name);
         });
 
         config.monitor.bind('softTabs', function(_, value) {
-            editor.setUseSoftTabs(value);
+          editor.setUseSoftTabs(value);
         });
 
         config.monitor.bind('tabSize', function(_, value) {
-            editor.setTabSize(value);
+          editor.setTabSize(value);
         });
 
         layout.getContainer().show();
-    }, 150);
-});
+        support.resize();
+      }, 150);
+    }
+
+
+    // AUTHENTICATION
+    theme.set(precog.config.theme || config.get('theme', 'gray'));
+    if(precog.config.apiKey)
+      init();
+    else
+      openAccountDialog(precog, init);
+  });
 });

@@ -17,7 +17,7 @@ define([
 ],
 
 function(tplDialog, ui, dom) {
-    var elDialog;
+    var elDialog, precog;
 
     function validateEmail(email) {
       var re_email = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -242,10 +242,68 @@ function(tplDialog, ui, dom) {
 
         elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
         elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
+
+      function actionLogin(email, password)
+      {
+        window.Precog.createAccount(email, password,
+          function(data) {
+            console.log("login data", data);
+          },
+          function(err) {
+            console.log("error", err);
+          }
+        );
+      }
+
+      function actionCreate(email, password, profile)
+      {
+        window.Precog.createAccount(email, password,
+          function(data) {
+            console.log("create data", data);
+          },
+          function(err) {
+            console.log("error", err);
+          },
+          {
+            profile : profile
+          }
+        );
+      }
+
+      elDialog.find("#account-login").click(function(e) {
+        e.preventDefault();
+        actionLogin(
+          elDialog.find("input#account-email").val(),
+          elDialog.find("input#account-password").val()
+        );
+        return false;
+      });
+
+      elDialog.find("#account-create").click(function(e) {
+        e.preventDefault();
+        actionCreate(
+          elDialog.find("input#account-email").val(),
+          elDialog.find("input#account-password").val(),
+          {
+            title   : elDialog.find("input#account-title").val(),
+            name    : elDialog.find("input#account-name").val(),
+            company : elDialog.find("input#account-company").val()
+          }
+        );
+        return false;
+      });
     }
 
+    function setDemoConfig()
+    {
+      precog.config.apiKey = "5CDA81E8-9817-438A-A340-F34E578E86F8";
+      precog.config.analyticsService = "http://labcoat.precog.com/";
+    }
+
+
     var inited = false;
-    return function() {
+    return function(p, callback) {
+        precog = p;
         if(!inited) {
             init();
             inited = true;
@@ -253,5 +311,13 @@ function(tplDialog, ui, dom) {
         elDialog.dialog("option", "position", "center");
         elDialog.dialog("option", "title", "Login to Labcoat");
         elDialog.dialog("open");
+        if(callback)
+        {
+          elDialog.bind("dialogclose", function() {
+            setDemoConfig();
+            callback();
+          });
+        }
+
     };
 });

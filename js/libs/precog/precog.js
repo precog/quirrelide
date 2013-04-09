@@ -716,10 +716,14 @@ throw new SyntaxError('JSON.parse');};}}());
   // ***     ACCOUNT    ***
   // **********************
   Precog.createAccount = function(email, password, success, failure, options) {
-    var description = 'Create account for ' + email;
+    var description = 'Create account for ' + email,
+        post = { "email" : email, "password" : password };
+    if(options && options.profile) {
+      post.profile = JSON.stringify(options.profile);
+    }
     http.post(
       Util.actionUrl("accounts","accounts", options),
-      { "email" : email, "password" : password },
+      post,
       Util.createCallbacks(success, failure, description),
       null
     );
