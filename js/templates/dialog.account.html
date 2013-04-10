@@ -1,7 +1,7 @@
 <div class="pg-dialog-account">
     <div>
-        <iframe id="blankiframe" id="name"></iframe>
-        <form action="actions/login" class="login signin" method="post">
+        <iframe id="blankiframe" name="blankiframe" style="display: none"></iframe>
+        <form action="https://labcoat.precog.com/actions/login" class="login signin" method="post" target="blankiframe">
             <div>
                 <div class="row">
                     <div class="field left">
@@ -34,6 +34,11 @@
                         <label for="password">Password</label>
                         <div class="control"><input class="password" type="password" name="password" id="password"></div>
                         <div class="error password ui-content ui-state-error ui-corner-all"></div>
+                    </div>
+                </div>
+                <div id="form-error">
+                    <div class="row error ui-content ui-state-error ui-corner-all">
+
                     </div>
                 </div>
                 <div class="create">
@@ -69,15 +74,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="form-error">
-                    <div class="row error ui-content ui-state-error ui-corner-all">
-
-                    </div>
-                </div>
                 <div class="recover">
                     <div class="row">
                         <div class="field right">
-                            <div class="control"><a href="#" class="reset small">Forgot your password? Click to reset.</a></div>
+                            <div class="control"><a href="#" class="reset small" id="reset-password">Forgot your password? Click to reset.</a></div>
                         </div>
                     </div>
                     <div class="row">

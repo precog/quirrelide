@@ -14,6 +14,7 @@ define([
     , 'libs/jquery/ui/jquery.ui.sortable'
     , 'libs/jquery/ui/jquery.ui.draggable'
     , "libs/jquery/ui/jquery.ui.dialog"
+    , "libs/jquery/jquery.cookie/jquery.cookie"
 ],
 
 function(tplDialog, ui, dom) {
@@ -184,36 +185,78 @@ function(tplDialog, ui, dom) {
         $(register).on("validation", register.toggle);
         $(register).on("validation", clearFormError);
 
+      elDialog.find("input#email")
+        .keydown(function(e) {
+          if(e.keyCode == 13) {
+            e.preventDefault();
+            return false;
+          }
+        })
+        .keyup(function(e) {
+          if(e.keyCode == 13) // enter
+          {
+            if(!$(this).val()) {
+              // do nothing;
+            } else if(!elDialog.find("input#password").val()) {
+              elDialog.find("input#password").focus();
+            } else {
+              $(this).blur();
+
+            }
+            e.preventDefault();
+            return false;
+          }
+        });
+
+      elDialog.find("input:not(#email)")
+        .keydown(function(e) {
+          if(e.keyCode == 13) {
+            e.preventDefault();
+            return false;
+          }
+        })
+        .keyup(function(e) {
+          if(e.keyCode == 13) // enter
+          {
+            if(!$(this).val()) {
+              // do nothing;
+            } else {
+              $(this).blur();
+            }
+            e.preventDefault();
+            return false;
+          }
+        });
 
         function wireLogin()
         {
           login.reset();
-          elDialog.find("input#email").on("change", login.email.validate);
-          elDialog.find("input#password").on("change", login.password.validate);
+          elDialog.find("input#email").on("change blur", login.email.validate);
+          elDialog.find("input#password").on("change blur", login.password.validate);
         }
         function unwireLogin()
         {
-          elDialog.find("input#email").off("change", login.email.validate);
-          elDialog.find("input#password").off("change", login.password.validate);
+          elDialog.find("input#email").off("change blur", login.email.validate);
+          elDialog.find("input#password").off("change blur", login.password.validate);
         }
         function wireRegister()
         {
           register.reset();
-          elDialog.find("input#email").on("change", register.email.validate);
-          elDialog.find("input#password").on("change", register.password.validate);
-          elDialog.find("input#account-confirm-password").on("change", register.confirmPassword.validate);
-          elDialog.find("input#account-name").on("change", register.name.validate);
-          elDialog.find("input#account-company").on("change", register.company.validate);
-          elDialog.find("input#account-title").on("change", register.title.validate);
+          elDialog.find("input#email").on("change blur", register.email.validate);
+          elDialog.find("input#password").on("change blur", register.password.validate);
+          elDialog.find("input#account-confirm-password").on("change blur", register.confirmPassword.validate);
+          elDialog.find("input#account-name").on("change blur", register.name.validate);
+          elDialog.find("input#account-company").on("change blur", register.company.validate);
+          elDialog.find("input#account-title").on("change blur", register.title.validate);
         }
         function unwireRegister()
         {
-          elDialog.find("input#email").off("change", register.email.validate);
-          elDialog.find("input#password").off("change", register.password.validate);
-          elDialog.find("input#account-confirm-password").off("change", register.confirmPassword.validate);
-          elDialog.find("input#account-name").off("change", register.name.validate);
-          elDialog.find("input#account-company").off("change", register.company.validate);
-          elDialog.find("input#account-title").off("change", register.title.validate);
+          elDialog.find("input#email").off("change blur", register.email.validate);
+          elDialog.find("input#password").off("change blur", register.password.validate);
+          elDialog.find("input#account-confirm-password").off("change blur", register.confirmPassword.validate);
+          elDialog.find("input#account-name").off("change blur", register.name.validate);
+          elDialog.find("input#account-company").off("change blur", register.company.validate);
+          elDialog.find("input#account-title").off("change blur", register.title.validate);
         }
 
         function updateForm()
@@ -236,9 +279,11 @@ function(tplDialog, ui, dom) {
         }
         elDialog.find("input.choose-ui").change(updateForm);
 
-        if(false) // TODO replace condition with email is present
+        var email = $.cookie("Precog_eMail");
+        if(email) { // TODO replace condition with email is present
           elDialog.find("input.choose-ui[value=\"login\"]").attr("checked", true);
-        else
+          elDialog.find("input#email").val(email);
+        } else
           elDialog.find("input.choose-ui[value=\"create\"]").attr("checked", true);
         updateForm();
 
@@ -266,28 +311,38 @@ function(tplDialog, ui, dom) {
         elDialog.find("#form-error .error").hide();
       }
 
+      function goToLabcoat(email, apiKey, basePath) {
+        $.cookie("Precog_eMail", email);
+        var url = buildUrl(
+          getHost(),
+          precog.config.analyticsService,
+          apiKey,
+          basePath
+        );
+        elDialog.find("form").submit();
+        setTimeout(function() {
+          window.location = url;
+        }, 100);
+      }
+
+      function describeAndLogin(email, password, accountId)
+      {
+        window.Precog.describeAccount(email, password, accountId,
+          function(data) {
+            goToLabcoat(email, data.apiKey, data.rootPath);
+          },
+          function(err) {
+            formError("password is incorrect");
+          }
+        );
+      }
+
       function actionLogin(email, password)
       {
         elDialog.find("#account-login").button("disable");
         window.Precog.findAccount(email,
           function(accountId) {
-            window.Precog.describeAccount(email, password, accountId,
-            function(data) {
-              var url = buildUrl(
-                    getHost(),
-                    precog.config.analyticsService,
-                    data.apiKey,
-                    data.rootPath
-                  );
-              elDialog.find("form").submit();
-              setTimeout(function() {
-//                window.location = url;
-              }, 1000);
-//
-            },
-            function(err) {
-              formError("password is incorrect");
-            });
+            describeAndLogin(email, password, accountId);
           },
           function(err) {
             formError("account not found for " + email);
@@ -298,15 +353,24 @@ function(tplDialog, ui, dom) {
       function actionCreate(email, password, profile)
       {
         elDialog.find("#account-create").button("disable");
-        window.Precog.findAccount(email, password,
-          function(data) {
-            console.log("create data", data);
+        window.Precog.findAccount(
+          email,
+          function() {
+            formError("an user is already registered with the email " + email)
           },
-          function(err) {
-            console.log("error", err);
-          },
-          {
-            profile : profile
+          function(_) {
+            window.Precog.createAccount(email, password,
+              function(data) {
+                describeAndLogin(email, password, data.accountId);
+//                goToLabcoat(email, data.apiKey, data.rootPath);
+              },
+              function(err) {
+                formError("failed to create an account: " + err);
+              },
+              {
+                profile : profile
+              }
+            )
           }
         );
       }
@@ -331,6 +395,23 @@ function(tplDialog, ui, dom) {
             company : elDialog.find("input#account-company").val()
           }
         );
+        return false;
+      });
+
+      elDialog.find("#reset-password").click(function(e) {
+        e.preventDefault();
+        var email = elDialog.find("input#email").val().trim();
+        if(!email) {
+          formError("you need to provide an email to be able to reset your password");
+          return false;
+        }
+        $(this).hide();
+        window.Precog.requestResetPassword(email,
+          function(data) {
+            alert(data);
+          }, function(err) {
+            formError("an error occurred trying to reset your password: " + err)
+          });
         return false;
       });
     }

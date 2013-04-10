@@ -800,6 +800,18 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
     );
   };
 
+  Precog.requestResetPassword = function(email, success, failure, options) {
+    var description = 'Request reset password for ' + email;
+    Precog.findAccount(email, function(accountId) {
+      http.post(
+        Util.actionUrl("accounts","accounts", options) + accountId + "/password/reset",
+        { "email" : email },
+        Util.createCallbacks(success, failure, description),
+        null
+      );
+    }, failure);
+  }
+
   Precog.findAccount = function(email, success, failure, options) {
     var description = 'Find accounts for ' + email;
     http.get(

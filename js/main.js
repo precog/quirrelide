@@ -562,7 +562,8 @@ function(config, createLayout, openAccountDialog, editors, history, buildBarMain
         });
 
         layout.getContainer().show();
-        support.resize();
+
+        layout.refresh();
       }, 150);
     }
 
