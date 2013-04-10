@@ -121,30 +121,30 @@ function(tplDialog, ui, dom) {
 
         var login = new Validator();
         login.email = login.create(
-          function() { return elDialog.find("input#account-email").val(); },
-          function() { return elDialog.find("div.error.account-email"); },
+          function() { return elDialog.find("input#email").val(); },
+          function() { return elDialog.find("div.error.email"); },
           function(value, handler) { handler(validateEmail(value)); }
         );
         login.password = login.createEmpty(
-          function() { return elDialog.find("input#account-password").val(); },
-          function() { return elDialog.find("div.error.account-password"); }
+          function() { return elDialog.find("input#password").val(); },
+          function() { return elDialog.find("div.error.password"); }
         );
 
         var register = new Validator();
         register.email = register.create(
-          function() { return elDialog.find("input#account-email").val(); },
-          function() { return elDialog.find("div.error.account-email"); },
+          function() { return elDialog.find("input#email").val(); },
+          function() { return elDialog.find("div.error.email"); },
           function(value, handler) { handler(validateEmail(value)); }
         );
         register.password = register.createMinLength(
-          function() { return elDialog.find("input#account-password").val(); },
-          function() { return elDialog.find("div.error.account-password"); },
+          function() { return elDialog.find("input#password").val(); },
+          function() { return elDialog.find("div.error.password"); },
           6
         );
         register.confirmPassword = register.create(
           function() { return elDialog.find("input#account-confirm-password").val(); },
           function() { return elDialog.find("div.error.account-confirm-password"); },
-          function(value, handler) { handler(elDialog.find("input#account-password").val() !== value ? "confirmation password doesn't match" : null); }
+          function(value, handler) { handler(elDialog.find("input#password").val() !== value ? "confirmation password doesn't match" : null); }
         );
         register.name = register.createMinLength(
           function() { return elDialog.find("input#account-name").val(); },
@@ -178,27 +178,29 @@ function(tplDialog, ui, dom) {
 
         login.toggle = createToggle("#account-login", login);
         $(login).on("validation", login.toggle);
+        $(login).on("validation", clearFormError);
 
         register.toggle = createToggle("#account-create", register);
         $(register).on("validation", register.toggle);
+        $(register).on("validation", clearFormError);
 
 
         function wireLogin()
         {
           login.reset();
-          elDialog.find("input#account-email").on("change", login.email.validate);
-          elDialog.find("input#account-password").on("change", login.password.validate);
+          elDialog.find("input#email").on("change", login.email.validate);
+          elDialog.find("input#password").on("change", login.password.validate);
         }
         function unwireLogin()
         {
-          elDialog.find("input#account-email").off("change", login.email.validate);
-          elDialog.find("input#account-password").off("change", login.password.validate);
+          elDialog.find("input#email").off("change", login.email.validate);
+          elDialog.find("input#password").off("change", login.password.validate);
         }
         function wireRegister()
         {
           register.reset();
-          elDialog.find("input#account-email").on("change", register.email.validate);
-          elDialog.find("input#account-password").on("change", register.password.validate);
+          elDialog.find("input#email").on("change", register.email.validate);
+          elDialog.find("input#password").on("change", register.password.validate);
           elDialog.find("input#account-confirm-password").on("change", register.confirmPassword.validate);
           elDialog.find("input#account-name").on("change", register.name.validate);
           elDialog.find("input#account-company").on("change", register.company.validate);
@@ -206,8 +208,8 @@ function(tplDialog, ui, dom) {
         }
         function unwireRegister()
         {
-          elDialog.find("input#account-email").off("change", register.email.validate);
-          elDialog.find("input#account-password").off("change", register.password.validate);
+          elDialog.find("input#email").off("change", register.email.validate);
+          elDialog.find("input#password").off("change", register.password.validate);
           elDialog.find("input#account-confirm-password").off("change", register.confirmPassword.validate);
           elDialog.find("input#account-name").off("change", register.name.validate);
           elDialog.find("input#account-company").off("change", register.company.validate);
@@ -243,21 +245,60 @@ function(tplDialog, ui, dom) {
         elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
         elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
 
+      function buildUrl(host, analyticsService, apiKey, basePath)
+      {
+        var url = host + "?apiKey=" + encodeURIComponent(apiKey) + "&basePath=" + encodeURIComponent(basePath);
+        if(analyticsService)
+          url += "&analyticsService=" + encodeURIComponent(analyticsService);
+        return url;
+      }
+
+      function getHost()
+      {
+        return window.location.href.split("?").shift();
+      }
+
+      function formError(msg) {
+        elDialog.find("#form-error .error").html(msg).show();
+      }
+
+      function clearFormError() {
+        elDialog.find("#form-error .error").hide();
+      }
+
       function actionLogin(email, password)
       {
-        window.Precog.createAccount(email, password,
-          function(data) {
-            console.log("login data", data);
+        elDialog.find("#account-login").button("disable");
+        window.Precog.findAccount(email,
+          function(accountId) {
+            window.Precog.describeAccount(email, password, accountId,
+            function(data) {
+              var url = buildUrl(
+                    getHost(),
+                    precog.config.analyticsService,
+                    data.apiKey,
+                    data.rootPath
+                  );
+              elDialog.find("form").submit();
+              setTimeout(function() {
+//                window.location = url;
+              }, 1000);
+//
+            },
+            function(err) {
+              formError("password is incorrect");
+            });
           },
           function(err) {
-            console.log("error", err);
+            formError("account not found for " + email);
           }
         );
       }
 
       function actionCreate(email, password, profile)
       {
-        window.Precog.createAccount(email, password,
+        elDialog.find("#account-create").button("disable");
+        window.Precog.findAccount(email, password,
           function(data) {
             console.log("create data", data);
           },
@@ -273,8 +314,8 @@ function(tplDialog, ui, dom) {
       elDialog.find("#account-login").click(function(e) {
         e.preventDefault();
         actionLogin(
-          elDialog.find("input#account-email").val(),
-          elDialog.find("input#account-password").val()
+          elDialog.find("input#email").val(),
+          elDialog.find("input#password").val()
         );
         return false;
       });
@@ -282,8 +323,8 @@ function(tplDialog, ui, dom) {
       elDialog.find("#account-create").click(function(e) {
         e.preventDefault();
         actionCreate(
-          elDialog.find("input#account-email").val(),
-          elDialog.find("input#account-password").val(),
+          elDialog.find("input#email").val(),
+          elDialog.find("input#password").val(),
           {
             title   : elDialog.find("input#account-title").val(),
             name    : elDialog.find("input#account-name").val(),

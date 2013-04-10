@@ -1,6 +1,7 @@
 <div class="pg-dialog-account">
     <div>
-        <form action="login">
+        <iframe id="blankiframe" id="name"></iframe>
+        <form action="actions/login" class="login signin" method="post">
             <div>
                 <div class="row">
                     <div class="field left">
@@ -25,14 +26,14 @@
             <div class="form">
                 <div class="row">
                     <div class="field left">
-                        <label for="account-email">Email</label>
-                        <div class="control"><input type="email" name="account-email" id="account-email"></div>
-                        <div class="error account-email ui-content ui-state-error ui-corner-all"></div>
+                        <label for="email">Email</label>
+                        <div class="control"><input class="username" type="text" name="email" id="email"></div>
+                        <div class="error username ui-content ui-state-error ui-corner-all"></div>
                     </div>
                     <div class="field right">
-                        <label for="account-password">Password</label>
-                        <div class="control"><input type="password" name="account-password" id="account-password"></div>
-                        <div class="error account-password ui-content ui-state-error ui-corner-all"></div>
+                        <label for="password">Password</label>
+                        <div class="control"><input class="password" type="password" name="password" id="password"></div>
+                        <div class="error password ui-content ui-state-error ui-corner-all"></div>
                     </div>
                 </div>
                 <div class="create">
@@ -62,8 +63,15 @@
                     </div>
                     <div class="row">
                         <div class="field right content-right action">
-                            <div class="control"><button disabled class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="submit" name="account-create" id="account-create"><span class="ui-button-text">Create Account</span></button></div>
+                            <div class="control">
+                                <button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only submit" type="submit" id="account-create"><span class="ui-button-text">Create Account</span></button>
+                            </div>
                         </div>
+                    </div>
+                </div>
+                <div id="form-error">
+                    <div class="row error ui-content ui-state-error ui-corner-all">
+
                     </div>
                 </div>
                 <div class="recover">
@@ -74,7 +82,9 @@
                     </div>
                     <div class="row">
                         <div class="field right content-right action">
-                            <div class="control"><button disabled class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="submit" name="account-login" id="account-login"><span class="ui-button-text">Login</span></button></div>
+                            <div class="control">
+                                <button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only submit" type="submit" id="account-login"><span class="ui-button-text">Login</span></button>
+                            </div>
                         </div>
                     </div>
                 </div>

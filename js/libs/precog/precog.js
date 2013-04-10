@@ -384,6 +384,16 @@ throw new SyntaxError('JSON.parse');};}}());
           version = options.version || $.Config.version;
       return this["actionUrlVersion" + (version === "false" ? "No" : version)](host, service, action, options);
     },
+     actionUrl2: function(service, action, options) {
+      if("undefined" === typeof options && "object" === typeof action) {
+        options = action;
+        action  = null;
+      }
+      options = options || {};
+      var host    = options.analyticsService || $.Config.analyticsService,
+          version = options.version || $.Config.version;
+      return host + service + (version === "false" ? "" : "/v" + version) + "/" + (action ? action : "");
+    },
 
     actionPath: function(path, options) {
       path = path && this.trimPath(path);
@@ -606,9 +616,12 @@ throw new SyntaxError('JSON.parse');};}}());
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
   };
 
+  var current = window.location.hostname,
+      service = current.substr(-11) == ".precog.com" ? current : "beta.precog.com";
+
   $.Util.extend($.Config,
     {
-      analyticsService: Util.getProtocol() + "//beta.precog.com/",
+      analyticsService: "https://"+service+"/",
       useJsonp  : "true",
       enableLog : "false",
       version   : 1
@@ -712,6 +725,64 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
+  Precog.asyncQuery = function(query, success, failure, options ) {
+    options = options || {};
+    var description = 'Precog query ' + query,
+        parameters = { apiKey : options.apiKey || $.Config.apiKey, q : query };
+
+    if(options.limit)
+      parameters.limit = options.limit || $.Config.limit;
+    if(options.basePath)
+      parameters.basePath = options.basePath;
+    if(options.skip)
+      parameters.skip = options.skip;
+    if(options.order)
+      parameters.order = options.order;
+    if(options.sortOn)
+      parameters.sortOn = JSON.stringify(options.sortOn);
+    if(options.sortOrder)
+      parameters.sortOrder = options.sortOrder;
+    parameters.timeout = options.timeout || 1800000;
+    parameters.prefixPath = options.prefixPath || $.Config.basePath;
+    if("undefined" !== typeof options.format) {
+      parameters.format = options.format;
+    }
+
+    if(parameters.format === "detailed") {
+      var old = success;
+      success = function(o, headers) {
+        old(o.data, o.errors, o.warnings, headers);
+      };
+    }
+    
+    return http.post(
+      Util.actionUrl2("analytics", "queries", options),
+      undefined,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+Precog.asyncQueryResults = function(jobId, success, failure, options){
+  var description = 'Return results of job Id: ' + jobId;
+  parameters = { apiKey : (options && options.apiKey) || $.Config.apiKey };
+
+  function complete(data) {
+    if(data) {
+      data.completed = true;
+    } else {
+      data = { completed : false };
+    }
+    success(data);
+  }
+
+  return http.get(
+    Util.actionUrl("analytics", "queries", options) + jobId,
+    Util.createCallbacks(complete, failure, description),
+    parameters
+  );
+}
+
   // **********************
   // ***     ACCOUNT    ***
   // **********************
@@ -726,6 +797,21 @@ throw new SyntaxError('JSON.parse');};}}());
       post,
       Util.createCallbacks(success, failure, description),
       null
+    );
+  };
+
+  Precog.findAccount = function(email, success, failure, options) {
+    var description = 'Find accounts for ' + email;
+    http.get(
+      Util.actionUrl("accounts","accounts", options) + "search",
+      Util.createCallbacks(
+        function(data) {
+          success(data instanceof Array ? data[0].accountId : data.accountId);
+        },
+        failure,
+        description
+      ),
+      { "email" : email }
     );
   };
 

@@ -79,13 +79,21 @@ define([
       return trimFilter(value).toUpperCase();
     }
 
-    function urlValidator(value) {
-      if (!!value.match(/^((\/?[a-z0-9_\-.]+)+)\/?$/i)) {
-        return null;
-      } else {
-        return "invalid url";
-      }
+  function urlValidator(value) {
+    if (!!value.match(/^((\/?[a-z0-9_\-.]+)+)\/?$/i)) {
+      return null;
+    } else {
+      return "invalid url";
     }
+  }
+
+  function uriValidator(value) {
+    if (!!value.match(/^((\/?[a-z0-9_\-.:]+)+)\/?$/i)) {
+      return null;
+    } else {
+      return "invalid url";
+    }
+  }
 
     // add global settings
     var message = $(tplGlobalSettings),
@@ -125,7 +133,7 @@ define([
             name      : "labcoatHost",
             extract   : function() { return window.location.hostname + window.location.pathname; },
             filter    : onlyTrailingSlash,
-            validator : urlValidator
+            validator : uriValidator
           }],
         userSettings = [{
             name      : "limit",
