@@ -223,7 +223,6 @@ function(tplDialog, ui, dom) {
           }
         })
         .keyup(function(e) {
-console.log(e.keyCode);
           if(e.keyCode == 13) // enter
           {
             if(!$(this).val()) {
@@ -376,7 +375,7 @@ console.log(e.keyCode);
           email,
           function() {
             elDialog.find("#account-create").button("enable");
-            formError("an user is already registered with the email " + email)
+            formError("a user is already registered with the email " + email)
           },
           function(_) {
             window.Precog.createAccount(email, password,
