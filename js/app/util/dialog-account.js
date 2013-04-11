@@ -77,7 +77,12 @@ function(tplDialog, ui, dom) {
             handler(result);
           });
         };
-
+      this.validate = function() {
+        for(var id in map) {
+          if(!map.hasOwnProperty(id)) continue;
+          map[id].validate();
+        }
+      };
       this.isValid = function() {
           for(var id in map) {
             if(!map.hasOwnProperty(id)) continue;
@@ -166,23 +171,25 @@ function(tplDialog, ui, dom) {
 
         function createToggle(selector, validator) {
           var el = elDialog.find(selector);
-          el.button({ disabled : true });
+          el.button({ disabled : false });
+          /*
           return function() {
             if(validator.isValid()) {
               el.button("enable");
-              el.focus();
+//              el.focus();
             } else {
               el.button("disable");
             }
           };
+          */
         }
 
         login.toggle = createToggle("#account-login", login);
-        $(login).on("validation", login.toggle);
+//        $(login).on("validation", login.toggle);
         $(login).on("validation", clearFormError);
 
         register.toggle = createToggle("#account-create", register);
-        $(register).on("validation", register.toggle);
+//        $(register).on("validation", register.toggle);
         $(register).on("validation", clearFormError);
 
       elDialog.find("input#email")
@@ -201,7 +208,7 @@ function(tplDialog, ui, dom) {
               elDialog.find("input#password").focus();
             } else {
               $(this).blur();
-
+              return;
             }
             e.preventDefault();
             return false;
@@ -216,23 +223,30 @@ function(tplDialog, ui, dom) {
           }
         })
         .keyup(function(e) {
+console.log(e.keyCode);
           if(e.keyCode == 13) // enter
           {
             if(!$(this).val()) {
+              console.log(currentToggle.button("option", "disabled"));
               // do nothing;
             } else {
               $(this).blur();
+              console.log(currentToggle.button("option", "disabled"));
+              if(!currentToggle.button("option", "disabled"))
+                currentToggle.click();
+              return;
             }
             e.preventDefault();
             return false;
           }
+
         });
 
         function wireLogin()
         {
           login.reset();
           elDialog.find("input#email").on("change blur", login.email.validate);
-          elDialog.find("input#password").on("change blur", login.password.validate);
+          elDialog.find("input#password").on("change blur keydown", login.password.validate);
         }
         function unwireLogin()
         {
@@ -256,9 +270,10 @@ function(tplDialog, ui, dom) {
           elDialog.find("input#account-confirm-password").off("change blur", register.confirmPassword.validate);
           elDialog.find("input#account-name").off("change blur", register.name.validate);
           elDialog.find("input#account-company").off("change blur", register.company.validate);
-          elDialog.find("input#account-title").off("change blur", register.title.validate);
+          elDialog.find("input#account-title").off("change blur keydown", register.title.validate);
         }
 
+        var currentToggle;
         function updateForm()
         {
           var mode = elDialog.find("input.choose-ui:checked").val();
@@ -270,10 +285,12 @@ function(tplDialog, ui, dom) {
             case "create":
               createPanel.show();
               wireRegister();
+              currentToggle = elDialog.find("#account-create");
               break;
             case "login":
               recoverPanel.show();
               wireLogin();
+              currentToggle = elDialog.find("#account-login");
               break;
           }
         }
@@ -332,6 +349,7 @@ function(tplDialog, ui, dom) {
             goToLabcoat(email, data.apiKey, data.rootPath);
           },
           function(err) {
+            elDialog.find("#account-login").button("enable");
             formError("password is incorrect");
           }
         );
@@ -345,6 +363,7 @@ function(tplDialog, ui, dom) {
             describeAndLogin(email, password, accountId);
           },
           function(err) {
+            elDialog.find("#account-login").button("enable");
             formError("account not found for " + email);
           }
         );
@@ -356,6 +375,7 @@ function(tplDialog, ui, dom) {
         window.Precog.findAccount(
           email,
           function() {
+            elDialog.find("#account-create").button("enable");
             formError("an user is already registered with the email " + email)
           },
           function(_) {
@@ -365,6 +385,7 @@ function(tplDialog, ui, dom) {
 //                goToLabcoat(email, data.apiKey, data.rootPath);
               },
               function(err) {
+                elDialog.find("#account-create").button("enable");
                 formError("failed to create an account: " + err);
               },
               {
@@ -377,6 +398,9 @@ function(tplDialog, ui, dom) {
 
       elDialog.find("#account-login").click(function(e) {
         e.preventDefault();
+        login.validate();
+        if(!login.isValid())
+          return false;
         actionLogin(
           elDialog.find("input#email").val(),
           elDialog.find("input#password").val()
@@ -386,6 +410,10 @@ function(tplDialog, ui, dom) {
 
       elDialog.find("#account-create").click(function(e) {
         e.preventDefault();
+        register.validate();
+        if(!register.isValid())
+          return false;
+
         actionCreate(
           elDialog.find("input#email").val(),
           elDialog.find("input#password").val(),
