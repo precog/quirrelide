@@ -20,7 +20,7 @@ function(require, ace, ui) {
         }
 
         editor.commands.addCommand({
-			name : "executeSelection",
+			      name : "executeSelection",
             bindKey: {
                 win: 'Shift-Ctrl-Return',
                 mac: 'Shift-Ctrl-Return|Command-Ctrl-Return',
@@ -30,7 +30,7 @@ function(require, ace, ui) {
         });
 
         editor.commands.addCommand({
-			name : "executeAll",
+			      name : "executeAll",
             bindKey: {
                 win: 'Shift-Return',
                 mac: 'Shift-Return|Command-Return',

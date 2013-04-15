@@ -231,6 +231,10 @@ define([
 
         updateBrand(el.find("a.pg-brand"));
 
+        var email = precog.config.email;
+
+      // TODO add logout here
+
         ui.button(right, {
             icon : "ui-icon-info",
             description : "about Labcoat"

@@ -73,7 +73,7 @@ require([
 
 ],
 
-function(config, createLayout, openAccountDialog, editors, history, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
+function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildTips, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
   function buildUrl(query) {
     var version  = precog.config.version,
         basePath = precog.config.basePath,
@@ -119,6 +119,9 @@ function(config, createLayout, openAccountDialog, editors, history, buildBarMain
     });
 
     function init() {
+      var editors = createEditors(),
+          history = createHistory();
+
       precog.calculateHash();
 
       var editor = buildEditor(layout.getCodeEditor(), config.get('ioPanesVertical'));

@@ -106,8 +106,6 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
         STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash;
         basePath = precog.config.basePath || "/";
         store = createStore(STORE_KEY, { virtuals : { }});
-console.log(precog.hash, basePath);
-
         var wrapper, map;
 
         el.find(".pg-toolbar").append(tplToolbar);

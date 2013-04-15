@@ -31,7 +31,6 @@ function(ui, loadFormats, exportLanguages, openDialog, tplToolbar) {
             lastOptions;
 
         function downloadCallback(data, action) {
-//console.log("DOWNLOAD", data, action);
           return true;
         }
 
