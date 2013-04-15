@@ -398,7 +398,8 @@ function(config, createLayout, openAccountDialog, editors, history, buildBarMain
           oresults = editors.getOutputResults() || { errors : [], warnings : []};
         output.setOutput(data, type, options);
 
-        results.setEditorMessages(oresults.errors, oresults.warnings);
+         if(results)
+          results.setEditorMessages(oresults.errors, oresults.warnings);
       });
 
       $(editors).on('saved', function(_, data) {
