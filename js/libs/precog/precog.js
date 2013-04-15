@@ -790,7 +790,7 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
     var description = 'Create account for ' + email,
         post = { "email" : email, "password" : password };
     if(options && options.profile) {
-      post.profile = JSON.stringify(options.profile);
+      post.profile = options.profile;
     }
     http.post(
       Util.actionUrl("accounts","accounts", options),
@@ -818,7 +818,11 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
       Util.actionUrl("accounts","accounts", options) + "search",
       Util.createCallbacks(
         function(data) {
-          success(data instanceof Array ? data[0].accountId : data.accountId);
+          try {
+            success(data instanceof Array ? data[0].accountId : data.accountId);
+          } catch(e) {
+            failure(e);
+          }
         },
         failure,
         description
@@ -1060,6 +1064,7 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
     var description = 'Precog retrieve metadata ' + options.type,
         parameters = { apiKey : options.apiKey || $.Config.apiKey };
     if(!parameters.apiKey) throw Error("apiKey not specified");
+console.log(parameters);
     return http.get(
       Util.actionUrl("meta", "fs", options) + Util.actionPath(path, options) + "#" + options.type,
       Util.createCallbacks(success, failure, description),

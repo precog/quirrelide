@@ -27,11 +27,11 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
     var DOWNLOAD_SERVICE = "download.php",
         LOAD_MORE_LABEL  = "[load more]",
         LOAD_MORE_NODE   = "[more]",
-        RECORDS_LABEL  = "data: %0",
+        RECORDS_LABEL    = "data: %0",
         RECORDS_NODE     = "[records]",
-        STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash,
-        basePath = precog.config.basePath || "/",
-        store = createStore(STORE_KEY, { virtuals : { }});
+        STORE_KEY,
+        basePath,
+        store;
 
     function setVirtualPath(parent, name) {
         var arr = getVirtualPaths(parent);
@@ -103,6 +103,11 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
     }
 
     return function(el) {
+        STORE_KEY = "pg-quirrel-virtualpaths-"+precog.hash;
+        basePath = precog.config.basePath || "/";
+        store = createStore(STORE_KEY, { virtuals : { }});
+console.log(precog.hash, basePath);
+
         var wrapper, map;
 
         el.find(".pg-toolbar").append(tplToolbar);
