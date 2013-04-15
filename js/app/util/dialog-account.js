@@ -179,24 +179,12 @@ function(tplDialog, ui, pardot) {
         function createToggle(selector, validator) {
           var el = elDialog.find(selector);
           el.button({ disabled : false });
-          /*
-          return function() {
-            if(validator.isValid()) {
-              el.button("enable");
-//              el.focus();
-            } else {
-              el.button("disable");
-            }
-          };
-          */
         }
 
         login.toggle = createToggle("#account-login", login);
-//        $(login).on("validation", login.toggle);
         $(login).on("validation", clearFormError);
 
         register.toggle = createToggle("#account-create", register);
-//        $(register).on("validation", register.toggle);
         $(register).on("validation", clearFormError);
 
       elDialog.find("input#email")
@@ -312,15 +300,7 @@ function(tplDialog, ui, pardot) {
         elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
 
       setTimeout(reposition, 0);
-/*
-      function buildUrl(host, analyticsService, apiKey, basePath)
-      {
-        var url = host + "?apiKey=" + encodeURIComponent(apiKey) + "&basePath=" + encodeURIComponent(basePath);
-        if(analyticsService)
-          url += "&analyticsService=" + encodeURIComponent(analyticsService);
-        return url;
-      }
-*/
+
       function getHost()
       {
         return window.location.href.split("?").shift();
@@ -336,26 +316,11 @@ function(tplDialog, ui, pardot) {
 
       function goToLabcoat(email, apiKey, basePath) {
         $.cookie("Precog_eMail", email);
-        /*
-        var url = buildUrl(
-          getHost(),
-          precog.config.analyticsService,
-          apiKey,
-          basePath
-        );
-
-        */
         elDialog.find("form").submit();
         precog.config.apiKey = apiKey;
         precog.config.basePath = basePath;
         precog.config.email = email;
-console.log(precog.config.analyticsService);
         elDialog.dialog("close");
-        /*
-        setTimeout(function() {
-          window.location = url;
-        }, 100);
-        */
       }
 
       function describeAndLogin(email, password, accountId)
@@ -366,7 +331,6 @@ console.log(precog.config.analyticsService);
           },
           function() {
             elDialog.find("#account-login").button("enable");
-console.log(arguments);
             formError("password is incorrect");
           }
         );
@@ -414,7 +378,6 @@ console.log(arguments);
               function(data) {
                 trackAccountCreationWithPardot(email, profile);
                 describeAndLogin(email, password, data.accountId);
-//                goToLabcoat(email, data.apiKey, data.rootPath);
               },
               function(err) {
                 elDialog.find("#account-create").button("enable");
@@ -475,14 +438,7 @@ console.log(arguments);
         return false;
       });
     }
-/*
-    function setDemoConfig()
-    {
-console.log("DEMO????");
-      precog.config.apiKey = "5CDA81E8-9817-438A-A340-F34E578E86F8";
-      precog.config.analyticsService = "http://labcoat.precog.com/";
-    }
-*/
+
 
     var inited = false;
     return function(p, callback) {
