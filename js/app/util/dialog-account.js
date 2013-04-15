@@ -348,6 +348,7 @@ function(tplDialog, ui, pardot) {
         elDialog.find("form").submit();
         precog.config.apiKey = apiKey;
         precog.config.basePath = basePath;
+        precog.config.email = email;
 console.log(precog.config.analyticsService);
         elDialog.dialog("close");
         /*
