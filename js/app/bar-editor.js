@@ -15,10 +15,11 @@ define([
 
 // TODO remove editors dependency
 
-function(ui, notification, qs, conv, utils, precog, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
+function(ui, notification, qs, conv, utils, precog, openExportDialog, openInputDialog, createExportLanguages, tplToolbar) {
 
     return function(el, queries, editors) {
-        var wrapper;
+        var wrapper,
+            exportLanguages = createExportLanguages();
         el.append(tplToolbar);
         var elContext = el.find('.pg-toolbar-context'),
             autoGoToTab = 0,

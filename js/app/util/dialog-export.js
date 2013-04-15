@@ -3,6 +3,7 @@ define([
     , "app/util/uiconfig"
     , "app/util/ui"
     , "app/util/dom"
+    , "app/util/precog"
     , "app/util/notification"
 
 

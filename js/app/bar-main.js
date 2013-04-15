@@ -14,6 +14,7 @@ define([
         BRAND_LINK  = "http://precog.com/products/labcoat",
         BRAND_CLASS = "pg-precog";
 
+    return function(el) {
     switch(document.location.host)
     {
 //        case "localhost":
@@ -224,7 +225,7 @@ define([
     else
       changeUrlError();
 
-    return function(el) {
+//    return function(el) {
 
         el.append(tplToolbar);
         var right = el.find(".pg-toolbar-context");
@@ -267,7 +268,7 @@ define([
                   }
                 },
                 options = {
-                  width  : 500
+                    width  : 500
                   , height : 440
                   , cancel : function() {
                     if(theme.current !== currentTheme) {
@@ -275,7 +276,6 @@ define([
                     }
                   }
                 };
-//            message.find("#theme").val(theme.current);
             userModel.getField("theme").setDefault(theme.current);
             userModel.getField("limit").setDefault(config.get("queryLimit"));
             openDialog(title, message, handler, options);
@@ -293,5 +293,5 @@ define([
                 }
             }
         });
-    }
+      };
 });
