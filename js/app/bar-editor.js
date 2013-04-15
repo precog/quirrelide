@@ -1,6 +1,5 @@
 define([
       "app/util/ui"
-    , "app/editors"
     , "app/util/notification"
     , "app/util/querystring"
     , "app/util/converters"
@@ -15,9 +14,9 @@ define([
 
 // TODO remove editors dependency
 
-function(ui, editors, notification, qs, conv, utils, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
+function(ui, notification, qs, conv, utils, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
 
-    return function(el, queries) {
+    return function(el, queries, editors) {
         var wrapper;
         el.append(tplToolbar);
         var elContext = el.find('.pg-toolbar-context'),
@@ -125,7 +124,8 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
                     subject = 'Quirrel Help',
                     body    = 'I need help with the following query:\n\n' + editors.getCode();
 
-                document.location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
+                var url = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
+                window.open(url, "_blank");
             }
         });
 

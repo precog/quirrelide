@@ -102,12 +102,9 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
 
     precog.cache.disable();
 
-    var queries,
-        layout = createLayout(config.get('ioPanesVertical'));
+    var layout = createLayout(config.get('ioPanesVertical'));
 
     layout.getContainer().hide();
-
-    buildBarMain(layout.getBarMain());
 
     $(theme).on('changed', function() {
         // refreshes the panes layout after theme changing
@@ -119,9 +116,11 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
     });
 
     function init() {
-      var editors = createEditors(),
+      var queries,
+          editors = createEditors(),
           history = createHistory();
 
+      buildBarMain(layout.getBarMain());
       precog.calculateHash();
 
       var editor = buildEditor(layout.getCodeEditor(), config.get('ioPanesVertical'));
@@ -492,7 +491,7 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
         }
       });
 
-      var editorbar = buildBarEditor(layout.getBarEditor(), queries, editor);
+      var editorbar = buildBarEditor(layout.getBarEditor(), queries, editors);
 
       $(editors).on('saved', function(e, editor){
         var index = editors.getIndexById(editor.id);

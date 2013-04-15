@@ -232,8 +232,16 @@ define([
         updateBrand(el.find("a.pg-brand"));
 
         var email = precog.config.email;
-
       // TODO add logout here
+        if(email) {
+          right.append('<span class="user">'+email+' (<a href="#" class="logout">logout</a>)</span>');
+          right.find("a.logout").click(function(e) {
+            e.preventDefault();
+            window.location.reload(false);
+            return false;
+          });
+        }
+
 
         ui.button(right, {
             icon : "ui-icon-info",

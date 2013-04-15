@@ -121,7 +121,9 @@
     height: 38px;
 }
 
-.pg-mainbar .pg-toolbar-actions {
+.pg-mainbar .user {
+    font-weight: normal;
+    margin: 0 10px;
 }
 
 .pg-results.ui-widget-content {
