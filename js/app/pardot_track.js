@@ -63,7 +63,7 @@ function(submit, displaySupport) {
   wrapper.submit_form = function(url, params, callback) {
     submit({
       action : url,
-      method : "post",
+      method : "get",
       data : params,
       complete : function() {
         if(callback) callback();
