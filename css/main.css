@@ -407,6 +407,15 @@
     width: 230px;
 }
 
+.pg-dialog-account .banner {
+    width: 470px;
+    height: 60px;
+    background-image: url(images/banner-labcoat-logo.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: 10px 0;
+}
+
 .pg-dialog-account .error
 {
     display: none;

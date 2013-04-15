@@ -253,7 +253,7 @@ function(config, createLayout, openAccountDialog, editors, history, buildBarMain
         status.endRequest(true);
         if(editors.getName() === execution.name) {
           output.setOutput(data, null, editors.getOutputOptions()); // TODO ADD HERE OUTPUT OPTIONS AND REMOVE REFERENCES TO DEFAULT TABLE
-          results.update(errors, warnings);
+          results.setEditorMessages(errors, warnings);
           // TODO SET OUTPUT OPTIONS FOR PAGINATION
           editors.setOutputData(data);
           editors.setOutputResults({ errors : errors, warnings : warnings });
@@ -398,7 +398,7 @@ function(config, createLayout, openAccountDialog, editors, history, buildBarMain
           oresults = editors.getOutputResults() || { errors : [], warnings : []};
         output.setOutput(data, type, options);
 
-        results.update(oresults.errors, oresults.warnings);
+        results.setEditorMessages(oresults.errors, oresults.warnings);
       });
 
       $(editors).on('saved', function(_, data) {
@@ -431,6 +431,47 @@ function(config, createLayout, openAccountDialog, editors, history, buildBarMain
 
       $(folders).on("uploadError", function() {
         pardot.track_page("upload_failure");
+      });
+
+      $(folders).on("uploadComplete", function(_, e) {
+        console.log("complete", e);
+        results.setMessages([{
+          type : "upload",
+          detail : "ingested " + e.ingested + " events"
+        }]);
+      });
+
+      $(folders).on("uploadError", function(_, e) {
+        var messages = [],
+            maxerrors = 10;
+        if(e.ingested) {
+          messages.push({
+            type : "upload",
+            detail : "ingested " + e.ingested + " events"
+          });
+        }
+        if(e.skipped) {
+          messages.push({
+            type : "warning",
+            detail : "skipped ingest of " + e.skipped + " events"
+          });
+        }
+        for(var i = 0; i < Math.min(maxerrors, e.failed); i++) {
+          var err = e.errors[i];
+          messages.push({
+            type : "error",
+            detail : "ingestion error",
+            nline : err.line,
+            line : err.reason
+          });
+        }
+        if(maxerrors < e.failed) {
+          messages.push({
+            type : "error",
+            detail : "... other " + (e.failed - maxerrors) + " events failed ingesting "
+          });
+        }
+        results.setMessages(messages);
       });
 
 

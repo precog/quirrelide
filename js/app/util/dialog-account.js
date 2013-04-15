@@ -1,7 +1,7 @@
 define([
       "rtext!templates/dialog.account.html"
     , "app/util/ui"
-    , "app/util/dom"
+    , "app/pardot_track"
 
 
     // FORCE INCLUSION?
@@ -17,7 +17,7 @@ define([
     , "libs/jquery/jquery.cookie/jquery.cookie"
 ],
 
-function(tplDialog, ui, dom) {
+function(tplDialog, ui, pardot) {
     var elDialog, precog;
 
     function validateEmail(email) {
@@ -166,6 +166,13 @@ function(tplDialog, ui, dom) {
           function() { return elDialog.find("input#account-title").val(); },
           function() { return elDialog.find("div.error.account-title"); }
         );
+        register.accept = register.create(
+          function() { return elDialog.find("input#account-accept").attr("checked"); },
+          function() { return elDialog.find("div.error.account-accept"); },
+          function(value, handler) {
+            handler(value ? null : "you have to read and to accept the terms of service agreement")
+          }
+        );
 
 
 
@@ -226,11 +233,9 @@ function(tplDialog, ui, dom) {
           if(e.keyCode == 13) // enter
           {
             if(!$(this).val()) {
-              console.log(currentToggle.button("option", "disabled"));
               // do nothing;
             } else {
               $(this).blur();
-              console.log(currentToggle.button("option", "disabled"));
               if(!currentToggle.button("option", "disabled"))
                 currentToggle.click();
               return;
@@ -238,7 +243,6 @@ function(tplDialog, ui, dom) {
             e.preventDefault();
             return false;
           }
-
         });
 
         function wireLogin()
@@ -261,6 +265,7 @@ function(tplDialog, ui, dom) {
           elDialog.find("input#account-name").on("change blur", register.name.validate);
           elDialog.find("input#account-company").on("change blur", register.company.validate);
           elDialog.find("input#account-title").on("change blur", register.title.validate);
+          elDialog.find("input#account-accept").on("change blur", register.accept.validate);
         }
         function unwireRegister()
         {
@@ -306,6 +311,8 @@ function(tplDialog, ui, dom) {
         elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
         elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
 
+      setTimeout(reposition, 0);
+
       function buildUrl(host, analyticsService, apiKey, basePath)
       {
         var url = host + "?apiKey=" + encodeURIComponent(apiKey) + "&basePath=" + encodeURIComponent(basePath);
@@ -329,16 +336,24 @@ function(tplDialog, ui, dom) {
 
       function goToLabcoat(email, apiKey, basePath) {
         $.cookie("Precog_eMail", email);
+        /*
         var url = buildUrl(
           getHost(),
           precog.config.analyticsService,
           apiKey,
           basePath
         );
+
+        */
         elDialog.find("form").submit();
+        precog.config.apiKey = apiKey;
+        precog.config.basePath = basePath;
+        elDialog.dialog("close");
+        /*
         setTimeout(function() {
           window.location = url;
         }, 100);
+        */
       }
 
       function describeAndLogin(email, password, accountId)
@@ -347,8 +362,9 @@ function(tplDialog, ui, dom) {
           function(data) {
             goToLabcoat(email, data.apiKey, data.rootPath);
           },
-          function(err) {
+          function() {
             elDialog.find("#account-login").button("enable");
+console.log(arguments);
             formError("password is incorrect");
           }
         );
@@ -368,6 +384,20 @@ function(tplDialog, ui, dom) {
         );
       }
 
+      function trackAccountCreationWithPardot(email, profile, callback) {
+        pardot.submit(
+          "http://www2.precog.com/l/17892/2012-12-10/76rq ",
+          {
+            "jform[email1]" : email,
+            "jform[name]" : profile.name,
+            "jform[profile][company]" : profile.company,
+            "jform[username]" : email,
+            "jform[profile][jobtitle]" : profile.title
+          },
+          callback
+        );
+      }
+
       function actionCreate(email, password, profile)
       {
         elDialog.find("#account-create").button("disable");
@@ -380,6 +410,7 @@ function(tplDialog, ui, dom) {
           function(_) {
             window.Precog.createAccount(email, password,
               function(data) {
+                trackAccountCreationWithPardot(email, profile);
                 describeAndLogin(email, password, data.accountId);
 //                goToLabcoat(email, data.apiKey, data.rootPath);
               },

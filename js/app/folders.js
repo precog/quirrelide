@@ -703,11 +703,11 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
                   "</li></ul>";
               }
               noty.progressError(message);
-              $(wrapper).trigger("uploadError");
+              $(wrapper).trigger("uploadError", e);
             } else {
               message = 'all of the ' + humanize.numberFormat(e.total || e.ingested, 0) + ' events have been queued correctly and are now in the process to be ingested';
               noty.progressComplete(message);
-              $(wrapper).trigger("uploadComplete");
+              $(wrapper).trigger("uploadComplete", e);
               recordsUploded(path);
             }
           }
