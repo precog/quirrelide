@@ -285,6 +285,7 @@ function(tplDialog, ui, pardot) {
               currentToggle = elDialog.find("#account-login");
               break;
           }
+          currentToggle.focus();
         }
         elDialog.find("input.choose-ui").change(updateForm);
 

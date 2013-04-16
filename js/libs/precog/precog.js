@@ -1064,7 +1064,6 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
     var description = 'Precog retrieve metadata ' + options.type,
         parameters = { apiKey : options.apiKey || $.Config.apiKey };
     if(!parameters.apiKey) throw Error("apiKey not specified");
-console.log(parameters);
     return http.get(
       Util.actionUrl("meta", "fs", options) + Util.actionPath(path, options) + "#" + options.type,
       Util.createCallbacks(success, failure, description),
