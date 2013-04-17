@@ -5,18 +5,17 @@ define([
 ],
 
 function(convert, precog, ui) {
-    var apiKey = precog.config.apiKey,
-        service = precog.config.analyticsService,
-        basePath = precog.config.basePath || "",
-        version = precog.config.version
+  return function() {
+    var apiKey   = precog.config.apiKey,
+        service  = precog.config.analyticsService,
+        basePath = (precog.config.basePath || "").trim(),
+        version  = precog.config.version
     ;
 
-    if(basePath.substring(-1) === "/")
+    if(basePath.substr(-1) === "/")
       basePath = basePath.substr(0, basePath.length - 1);
-
-    if(basePath.substring(0, 1) === "/")
+    if(basePath.substr(0, 1) === "/")
       basePath = basePath.substr(1);
-
     function escapeQuotes(s) {
         return s.replace(/"/g, '\\"');
     }
@@ -106,8 +105,8 @@ function(convert, precog, ui) {
       name : "Python",
       handler : function(code) {
         code = escapeQuotes(convert.minifyQuirrel(code));
-        service = removeProtocol(service);
-        return 'api = precog.Precog("'+apiKey+'", "'+service+'", 443)\n' +
+        var s = removeProtocol(service);
+        return 'api = precog.Precog("'+apiKey+'", "'+s+'", 443)\n' +
           'response = api.query("/'+basePath+'", "'+code+'")'
           ;
       }
@@ -116,8 +115,8 @@ function(convert, precog, ui) {
       name : "Ruby",
       handler : function(code) {
         code = escapeQuotes(convert.minifyQuirrel(code));
-        service = removeProtocol(service);
-        return 'api = Precog::Precog.new("'+apiKey+'", "'+service+'", 443)\n' +
+        var s = removeProtocol(service);
+        return 'api = Precog::Precog.new("'+apiKey+'", "'+s+'", 443)\n' +
           'response = api.query("/'+basePath+'", "'+code+'")'
           ;
       }
@@ -126,11 +125,11 @@ function(convert, precog, ui) {
       name : "Java",
       handler : function(code) {
         code = escapeQuotes(convert.minifyQuirrel(code));
-        service = removeProtocol(service);
+        var s = removeProtocol(service);
         return  '// import com.precog.api.Client;\n' +
                 '// import com.precog.api.Path;\n' +
                 '// import com.precog.api.ServiceBuilder;\n\n' +
-                'Client testClient = new Client(ServiceBuilder.service("'+service+'"), "'+apiKey+'");\n' +
+                'Client testClient = new Client(ServiceBuilder.service("'+s+'"), "'+apiKey+'");\n' +
                 'String result = testClient.query(new Path("/'+basePath+'"), "'+code+'");'
                 ;
       }
@@ -157,4 +156,5 @@ function(convert, precog, ui) {
         return 'curl "'+escapeQuotes(urlEncode(code))+'"';
       }
     }];
+  };
 });

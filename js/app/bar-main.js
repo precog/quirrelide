@@ -4,17 +4,17 @@ define([
     , "app/util/fullscreen"
     , "app/theme"
     , "app/util/dialog-confirm"
-    , "app/util/dialog-account"
     , "rtext!templates/dialog.global.settings.html"
     , "app/util/valuemodel"
     , "app/util/objectmodel"
     , "app/util/precog"
     , "app/util/config"
-], function(ui, tplToolbar, fullscreen, theme, openDialog, openAccountDialog, tplGlobalSettings, valueModel, objectModel, precog, config) {
+], function(ui, tplToolbar, fullscreen, theme, openDialog, tplGlobalSettings, valueModel, objectModel, precog, config) {
     var ABOUT_LINK  = "http://precog.com/products/labcoat",
         BRAND_LINK  = "http://precog.com/products/labcoat",
         BRAND_CLASS = "pg-precog";
 
+    return function(el) {
     switch(document.location.host)
     {
 //        case "localhost":
@@ -80,13 +80,21 @@ define([
       return trimFilter(value).toUpperCase();
     }
 
-    function urlValidator(value) {
-      if (!!value.match(/^((\/?[a-z0-9_\-.]+)+)\/?$/i)) {
-        return null;
-      } else {
-        return "invalid url";
-      }
+  function urlValidator(value) {
+    if (!!value.match(/^((\/?[a-z0-9_\-.]+)+)\/?$/i)) {
+      return null;
+    } else {
+      return "invalid url";
     }
+  }
+
+  function uriValidator(value) {
+    if (!!value.match(/^((\/?[a-z0-9_\-.:]+)+)\/?$/i)) {
+      return null;
+    } else {
+      return "invalid url";
+    }
+  }
 
     // add global settings
     var message = $(tplGlobalSettings),
@@ -126,7 +134,7 @@ define([
             name      : "labcoatHost",
             extract   : function() { return window.location.hostname + window.location.pathname; },
             filter    : onlyTrailingSlash,
-            validator : urlValidator
+            validator : uriValidator
           }],
         userSettings = [{
             name      : "limit",
@@ -217,22 +225,24 @@ define([
     else
       changeUrlError();
 
-    return function(el) {
+//    return function(el) {
 
         el.append(tplToolbar);
         var right = el.find(".pg-toolbar-context");
 
         updateBrand(el.find("a.pg-brand"));
 
+        var email = precog.config.email;
+      // TODO add logout here
+        if(email) {
+          right.append('<span class="user">'+email+' (<a href="#" class="logout">logout</a>)</span>');
+          right.find("a.logout").click(function(e) {
+            e.preventDefault();
+            window.location.reload(false);
+            return false;
+          });
+        }
 
-/*
-      ui.button(right, {
-        icon : "ui-icon-gear",
-        description : "account settings"
-      }).click(function() {
-        openAccountDialog("account", "hello world");
-      });
-*/
 
         ui.button(right, {
             icon : "ui-icon-info",
@@ -258,7 +268,7 @@ define([
                   }
                 },
                 options = {
-                  width  : 500
+                    width  : 500
                   , height : 440
                   , cancel : function() {
                     if(theme.current !== currentTheme) {
@@ -266,7 +276,6 @@ define([
                     }
                   }
                 };
-//            message.find("#theme").val(theme.current);
             userModel.getField("theme").setDefault(theme.current);
             userModel.getField("limit").setDefault(config.get("queryLimit"));
             openDialog(title, message, handler, options);
@@ -284,5 +293,5 @@ define([
                 }
             }
         });
-    }
+      };
 });

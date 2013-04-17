@@ -6,6 +6,7 @@ define([
 ],
 
 function(precog, md5, createStore, utils) {
+  return function() {
     var STORE_KEY = "pg-quirrel-editors-"+precog.hash,
         store = createStore(STORE_KEY, {
             list : [],
@@ -239,4 +240,5 @@ function(precog, md5, createStore, utils) {
     });
 
     return wrapper;
+  };
 });

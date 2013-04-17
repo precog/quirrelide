@@ -151,8 +151,10 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
           },
           config : config,
           lastExecution : 2000,
-          hash : md5(config.apiKey),
-          cache : window.Precog.cache
+          cache : window.Precog.cache,
+          calculateHash : function() {
+            q.hash = md5(config.apiKey || "");
+          }
         };
 
     $(q).on("abort", function(_, id) {
@@ -163,5 +165,6 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
       $(q).trigger("aborted", id);
     });
 
+    q.calculateHash();
     return q;
 });

@@ -1,10 +1,10 @@
 define([
       "app/util/ui"
-    , "app/editors"
     , "app/util/notification"
     , "app/util/querystring"
     , "app/util/converters"
     , "app/util/utils"
+    , "app/util/precog"
     , "app/util/dialog-export"
     , "app/util/dialog-lineinput"
     , "app/config/output-languages"
@@ -15,10 +15,11 @@ define([
 
 // TODO remove editors dependency
 
-function(ui, editors, notification, qs, conv, utils, openExportDialog, openInputDialog, exportLanguages, tplToolbar) {
+function(ui, notification, qs, conv, utils, precog, openExportDialog, openInputDialog, createExportLanguages, tplToolbar) {
 
-    return function(el, queries) {
-        var wrapper;
+    return function(el, queries, editors) {
+        var wrapper,
+            exportLanguages = createExportLanguages();
         el.append(tplToolbar);
         var elContext = el.find('.pg-toolbar-context'),
             autoGoToTab = 0,
@@ -125,7 +126,8 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
                     subject = 'Quirrel Help',
                     body    = 'I need help with the following query:\n\n' + editors.getCode();
 
-                document.location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
+                var url = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
+                window.open(url, "_blank");
             }
         });
 
@@ -136,8 +138,15 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
             handler : function(e) {
                 var base = document.location.protocol + "//" + document.location.hostname + document.location.pathname;
                 // strip q if it exists
-                var params = qs.all();
+                var params = {};
                 params.q = editors.getCode();
+                if(precog.config.apiKey)
+                  params.apiKey = precog.config.apiKey;
+                if(precog.config.basePath)
+                  params.basePath = precog.config.basePath;
+                if(precog.config.analyticsService)
+                  params.analyticsService = precog.config.analyticsService;
+
                 if(copier) copier.remove();
                 copier = notification.copier("Create Query Link", {
                     text : "Copy this link to pass the current query to someone else.<br>Don't forget that the URL contains your token!",
@@ -179,14 +188,14 @@ function(ui, editors, notification, qs, conv, utils, openExportDialog, openInput
             }
             var code = codeLines.map(function(v) { return utils.truncate(v, tlen); }).join("\n");
             return '<div class="pg-history-item ui-content ui-state-highlight ui-corner-all">'
-                + '<div class="pg-header">query:</div>'
-                + '<pre>'+code+'</pre>'
-                + '<div class="pg-header">sample:</div>'
-                + '<pre>'+utils.truncate(JSON.stringify(item.sample.first), tlen)+'</pre>'
-                + '<div class="pg-info">generated '+item.sample.length+' records<br>executed '+ execution +'</div>'
-                + '<div class="pg-toolbar"></div>'
-                + '<div class="pg-clear"></div>'
-                + '</div>'
+                  + '<div class="pg-header">query:</div>'
+                  + '<pre>'+code+'</pre>'
+                  + '<div class="pg-header">sample:</div>'
+                  + '<pre>'+utils.truncate(JSON.stringify(item.sample.first), tlen)+'</pre>'
+                  + '<div class="pg-info">generated '+item.sample.length+' records<br>executed '+ execution +'</div>'
+                  + '<div class="pg-toolbar"></div>'
+                  + '<div class="pg-clear"></div>'
+                  + '</div>'
             ;
         }
 

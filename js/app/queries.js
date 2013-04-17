@@ -18,11 +18,11 @@ define([
 
 function(precog, createStore, ui, utils, demo, openRequestInputDialog, openConfirmDialog, tplToolbar) {
     var list = [],
-        DEMO_TOKEN = "5CDA81E8-9817-438A-A340-F34E578E86F8", //"5CDA81E8-9817-438A-A340-F34E578E86F8", 
-        STORE_KEY = "pg-quirrel-queries-"+precog.hash,
-        store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.apiKey ? demo : {}), folders : [] });
+        DEMO_TOKEN = "5CDA81E8-9817-438A-A340-F34E578E86F8";
 
     return function(el) {
+        var STORE_KEY = "pg-quirrel-queries-"+precog.hash;
+        var store = createStore(STORE_KEY, { queries : (DEMO_TOKEN === precog.config.apiKey ? demo : {}), folders : [] });
         var wrapper;
 
         el.find(".pg-toolbar").append(tplToolbar);

@@ -48,6 +48,7 @@ function(dom) {
 
             var options = {
                   title : title
+                , history : false
                 , shadow : true
                 , delay : timeout
                 , sticker : false

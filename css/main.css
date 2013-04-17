@@ -121,7 +121,9 @@
     height: 38px;
 }
 
-.pg-mainbar .pg-toolbar-actions {
+.pg-mainbar .user {
+    font-weight: normal;
+    margin: 0 10px;
 }
 
 .pg-results.ui-widget-content {
@@ -180,11 +182,11 @@
 
 .pg-statusbar .ui-progressbar-value {
     background-image: url(images/progress-background.png);
-    animation: progressbg 1s linear infinite;
+    animation: progressbg0.5s linear infinite;
     /* Firefox: */
-    -moz-animation: progressbg 1s linear infinite;
+    -moz-animation: progressbg0.5s linear infinite;
     /* Safari and Chrome: */
-    -webkit-animation: progressbg 1s linear infinite;
+    -webkit-animation: progressbg0.5s linear infinite;
 }
 
 .pg-editor-tabs.ui-tabs .ui-tabs-nav {
@@ -245,6 +247,103 @@
 
 .pg-output-formats /*, .pg-editor-tabs.ui-tabs*/ {
 /*    padding: 2px; */
+}
+
+/*.pg-wizard,*/
+.pg-wizard.transition
+{
+    -webkit-transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+    -moz-transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+    -o-transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+    -ms-transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+    transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+}
+
+.pg-wizard {
+    position: absolute;
+    pointer-events:none;
+    font-size: 105%;
+}
+
+.pg-wizard .pg-arrow.fade {
+    opacity: 1;
+    -webkit-transition: opacity .5s ease-in-out;
+    -moz-transition: opacity .5s ease-in-out;
+    transition: opacity .5s ease-in-out;
+}
+
+.pg-wizard .pg-frame {
+    font-family: Helvetica, Arial, sans-serif;
+
+    border: 1px solid #8CC63F;
+    padding: 15px;
+    background: #fff;
+    margin: 60px;
+    position: relative;
+
+    border-radius: 10px;
+
+    -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow:    2px 2px 5px rgba(0, 0, 0, 0.25);
+    box-shadow:         2px 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+.pg-wizard .pg-arrow {
+    opacity: 0;
+    background-repeat: no-repeat;
+    position: absolute;
+    width : 80px;
+    height : 80px;
+}
+
+.pg-wizard .pg-step {
+    top: 0px;
+    padding: 0 15px 0 5px;
+    position: absolute;
+    font-size: 400%;
+    font-weight: bold;
+
+    color: rgba(240,240,240, 0.8);
+    text-shadow: 1px 1px 2px #fff, 0 0 0 #000, 1px 1px 2px #eee;
+}
+
+.pg-wizard .pg-content {
+    text-align: center;
+    pointer-events:auto;
+ }
+
+.pg-wizard .pg-arrow.left-top {
+    top: 0;
+    left: 0;
+    background-image: url("images/arrows/left-top.png");
+    background-position: left top;
+}
+
+.pg-wizard .pg-arrow.left-center {
+    top: 50%;
+    margin-top: -40px;
+    left: 0;
+    background-image: url("images/arrows/left-center.png");
+    background-position: left center;
+}
+
+.pg-wizard .pg-arrow.left-bottom {
+    bottom: 0;
+    left: 0;
+    background-image: url("images/arrows/left-bottom.png");
+    background-position: left bottom;
+}
+
+.pg-wizard .pg-arrow.center-top{
+    top: 0;
+    left: 50%;
+    margin-left: -40px;
+    background-image: url("images/arrows/center-top.png");
+    background-position: center top;
+}
+
+.pg-wizard .pg-arrow.center-center {
+    display: none;
 }
 
 .pg-result .ui-state-error, .pg-result .ui-state-highlight, .pg-queries .pg-queries .ui-state-highlight {
@@ -407,7 +506,16 @@
     width: 230px;
 }
 
-.pg-dialog-account .field .error
+.pg-dialog-account .banner {
+    width: 470px;
+    height: 60px;
+    background-image: url(images/banner-labcoat-logo.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: 10px 0;
+}
+
+.pg-dialog-account .error
 {
     display: none;
     padding: 0.5em 1em;
@@ -442,6 +550,35 @@
 .pg-dialog-account .small
 {
     font-size: 93%;
+}
+
+.pg-dialog-account .or-vertical:after
+{
+    content: "or";
+    line-height: 5em;
+    margin-left: -0.85em;
+    background-color: #fff;
+    font-weight: bold;
+    padding: 4px;
+}
+
+.pg-dialog-account .or-vertical
+{
+    border-left: 1px solid #ccc;
+    position: absolute;
+    left: 50%;
+}
+
+.pg-dialog-account .try-demo
+{
+    width: 200px;
+    height: 44px;
+    margin-top: 14px;
+    font-weight: bold !important;
+}
+
+.pg-dialog-account .row.header {
+    min-height: 90px;
 }
 
 .pg-ingest-phase, .pg-ingest-message {
