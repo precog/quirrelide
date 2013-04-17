@@ -60,7 +60,7 @@ require([
     , 'app/folders'
     , 'app/queries'
     , 'app/support'
-    , 'app/startup-wizard'
+//    , 'app/startup-wizard'
     , 'app/results'
     , 'app/util/precog'
     , 'app/util/querystring'
@@ -73,7 +73,7 @@ require([
 
 ],
 
-function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildWizard, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
+function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport/*, buildWizard*/, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
   function buildUrl(query) {
     var version  = precog.config.version,
         basePath = precog.config.basePath,
@@ -566,8 +566,7 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
         pardot.track_page("download_code");
       });
 
-//      var tips = buildTips(layout);
-      var wizard = buildWizard();
+//      var wizard = buildWizard();
 
       editors.load();
 
