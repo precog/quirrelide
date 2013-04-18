@@ -350,7 +350,7 @@ function(tplDialog, ui, qs, pardot) {
           "https://beta.precog.com/"
         ];
       }
-console.log(servers);
+      
       function findAccount(email, success, error) {
         var i = 0;
         function execute() {
