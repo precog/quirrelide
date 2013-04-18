@@ -33,6 +33,7 @@ cp -f ../css/images/logo-gridgain-white.svg ../build/css/images/logo-gridgain-wh
 cp -f ../css/images/logo-gridgain-black.svg ../build/css/images/logo-gridgain-black.svg
 cp -f ../css/images/file.png ../build/css/images/file.png
 cp -f ../css/images/more.png ../build/css/images/more.png
+cp -f ../css/images/logo-dark-precog.png ../build/css/images/logo-dark-precog.png
 cp -r -f libs/jquery/jstree/themes/default ../build/themes
 mkdir ../build/css/images/arrows/
 cp -f ../css/images/arrows/*.png ../build/css/images/arrows/
