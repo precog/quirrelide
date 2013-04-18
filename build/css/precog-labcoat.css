@@ -458,7 +458,7 @@ html > body .ui-pnotify {
 }
 .pg-wizard .pg-frame {
     font-family: Helvetica, Arial, sans-serif;
-    border: 1px solid #8CC63F;
+    border: 3px solid #8CC63F;
     padding: 15px;
     background: #fff;
     margin: 60px;
@@ -487,7 +487,11 @@ html > body .ui-pnotify {
 .pg-wizard .pg-content {
     text-align: center;
     pointer-events:auto;
- }
+}
+.ui-widget-content .pg-wizard .pg-content a {
+    color: #0000A2;
+    font-weight: bold;
+}
 .pg-wizard .pg-arrow.left-top {
     top: 0;
     left: 0;
@@ -513,6 +517,13 @@ html > body .ui-pnotify {
     margin-left: -40px;
     background-image: url("images/arrows/center-top.png");
     background-position: center top;
+}
+.pg-wizard .pg-arrow.center-bottom{
+    bottom: 0;
+    left: 50%;
+    margin-left: -40px;
+    background-image: url("images/arrows/center-bottom.png");
+    background-position: center bottom;
 }
 .pg-wizard .pg-arrow.center-center {
     display: none;
@@ -647,6 +658,20 @@ html > body .ui-pnotify {
     background-repeat: no-repeat;
     background-position: center center;
     margin: 10px 0;
+}
+.pg-dialog-account .poweredby {
+    line-height: 13px;
+    vertical-align: top;
+    color: #999;;
+    text-align: center;
+    font-size: 11px;
+    margin: 0px 0 10px;
+}
+.pg-dialog-account .poweredby img {
+    width: 78px;
+    height: 13px;
+    margin-left: 5px;
+    display: inline-block;
 }
 .pg-dialog-account .error
 {
