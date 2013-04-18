@@ -36,6 +36,7 @@ cp -f ../css/images/more.png ../build/css/images/more.png
 cp -r -f libs/jquery/jstree/themes/default ../build/themes
 mkdir ../build/css/images/arrows/
 cp -f ../css/images/arrows/*.png ../build/css/images/arrows/
+cp -f ../css/images/banner-labcoat-logo.png ../build/css/images/banner-labcoat-logo.png
 
 cp -f libs/jquery/zclip/ZeroClipboard.swf ../build/js/libs/jquery/zclip/ZeroClipboard.swf
 
