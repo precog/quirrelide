@@ -129,15 +129,6 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
               }, function(code, e) {
                 throw "Unable To Query Path API";
               });
-            /*
-              window.Precog.children(parent, function(r) {
-                  callback(r.map(function(path) {
-                      return path.substr(-1) === '/' && path.substr(0, path.length-1) || path;
-                  }).sort());
-              }, function(code, e) {
-                  throw "Unable To Query Path API";
-              })
-              */
           },
           is_demo : function() {
             var domains = ["labcoat.precog.com", "demo.precog.com"],

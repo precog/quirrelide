@@ -7,7 +7,6 @@ requirejs.config({
         , 'libs/jquery/ui/jquery.ui.position' : ['libs/jquery/ui/jquery.ui.core']
         , 'libs/jquery/ui/jquery.ui.widget' : ['libs/jquery/ui/jquery.ui.core']
         , 'libs/jquery/ui/jquery.ui.mouse' : ['libs/jquery/ui/jquery.ui.widget']
-//        , 'libs/jquery/ui/jquery.ui.tooltip' : ['libs/jquery/ui/jquery.ui.position']
         , 'libs/jquery/ui/jquery.ui.resizable' : ['libs/jquery/ui/jquery.ui.mouse']
         , 'libs/jquery/ui/jquery.ui.button' : ['libs/jquery/ui/jquery.ui.widget']
         , 'libs/jquery/ui/jquery.ui.sortable' : ['libs/jquery/ui/jquery.ui.widget', 'libs/jquery/ui/jquery.ui.mouse', 'libs/jquery/ui/jquery.ui.core']
@@ -35,7 +34,6 @@ requirejs.config({
         , 'app/util/ui' : ['libs/jquery/ui/jquery.ui.menu', 'libs/jquery/ui/jquery.ui.tabs', 'libs/jquery/ui/jquery.ui.progressbar', 'app/util/dom']
         , 'libs/jquery/layout/jquery.layout' : ['libs/jquery/ui/jquery.ui.draggable']
         , 'libs/jquery/jstree/jstree' : ['libs/jquery/jstree/vakata']
-//        , 'libs/jquery/jstree/jstree.dnd2' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.sort' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.types' : ['libs/jquery/jstree/jstree']
         , 'libs/jquery/jstree/jstree.themes' : ['libs/jquery/jstree/jstree']
@@ -60,7 +58,7 @@ require([
     , 'app/folders'
     , 'app/queries'
     , 'app/support'
-//    , 'app/startup-wizard'
+    , 'app/startup-wizard'
     , 'app/results'
     , 'app/util/precog'
     , 'app/util/querystring'
@@ -73,7 +71,7 @@ require([
 
 ],
 
-function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport/*, buildWizard*/, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
+function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildWizard, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
   function buildUrl(query) {
     var version  = precog.config.version,
         basePath = precog.config.basePath,
@@ -437,7 +435,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
       });
 
       $(folders).on("uploadComplete", function(_, e) {
-        console.log("complete", e);
         results.setMessages([{
           type : "upload",
           detail : "ingested " + e.ingested + " events"
@@ -566,7 +563,9 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
         pardot.track_page("download_code");
       });
 
-//      var wizard = buildWizard();
+      var wizard = buildWizard({
+        folders : folders
+      });
 
       editors.load();
 

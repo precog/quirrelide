@@ -715,8 +715,15 @@ function(precog, createStore, uiconfig, ui,  utils, notification, openRequestInp
             }
           }
           function error(e) {
-            noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + JSON.stringify(e));
-            $(wrapper).trigger("uploadError");
+            noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + (e === 400 ? "file is not properly formatted" : JSON.stringify(e)));
+            $(wrapper).trigger("uploadError", {
+              failed : 1,
+              ingested : 0,
+              skipped : 0,
+              errors : [
+                { line : 0, reason : "file is not properly formatted" }
+              ]
+            });
           }
 
           precog.ingest(path, data, extension, progress, complete, error);

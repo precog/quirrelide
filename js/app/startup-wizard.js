@@ -11,13 +11,15 @@ define([
     , "rtext!templates/content.tip.supportpane.html"
 ],
 function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSystem, tplQueryBrowser, tplResultsPane, tplSupportPane) {
-    return function() {
+    return function(ctx) {
       var STORE_KEY = "pg-quirrel-wizard",
           store = createStore(STORE_KEY, {
             step : "welcome",
             dismissed : false
           }),
           current;
+
+      store.set("step", "welcome");
 
       if(store.get("dismissed"))
         return;
@@ -68,6 +70,7 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
         }
 
         if(step.init) {
+          step.ctx = ctx;
           step.init.call(content, goTo, step, value);
         }
       }
@@ -85,6 +88,10 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
         if(name === "#hide") {
           $tip.hide();
           return;
+        } else if(name === "#end") {
+console.log("END!");
+          $tip.hide();
+//          store.set("dismissed", true);
         }
         $tip.show();
         current = steps.filter(function(step) { return step.name == name; })[0];

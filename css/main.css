@@ -275,7 +275,7 @@
 .pg-wizard .pg-frame {
     font-family: Helvetica, Arial, sans-serif;
 
-    border: 1px solid #8CC63F;
+    border: 3px solid #8CC63F;
     padding: 15px;
     background: #fff;
     margin: 60px;
@@ -310,7 +310,12 @@
 .pg-wizard .pg-content {
     text-align: center;
     pointer-events:auto;
- }
+}
+
+.ui-widget-content .pg-wizard .pg-content a {
+    color: #0000A2;
+    font-weight: bold;
+}
 
 .pg-wizard .pg-arrow.left-top {
     top: 0;
@@ -340,6 +345,14 @@
     margin-left: -40px;
     background-image: url("images/arrows/center-top.png");
     background-position: center top;
+}
+
+.pg-wizard .pg-arrow.center-bottom{
+    bottom: 0;
+    left: 50%;
+    margin-left: -40px;
+    background-image: url("images/arrows/center-bottom.png");
+    background-position: center bottom;
 }
 
 .pg-wizard .pg-arrow.center-center {
