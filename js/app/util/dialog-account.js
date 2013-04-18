@@ -1,6 +1,7 @@
 define([
       "rtext!templates/dialog.account.html"
     , "app/util/ui"
+    , "app/util/querystring"
     , "app/pardot_track"
 
 
@@ -17,7 +18,7 @@ define([
     , "libs/jquery/jquery.cookie/jquery.cookie"
 ],
 
-function(tplDialog, ui, pardot) {
+function(tplDialog, ui, qs, pardot) {
     var elDialog, precog;
 
     function validateEmail(email) {
@@ -315,34 +316,70 @@ function(tplDialog, ui, pardot) {
         elDialog.find("#form-error .error").hide();
       }
 
-      function goToLabcoat(email, apiKey, basePath) {
+      function goToLabcoat(email, server, apiKey, basePath) {
         $.cookie("Precog_eMail", email);
         elDialog.find("form").submit();
+        precog.config.analyticsService = server;
         precog.config.apiKey = apiKey;
         precog.config.basePath = basePath;
         precog.config.email = email;
         elDialog.dialog("close");
       }
 
-      function describeAndLogin(email, password, accountId)
+      function describeAndLogin(email, password, server, accountId)
       {
         window.Precog.describeAccount(email, password, accountId,
           function(data) {
-            goToLabcoat(email, data.apiKey, data.rootPath);
+            goToLabcoat(email, server, data.apiKey, data.rootPath);
           },
           function() {
             elDialog.find("#account-login").button("enable");
             formError("password is incorrect");
+          }, {
+            analyticsService: server
           }
         );
+      }
+      var urlserver = qs.get("analyticsService"),
+          servers;
+      if(urlserver) {
+        servers = [urlserver];
+      } else {
+        servers = [
+          "https://nebula.precog.com/",
+          "https://beta.precog.com/"
+        ];
+      }
+
+      function findAccount(email, success, error) {
+        var i = 0;
+        function execute() {
+          if(i == servers.length)
+          {
+            error("account not found");
+            return;
+          }
+          window.Precog.findAccount(email,
+            function(accountId) {
+              success(servers[i],accountId);
+            },
+            function(err) {
+              i++;
+              execute();
+            }, {
+              analyticsService : servers[i]
+            }
+          );
+        }
+        execute();
       }
 
       function actionLogin(email, password)
       {
         elDialog.find("#account-login").button("disable");
-        window.Precog.findAccount(email,
-          function(accountId) {
-            describeAndLogin(email, password, accountId);
+        findAccount(email,
+          function(server, accountId) {
+            describeAndLogin(email, password, server, accountId);
           },
           function(err) {
             elDialog.find("#account-login").button("enable");
@@ -368,26 +405,27 @@ function(tplDialog, ui, pardot) {
       function actionCreate(email, password, profile)
       {
         elDialog.find("#account-create").button("disable");
-        window.Precog.findAccount(
-          email,
+        findAccount(email,
           function() {
             elDialog.find("#account-create").button("enable");
             formError("a user is already registered with the email " + email)
           },
-          function(_) {
+          function(err) {
+            var server = servers[servers.length-1];
             window.Precog.createAccount(email, password,
               function(data) {
                 trackAccountCreationWithPardot(email, profile);
-                describeAndLogin(email, password, data.accountId);
+                describeAndLogin(email, password, server, data.accountId);
               },
               function(err) {
                 elDialog.find("#account-create").button("enable");
                 formError("failed to create an account: " + err);
               },
               {
+                analyticsService : server,
                 profile : profile
               }
-            )
+            );
           }
         );
       }
