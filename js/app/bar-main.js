@@ -245,10 +245,9 @@ define([
         }
 
         ui.button(right, {
-          icon : "ui-icon-info",
+          icon : "ui-icon-star",
           description : "start Wizard"
         }).click(function() {
-console.log("GO WIZARD");
           $(wrapper).trigger("startWizard");
         });
 
