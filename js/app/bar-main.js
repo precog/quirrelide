@@ -246,7 +246,7 @@ define([
 
         ui.button(right, {
           icon : "ui-icon-star",
-          description : "start Wizard"
+          description : "Getting Started Tutorial"
         }).click(function() {
           $(wrapper).trigger("startWizard");
         });

@@ -33,7 +33,7 @@ function() {
       {
         name : "welcome",
         target : ".pg-labcoat",
-        text : 'Welcome to Labcoat! Follow this small tutorial to find out how to load your data in Labcoat and run your first query.<br><a href="#">Continue.</a>',
+        text : 'Welcome to Labcoat! This Getting Started Tutorial will show you how to load your data in Labcoat and run your first query.<br><a href="#">Start now!</a>',
         position : ["center", "center"],
         width: 300,
         init : function(goto, step) {
@@ -46,7 +46,7 @@ function() {
       }, {
         name   : "select_root",
         target : ".pg-labcoat .pg-folders .pg-tree .pg-root .jstree.jstree-default:first-child ins",
-        text   : "Start creating a folder where you will store your data.<br>Click on the root path.",
+        text   : "Let's start by creating a folder where you will store your data.<br>Click on the root path.",
         width: 250,
         position : ["left+10 center", "right center"],
         init : function (goto, step) {
@@ -185,7 +185,7 @@ function() {
       }, {
         name   : "save_query",
         target : ".pg-labcoat .pg-editor .ui-icon-disk",
-        text   : 'Clicking on the save button will store your quirrel query in the query manager so that you can easily reload it the next time you visit labcoat.',
+        text   : 'Click on the "save query" button to store your Quirrel query in the query manager so that you can easily reload it the next time you visit Labcoat.',
         width: 300,
         position : ["center top", "center bottom"],
         init : function (goto, step) {
@@ -197,7 +197,7 @@ function() {
       }, {
         name   : "the_end",
         target : ".pg-labcoat",
-        text   : 'Well, this is all. You can now have a look at the tutorials on the right and start writing your custom queries to analyze your data.<br><a href="#">Close tutorial.</a>',
+        text   : 'Congrats, you completed our Labcoat Tutorial! Take a look at our resources on the right and start writing your custom queries to analyze your data.<br><a href="#">Close tutorial.</a>',
         width: 300,
         position : ["center center", "center center"],
         init : function (goto, step) {
