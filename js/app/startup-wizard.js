@@ -19,7 +19,7 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
           }),
           current;
 
-      store.set("step", "welcome");
+      store.set("step", "the_end");
 
       if(store.get("dismissed"))
         return;
@@ -92,6 +92,7 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
 console.log("END!");
           $tip.hide();
 //          store.set("dismissed", true);
+          return;
         }
         $tip.show();
         current = steps.filter(function(step) { return step.name == name; })[0];

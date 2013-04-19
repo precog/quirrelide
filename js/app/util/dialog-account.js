@@ -495,6 +495,6 @@ function(tplDialog, ui, qs, pardot) {
             callback();
           });
         }
-
+        elDialog.find("input#email").focus();
     };
 });
