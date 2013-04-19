@@ -19,39 +19,27 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
           }),
           current;
 
-      store.set("step", "the_end");
+      store.set("step", "welcome"); // the_end
 
       if(store.get("dismissed"))
         return;
 
       var steps = createSteps();
 
-      var $tip = $('<div class="pg-el pg-wizard"><div class="pg-frame"><div class="pg-step"></div><div class="pg-content"></div></div><div class="pg-arrow"></div></div>').appendTo("body");
+      var $tip = $('<div class="pg-el pg-wizard"><div class="pg-frame"><div class="pg-content"></div></div><div class="pg-arrow"></div></div>').appendTo("body");
       $tip.hide();
 
       function displayStep(step, value) {
         var content = $tip.find(".pg-content"),
-            marker  = $tip.find(".pg-step"),
             arrow   = $tip.find(".pg-arrow");
 
 
         $tip.find(".pg-frame").css({
           "width" : (step.width || 200)+"px",
-          "height" : (step.height || 50)+"px"
+//          "height" : (step.height || 50)+"px"
         });
 
-        if(step.step) {
-          marker.html(step.step);
-          marker.show();
-          content.css("margin-left", marker.outerWidth() + "px");
-        } else {
-          marker.hide();
-          content.css("margin-left", "0px");
-        }
-
         content.html(step.text);
-
-
 
         var position = {
           my : (step.position[0] || "left top"),

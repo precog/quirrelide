@@ -7,11 +7,9 @@ function() {
   return function createWizardSteps() {
     var select_folder = {
           name   : "select_folder",
-          step   : 3,
           target : null,
-          text   : "now select your newly created folder",
+          text   : "Now select your newly created folder.",
           width: 300,
-          height: 50,
           init : function (goto, step, value) {
             $(step.target).closest("a").one("click", function() {
               goto("upload_file")
@@ -21,11 +19,9 @@ function() {
         },
         load_data = {
           name   : "load_data",
-          step   : 6,
           target : null,
           text   : "Double click on a data file to load its content.<br>You can also select it and click on the 'lightning bolt' button above.",
           width: 300,
-          height: 90,
           init : function (goto, step, value) {
             $(step.ctx.folders).one("querypath", function() {
               goto("save_query");
@@ -36,12 +32,10 @@ function() {
     return [
       {
         name : "welcome",
-        step : null,
         target : ".pg-labcoat",
         text : 'Welcome to Labcoat! Follow this small tutorial to find out how to load your data in Labcoat and run your first query<br><a href="#">continue</a>',
         position : ["center", "center"],
         width: 300,
-        height: 80,
         init : function(goto, step) {
           $(this).find("a").click(function (e) {
             e.preventDefault();
@@ -51,11 +45,9 @@ function() {
         }
       }, {
         name   : "select_root",
-        step   : 1,
         target : ".pg-labcoat .pg-folders .pg-tree .pg-root .jstree.jstree-default:first-child ins",
-        text   : "start creating a folder where you will store your data. Click on the root path",
-        width: 300,
-        height: 70,
+        text   : "Start creating a folder where you will store your data.<br>Click on the root path.",
+        width: 250,
         position : ["left+10 center", "right center"],
         init : function (goto, step) {
           $('.pg-labcoat .pg-folders .pg-root a').one("click", function() {
@@ -64,11 +56,9 @@ function() {
         }
       }, {
         name   : "create_folder",
-        step   : 2,
         target : ".pg-labcoat .pg-folders .ui-icon-new-folder",
-        text   : "click on the 'create new folder' button",
+        text   : 'Click on the "create new folder" button.',
         width: 300,
-        height: 50,
         init : function (goto, step) {
           $(step.target).closest("button").one("click", function() {
             goto("#hide");
@@ -103,11 +93,9 @@ function() {
       select_folder,
       {
         name : "upload_file",
-        step : 4,
         target : ".pg-labcoat .pg-folders .ui-icon-arrowthickstop-1-n",
-        text : "click on the upload file button and choose one of your files to upload",
+        text : "Click on the upload file button and choose one of your files to upload.",
         width : 250,
-        height : 80,
         position : ["center top", "center bottom"],
         init : function(goto, step, value) {
           $(step.target).closest("button").one("click", function() {
@@ -159,11 +147,9 @@ console.log("UPLOAD CLICKED");
         }
       }, {
         name   : "upload_success",
-        step   : 5,
         target : ".pg-labcoat .pg-results",
         text   : 'Great, it seems like your data was successfully uploaded! Have a look at the results below and <a href="#">click here</a> to continue.',
         width: 300,
-        height: 85,
         position : ["center bottom", "center top"],
         init : function (goto, step) {
           $(this).find("a").click(function(e) {
@@ -174,11 +160,9 @@ console.log("UPLOAD CLICKED");
         }
       }, {
         name   : "upload_failure",
-        step   : null,
         target : ".pg-labcoat .pg-results",
         text   : 'Oh nooo! Something went wrong uploading your data. Be sure that the file you tried to upload is a valid CSV (with headers) or JSON file. Have a look at the results below and <a href="#">click here</a> to try uploading your data again.',
-        width: 300,
-        height: 140,
+        width: 280,
         position : ["center bottom", "center top"],
         init : function (goto, step) {
           $(this).find("a").one("click", function(e) {
@@ -189,12 +173,10 @@ console.log("UPLOAD CLICKED");
         }
       },
       load_data, {
-        step   : 7,
         name   : "save_query",
         target : ".pg-labcoat .pg-editor .ui-icon-disk",
-        text   : 'Congratulations, you just executed your first query! Clicking on the above button will save the query in the query manager so that you can easily reload it.',
+        text   : 'Congratulations, you just executed your first query!<br>Clicking on the above button will save the query in the query manager so that you can easily reload it.',
         width: 300,
-        height: 140,
         position : ["center top", "center bottom"],
         init : function (goto, step) {
           $(step.target).closest("button").one("click", function() {
@@ -203,12 +185,10 @@ console.log("UPLOAD CLICKED");
           });
         }
       }, {
-        step   : 8,
         name   : "the_end",
         target : ".pg-labcoat",
         text   : 'Well, this is all. You can now have a look at the tutorials on the right and start writing your custom queries to analyze your data.<br><a href="#">close tutorial</a>',
         width: 300,
-        height: 120,
         position : ["center center", "center center"],
         init : function (goto, step) {
           $(this).find("a").one("click", function(e) {
