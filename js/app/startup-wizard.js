@@ -14,29 +14,33 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
     return function(ctx) {
       var STORE_KEY = "pg-quirrel-wizard",
           store = createStore(STORE_KEY, {
-            step : "welcome",
             dismissed : false
           }),
           current;
 
-      store.set("step", "welcome"); // the_end
-
-      if(store.get("dismissed"))
-        return;
-
       var steps = createSteps();
 
-      var $tip = $('<div class="pg-el pg-wizard"><div class="pg-frame"><div class="pg-content"></div></div><div class="pg-arrow"></div></div>').appendTo("body");
+      var $tip = $('<div class="pg-el pg-wizard"><div class="pg-frame"><div class="close"><a href="#" title="close wizard"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="pg-content"></div></div><div class="pg-arrow"></div></div>').appendTo("body");
       $tip.hide();
 
       function displayStep(step, value) {
         var content = $tip.find(".pg-content"),
-            arrow   = $tip.find(".pg-arrow");
+            arrow   = $tip.find(".pg-arrow"),
+            closer  = $tip.find(".close");
 
+        closer.css("opacity", 0);
+        $tip.mouseenter(function() {
+          closer.css("opacity", 1);
+        });
+        $tip.mouseleave(function() {
+          closer.css("opacity", 0);
+        });
 
         $tip.find(".pg-frame").css({
-          "width" : (step.width || 200)+"px",
-//          "height" : (step.height || 50)+"px"
+          "width" : (step.width || 200)+"px"
+        });
+        closer.find("a").click(function() {
+          goTo("#end");
         });
 
         content.html(step.text);
@@ -64,22 +68,18 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
       }
 
       function goTo(name, value) {
-        /*
         if(name === null) {
           store.set("dismissed", true);
           $tip.remove();
           current = null;
           return;
         }
-        store.set("step", name);
-        */
         if(name === "#hide") {
           $tip.hide();
           return;
         } else if(name === "#end") {
-console.log("END!");
           $tip.hide();
-//          store.set("dismissed", true);
+          store.set("dismissed", true);
           return;
         }
         $tip.show();
@@ -87,10 +87,21 @@ console.log("END!");
         displayStep(current, value);
       }
 
-      setTimeout(function() {
-        $tip.show();
-        goTo(store.get("step"));
-        setTimeout(function() { $tip.addClass("transition"); }, 0);
-      }, 1000);
+      if(!store.get("dismissed"))
+      {
+        setTimeout(function() {
+          $tip.show();
+          goTo("welcome");
+          setTimeout(function() { $tip.addClass("transition"); }, 0);
+        }, 1000);
+      }
+
+      return {
+        start : function() {
+          store.set("dismissed", false);
+          goTo("welcome");
+          setTimeout(function() { $tip.addClass("transition"); }, 0);
+        }
+      }
     }
 });

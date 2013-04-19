@@ -15,6 +15,7 @@ define([
         BRAND_CLASS = "pg-precog";
 
     return function(el) {
+      var wrapper = {};
     switch(document.location.host)
     {
 //        case "localhost":
@@ -243,6 +244,13 @@ define([
           });
         }
 
+        ui.button(right, {
+          icon : "ui-icon-info",
+          description : "start Wizard"
+        }).click(function() {
+console.log("GO WIZARD");
+          $(wrapper).trigger("startWizard");
+        });
 
         ui.button(right, {
             icon : "ui-icon-info",
@@ -293,5 +301,6 @@ define([
                 }
             }
         });
+        return wrapper;
       };
 });

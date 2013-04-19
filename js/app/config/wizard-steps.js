@@ -7,7 +7,7 @@ function() {
   return function createWizardSteps() {
     var select_folder = {
           name   : "select_folder",
-          target : null,
+          target : '.pg-labcoat .pg-folders .pg-tree li[data]:last-child a',
           text   : "Now select your newly created folder.",
           width: 300,
           init : function (goto, step, value) {
@@ -19,12 +19,12 @@ function() {
         },
         load_data = {
           name   : "load_data",
-          target : null,
+          target : '.pg-labcoat .pg-folders .pg-tree li[data]:last-child a',
           text   : "Double click on a data file to load its content.<br>You can also select it and click on the 'lightning bolt' button above.",
           width: 300,
           init : function (goto, step, value) {
             $(step.ctx.folders).one("querypath", function() {
-              goto("save_query");
+              goto("look_at_results");
             });
           },
           position : ["left center", "right center"]
@@ -33,7 +33,7 @@ function() {
       {
         name : "welcome",
         target : ".pg-labcoat",
-        text : 'Welcome to Labcoat! Follow this small tutorial to find out how to load your data in Labcoat and run your first query<br><a href="#">continue</a>',
+        text : 'Welcome to Labcoat! Follow this small tutorial to find out how to load your data in Labcoat and run your first query.<br><a href="#">Continue.</a>',
         position : ["center", "center"],
         width: 300,
         init : function(goto, step) {
@@ -64,8 +64,6 @@ function() {
             goto("#hide");
 
             function poll() {
-              console.log("do we have the dialog? " + !!$('.pg-el.ui-dialog').length);
-
               if(!$('.pg-el.ui-dialog').length) {
                 setTimeout(poll, 100);
                 return;
@@ -99,7 +97,6 @@ function() {
         position : ["center top", "center bottom"],
         init : function(goto, step, value) {
           $(step.target).closest("button").one("click", function() {
-console.log("UPLOAD CLICKED");
             goto("#hide");
 
             var started = false;
@@ -173,9 +170,22 @@ console.log("UPLOAD CLICKED");
         }
       },
       load_data, {
+        name   : "look_at_results",
+        target : ".pg-labcoat .pg-output-formats label",
+        text   : 'Congratulations, you just executed your first query!<br>In the panel below you can have a look at the results. Note that you can look at your data in a table, in JSON format or in a nice chart.<br><a href="#">Continue.</a>',
+        width: 360,
+        position : ["center bottom", "center top"],
+        init : function (goto, step) {
+          $(this).find("a").one("click", function(e) {
+            e.preventDefault();
+            goto("save_query");
+            return false;
+          });
+        }
+      }, {
         name   : "save_query",
         target : ".pg-labcoat .pg-editor .ui-icon-disk",
-        text   : 'Congratulations, you just executed your first query!<br>Clicking on the above button will save the query in the query manager so that you can easily reload it.',
+        text   : 'Clicking on the save button will store your quirrel query in the query manager so that you can easily reload it the next time you visit labcoat.',
         width: 300,
         position : ["center top", "center bottom"],
         init : function (goto, step) {
@@ -187,7 +197,7 @@ console.log("UPLOAD CLICKED");
       }, {
         name   : "the_end",
         target : ".pg-labcoat",
-        text   : 'Well, this is all. You can now have a look at the tutorials on the right and start writing your custom queries to analyze your data.<br><a href="#">close tutorial</a>',
+        text   : 'Well, this is all. You can now have a look at the tutorials on the right and start writing your custom queries to analyze your data.<br><a href="#">Close tutorial.</a>',
         width: 300,
         position : ["center center", "center center"],
         init : function (goto, step) {
@@ -201,13 +211,3 @@ console.log("UPLOAD CLICKED");
     ];
   };
 });
-
-// TODO request double click or select and click on lightning bolt to query all
-
-// TODO request save query
-
-// TODO display where saved queries are stored and mention double-click to open
-
-// TODO ask for autogenerating queries
-
-// TODO ship it

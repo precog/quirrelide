@@ -269,6 +269,8 @@
     opacity: 1;
     -webkit-transition: opacity .5s ease-in-out;
     -moz-transition: opacity .5s ease-in-out;
+    -o-transition: opacity .5s ease-in-out;
+    -ms-transition: opacity .5s ease-in-out;
     transition: opacity .5s ease-in-out;
 }
 
@@ -278,7 +280,7 @@
     border: 3px solid #8CC63F;
     padding: 25px;
     background: #fff;
-    margin: 60px;
+    margin: 50px;
     position: relative;
 
     border-radius: 10px;
@@ -286,6 +288,25 @@
     -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
     -moz-box-shadow:    2px 2px 5px rgba(0, 0, 0, 0.25);
     box-shadow:         2px 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+.pg-wizard .pg-frame .close {
+    position: absolute;
+    right : 10px;
+    top: 10px;
+
+    -webkit-transition: opacity .5s ease-in-out;
+    -moz-transition: opacity .5s ease-in-out;
+    -o-transition: opacity .5s ease-in-out;
+    -ms-transition: opacity .5s ease-in-out;
+    transition: opacity .5s ease-in-out;
+}
+
+.pg-wizard .pg-frame .close a {
+    pointer-events:auto;
+    height: 16px;
+    width: 16px;
+    display: inline-block;
 }
 
 .pg-wizard .pg-arrow {

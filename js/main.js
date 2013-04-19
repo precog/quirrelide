@@ -118,7 +118,7 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
           editors = createEditors(),
           history = createHistory();
 
-      buildBarMain(layout.getBarMain());
+      var barmain = buildBarMain(layout.getBarMain());
       precog.calculateHash();
 
       var editor = buildEditor(layout.getCodeEditor(), config.get('ioPanesVertical'));
@@ -565,6 +565,9 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
 
       var wizard = buildWizard({
         folders : folders
+      });
+      $(barmain).on("startWizard", function() {
+        wizard.start();
       });
 
       editors.load();
