@@ -1,38 +1,30 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ * Distributed under the BSD license:
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
  *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Fabian Jakobs <fabian AT ajax DOT org>
- *      Shlomo Zalman Heigh <shlomozalmanheigh AT gmail DOT com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -40,14 +32,44 @@ define(function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
-var lang = require("../lib/lang");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+
+// exports is for Haml
+var constantOtherSymbol = exports.constantOtherSymbol = {
+    token : "constant.other.symbol.ruby", // symbol
+    regex : "[:](?:[A-Za-z_]|[@$](?=[a-zA-Z0-9_]))[a-zA-Z0-9_]*[!=?]?"
+};
+
+var qString = exports.qString = {
+    token : "string", // single line
+    regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
+};
+
+var qqString = exports.qqString = {
+    token : "string", // single line
+    regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
+};
+
+var tString = exports.tString = {
+    token : "string", // backtick string
+    regex : "[`](?:(?:\\\\.)|(?:[^'\\\\]))*?[`]"
+};
+
+var constantNumericHex = exports.constantNumericHex = {
+    token : "constant.numeric", // hex
+    regex : "0[xX][0-9a-fA-F](?:[0-9a-fA-F]|_(?=[0-9a-fA-F]))*\\b"
+};
+
+var constantNumericFloat = exports.constantNumericFloat = {
+    token : "constant.numeric", // float
+    regex : "[+-]?\\d(?:\\d|_(?=\\d))*(?:(?:\\.\\d(?:\\d|_(?=\\d))*)?(?:[eE][+-]?\\d+)?)?\\b"
+};
 
 var RubyHighlightRules = function() {
 
-    var builtinFunctions = lang.arrayToMap(
-        ("abort|Array|assert|assert_equal|assert_not_equal|assert_same|assert_not_same|" +
-        "assert_nil|assert_not_nil|assert_match|assert_no_match|assert_in_delta|assert_throws|" + 
+    var builtinFunctions = (
+        "abort|Array|assert|assert_equal|assert_not_equal|assert_same|assert_not_same|" +
+        "assert_nil|assert_not_nil|assert_match|assert_no_match|assert_in_delta|assert_throws|" +
         "assert_raise|assert_nothing_raised|assert_instance_of|assert_kind_of|assert_respond_to|" +
         "assert_operator|assert_send|assert_difference|assert_no_difference|assert_recognizes|" +
         "assert_generates|assert_response|assert_redirected_to|assert_template|assert_select|" +
@@ -55,7 +77,7 @@ var RubyHighlightRules = function() {
         "attr|attr_writer|attr_reader|attr_accessor|attr_accessible|autoload|binding|block_given?|callcc|" +
         "caller|catch|chomp|chomp!|chop|chop!|defined?|delete_via_redirect|eval|exec|exit|" +
         "exit!|fail|Float|flunk|follow_redirect!|fork|form_for|form_tag|format|gets|global_variables|gsub|" +
-        "gsub!|get_via_redirect|h|host!|https?|https!|include|Integer|lambda|link_to|" +
+        "gsub!|get_via_redirect|host!|https?|https!|include|Integer|lambda|link_to|" +
         "link_to_unless_current|link_to_function|link_to_remote|load|local_variables|loop|open|open_session|" +
         "p|print|printf|proc|putc|puts|post_via_redirect|put_via_redirect|raise|rand|" +
         "raw|readline|readlines|redirect?|request_via_redirect|require|scan|select|" +
@@ -73,26 +95,34 @@ var RubyHighlightRules = function() {
         "validates_inclusion_of|validates_numericality_of|validates_with|validates_each|" +
         "authenticate_or_request_with_http_basic|authenticate_or_request_with_http_digest|" +
         "filter_parameter_logging|match|get|post|resources|redirect|scope|assert_routing|" +
-        "translate|localize|extract_locale_from_tld|t|l|caches_page|expire_page|caches_action|expire_action|" +
+        "translate|localize|extract_locale_from_tld|caches_page|expire_page|caches_action|expire_action|" +
         "cache|expire_fragment|expire_cache_for|observe|cache_sweeper|" +
-        "has_many|has_one|belongs_to|has_and_belongs_to_many").split("|")
+        "has_many|has_one|belongs_to|has_and_belongs_to_many"
     );
 
-    var keywords = lang.arrayToMap(
-        ("alias|and|BEGIN|begin|break|case|class|def|defined|do|else|elsif|END|end|ensure|" +
-        "__FILE__|finally|for|gem|if|in|__LINE__|module|next|not|or|private|protected|public|" + 
-        "redo|rescue|retry|return|super|then|undef|unless|until|when|while|yield").split("|")
+    var keywords = (
+        "alias|and|BEGIN|begin|break|case|class|def|defined|do|else|elsif|END|end|ensure|" +
+        "__FILE__|finally|for|gem|if|in|__LINE__|module|next|not|or|private|protected|public|" +
+        "redo|rescue|retry|return|super|then|undef|unless|until|when|while|yield"
     );
 
-    var buildinConstants = lang.arrayToMap(
-        ("true|TRUE|false|FALSE|nil|NIL|ARGF|ARGV|DATA|ENV|RUBY_PLATFORM|RUBY_RELEASE_DATE|" +
-        "RUBY_VERSION|STDERR|STDIN|STDOUT|TOPLEVEL_BINDING").split("|")
+    var buildinConstants = (
+        "true|TRUE|false|FALSE|nil|NIL|ARGF|ARGV|DATA|ENV|RUBY_PLATFORM|RUBY_RELEASE_DATE|" +
+        "RUBY_VERSION|STDERR|STDIN|STDOUT|TOPLEVEL_BINDING"
     );
 
-    var builtinVariables = lang.arrayToMap(
-        ("\$DEBUG|\$defout|\$FILENAME|\$LOAD_PATH|\$SAFE|\$stdin|\$stdout|\$stderr|\$VERBOSE|" +
-        "$!|root_url|flash|session|cookies|params|request|response|logger").split("|")
+    var builtinVariables = (
+        "\$DEBUG|\$defout|\$FILENAME|\$LOAD_PATH|\$SAFE|\$stdin|\$stdout|\$stderr|\$VERBOSE|" +
+        "$!|root_url|flash|session|cookies|params|request|response|logger|self"
     );
+
+    var keywordMapper = this.$keywords = this.createKeywordMapper({
+        "keyword": keywords,
+        "constant.language": buildinConstants,
+        "variable.language": builtinVariables,
+        "support.function": builtinFunctions,
+        "invalid.deprecated": "debugger" // TODO is this a remnant from js mode?
+    }, "identifier");
 
     // regexp must not have capturing parentheses. Use (?:) instead.
     // regexps are ordered -> the first match is used
@@ -104,62 +134,86 @@ var RubyHighlightRules = function() {
                 regex : "#.*$"
             }, {
                 token : "comment", // multi line comment
-                merge : true,
-                regex : "^\=begin$",
+                regex : "^=begin(?:$|\\s.*$)",
                 next : "comment"
             }, {
                 token : "string.regexp",
                 regex : "[/](?:(?:\\[(?:\\\\]|[^\\]])+\\])|(?:\\\\/|[^\\]/]))*[/]\\w*\\s*(?=[).,;]|$)"
-            }, {
-                token : "string", // single line
-                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
-            }, {
-                token : "string", // single line
-                regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
-            }, {
-                token : "string", // backtick string
-                regex : "[`](?:(?:\\\\.)|(?:[^'\\\\]))*?[`]"
-            }, {
+            },
+
+            qString,
+            qqString,
+            tString,
+
+            {
                 token : "text", // namespaces aren't symbols
                 regex : "::"
             }, {
-                token : "variable.instancce", // instance variable
-                regex : "@{1,2}(?:[a-zA-Z_]|\d)+"
+                token : "variable.instance", // instance variable
+                regex : "@{1,2}[a-zA-Z_\\d]+"
             }, {
-                token : "variable.class", // class name
-                regex : "[A-Z](?:[a-zA-Z_]|\d)+"
-            }, {
-                token : "string", // symbol
-                regex : "[:](?:[A-Za-z_]|[@$](?=[a-zA-Z0-9_]))[a-zA-Z0-9_]*[!=?]?"
-           }, {
-                token : "constant.numeric", // hex
-                regex : "0[xX][0-9a-fA-F](?:[0-9a-fA-F]|_(?=[0-9a-fA-F]))*\\b"
-            }, {
-                token : "constant.numeric", // float
-                regex : "[+-]?\\d(?:\\d|_(?=\\d))*(?:(?:\\.\\d(?:\\d|_(?=\\d))*)?(?:[eE][+-]?\\d+)?)?\\b"
-            }, {
+                token : "support.class", // class name
+                regex : "[A-Z][a-zA-Z_\\d]+"
+            },
+
+            constantOtherSymbol,
+            constantNumericHex,
+            constantNumericFloat,
+
+            {
                 token : "constant.language.boolean",
                 regex : "(?:true|false)\\b"
             }, {
-                token : function(value) {
-                    if (value == "self")
-                        return "variable.language";
-                    else if (keywords.hasOwnProperty(value))
-                        return "keyword";
-                    else if (buildinConstants.hasOwnProperty(value))
-                        return "constant.language";
-                    else if (builtinVariables.hasOwnProperty(value))
-                        return "variable.language";
-                    else if (builtinFunctions.hasOwnProperty(value))
-                        return "support.function";
-                    else if (value == "debugger")
-                        return "invalid.deprecated";
-                    else
-                        return "identifier";
-                },
+                token : keywordMapper,
                 // TODO: Unicode escape sequences
                 // TODO: Unicode identifiers
                 regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            }, {
+                token : "punctuation.separator.key-value",
+                regex : "=>"
+            }, {
+                stateName: "heredoc",
+                onMatch : function(value, currentState, stack) {
+                    var next = value[2] == '-' ? "indentedHeredoc" : "heredoc";
+                    var tokens = value.split(this.splitRegex);
+                    stack.push(next, tokens[3]);
+                    return [
+                        {type:"constant", value: tokens[1]},
+                        {type:"string", value: tokens[2]},
+                        {type:"support.class", value: tokens[3]},
+                        {type:"string", value: tokens[4]}
+                    ];
+                },
+                regex : "(<<-?)(['\"`]?)([\\w]+)(['\"`]?)",
+                rules: {
+                    heredoc: [{
+                        onMatch:  function(value, currentState, stack) {
+                            if (value == stack[1]) {
+                                stack.shift();
+                                stack.shift();
+                                return "support.class";
+                            }
+                            return "string";
+                        },
+                        regex: ".*$",
+                        next: "start"
+                    }],
+                    indentedHeredoc: [{
+                        token: "string",
+                        regex: "^ +"
+                    }, {
+                        onMatch:  function(value, currentState, stack) {
+                            if (value == stack[1]) {
+                                stack.shift();
+                                stack.shift();
+                                return "support.class";
+                            }
+                            return "string";
+                        },
+                        regex: ".*$",
+                        next: "start"
+                    }]
+                }
             }, {
                 token : "keyword.operator",
                 regex : "!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?\\:|\\*=|%=|\\+=|\\-=|&=|\\^=|\\b(?:in|instanceof|new|delete|typeof|void)"
@@ -177,15 +231,16 @@ var RubyHighlightRules = function() {
         "comment" : [
             {
                 token : "comment", // closing comment
-                regex : "^\=end$",
+                regex : "^=end(?:$|\\s.*$)",
                 next : "start"
             }, {
                 token : "comment", // comment spanning whole line
-                merge : true,
                 regex : ".+"
             }
         ]
     };
+
+    this.normalizeRules();
 };
 
 oop.inherits(RubyHighlightRules, TextHighlightRules);

@@ -13,12 +13,15 @@ var Mode = function() {
     this.$tokenizer = new Tokenizer(new PowershellHighlightRules().getRules());
     this.$outdent = new MatchingBraceOutdent();
     this.$behaviour = new CstyleBehaviour();
-    this.foldingRules = new CStyleFoldMode();
+    this.foldingRules = new CStyleFoldMode({start: "^\\s*(<#)", end: "^[#\\s]>\\s*$"});
 };
 oop.inherits(Mode, TextMode);
 
 (function() {
 
+    this.lineCommentStart = "#";
+    this.blockComment = {start: "<#", end: "#>"};
+    
     this.getNextLineIndent = function(state, line, tab) {
         var indent = this.$getIndent(line);
 

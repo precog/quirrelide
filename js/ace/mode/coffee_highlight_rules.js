@@ -1,159 +1,182 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ * Distributed under the BSD license:
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
  *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Satoshi Murakami <murky.satyr AT gmail DOT com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * ***** END LICENSE BLOCK ***** */
 
 define(function(require, exports, module) {
 "use strict";
 
-    var lang = require("../lib/lang");
     var oop = require("../lib/oop");
     var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-    
+
     oop.inherits(CoffeeHighlightRules, TextHighlightRules);
 
     function CoffeeHighlightRules() {
         var identifier = "[$A-Za-z_\\x7f-\\uffff][$\\w\\x7f-\\uffff]*";
-        var stringfill = {
-            token : "string",
-            merge : true,
-            regex : ".+"
-        };
 
-        var keywords = lang.arrayToMap((
-            "this|throw|then|try|typeof|super|switch|return|break|by)|continue|" +
+        var keywords = (
+            "this|throw|then|try|typeof|super|switch|return|break|by|continue|" +
             "catch|class|in|instanceof|is|isnt|if|else|extends|for|forown|" +
             "finally|function|while|when|new|no|not|delete|debugger|do|loop|of|off|" +
-            "or|on|unless|until|and|yes").split("|")
+            "or|on|unless|until|and|yes"
         );
-        
-        var langConstant = lang.arrayToMap((
-            "true|false|null|undefined").split("|")
+
+        var langConstant = (
+            "true|false|null|undefined|NaN|Infinity"
         );
-        
-        var illegal = lang.arrayToMap((
+
+        var illegal = (
             "case|const|default|function|var|void|with|enum|export|implements|" +
             "interface|let|package|private|protected|public|static|yield|" +
-            "__hasProp|extends|slice|bind|indexOf").split("|")
+            "__hasProp|slice|bind|indexOf"
         );
-        
-        var supportClass = lang.arrayToMap((
-            "Array|Boolean|Date|Function|Number|Object|RegExp|ReferenceError|" +
-            "RangeError|String|SyntaxError|Error|EvalError|TypeError|URIError").split("|")
+
+        var supportClass = (
+            "Array|Boolean|Date|Function|Number|Object|RegExp|ReferenceError|String|" +
+            "Error|EvalError|InternalError|RangeError|ReferenceError|StopIteration|" +
+            "SyntaxError|TypeError|URIError|"  +
+            "ArrayBuffer|Float32Array|Float64Array|Int16Array|Int32Array|Int8Array|" +
+            "Uint16Array|Uint32Array|Uint8Array|Uint8ClampedArray"
         );
-        
-        var supportFunction = lang.arrayToMap((
+
+        var supportFunction = (
             "Math|JSON|isNaN|isFinite|parseInt|parseFloat|encodeURI|" +
-            "encodeURIComponent|decodeURI|decodeURIComponent|RangeError|String|" +
-            "SyntaxError|Error|EvalError|TypeError|URIError").split("|")
+            "encodeURIComponent|decodeURI|decodeURIComponent|String|"
         );
+
+        var variableLanguage = (
+            "window|arguments|prototype|document"
+        );
+
+        var keywordMapper = this.createKeywordMapper({
+            "keyword": keywords,
+            "constant.language": langConstant,
+            "invalid.illegal": illegal,
+            "language.support.class": supportClass,
+            "language.support.function": supportFunction,
+            "variable.language": variableLanguage
+        }, "identifier");
+
+        var functionRule = {
+            token: ["paren.lparen", "variable.parameter", "paren.rparen", "text", "storage.type"],
+            regex: /(?:(\()((?:"[^")]*?"|'[^')]*?'|\/[^\/)]*?\/|[^()\"'\/])*?)(\))(\s*))?([\-=]>)/.source
+        };
+
+        var stringEscape = /\\(?:x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.)/;
 
         this.$rules = {
             start : [
                 {
-                    token : "identifier",
-                    regex : "(?:(?:\\.|::)\\s*)" + identifier
-                }, {
-                    token : "variable",
-                    regex : "@(?:" + identifier + ")?"
-                }, {
-                    token: function(value) {
-                        if (keywords.hasOwnProperty(value))
-                            return "keyword";
-                        else if (langConstant.hasOwnProperty(value))
-                            return "constant.language";
-                        else if (illegal.hasOwnProperty(value))
-                            return "invalid.illegal";
-                        else if (supportClass.hasOwnProperty(value))
-                            return "language.support.class";
-                        else if (supportFunction.hasOwnProperty(value))
-                            return "language.support.function";
-                        else
-                            return "identifier";
-                    },
-                    regex : identifier
-                }, {
                     token : "constant.numeric",
                     regex : "(?:0x[\\da-fA-F]+|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[eE][+-]?\\d+)?)"
                 }, {
-                    token : "string",
-                    merge : true,
-                    regex : "'''",
-                    next : "qdoc"
+                    stateName: "qdoc",
+                    token : "string", regex : "'''", next : [
+                        {token : "string", regex : "'''", next : "start"},
+                        {token : "constant.language.escape", regex : stringEscape},
+                        {defaultToken: "string"}
+                    ]
                 }, {
+                    stateName: "qqdoc",
                     token : "string",
-                    merge : true,
                     regex : '"""',
-                    next : "qqdoc"
+                    next : [
+                        {token : "string", regex : '"""', next : "start"},
+                        {token : "constant.language.escape", regex : stringEscape},
+                        {defaultToken: "string"}
+                    ]
                 }, {
-                    token : "string",
-                    merge : true,
-                    regex : "'",
-                    next : "qstring"
+                    stateName: "qstring",
+                    token : "string", regex : "'", next : [
+                        {token : "string", regex : "'", next : "start"},
+                        {token : "constant.language.escape", regex : stringEscape},
+                        {defaultToken: "string"}
+                    ]
                 }, {
-                    token : "string",
-                    merge : true,
-                    regex : '"',
-                    next : "qqstring"
+                    stateName: "qqstring",
+                    token : "string.start", regex : '"', next : [
+                        {token : "string.end", regex : '"', next : "start"},
+                        {token : "constant.language.escape", regex : stringEscape},
+                        {defaultToken: "string"}
+                    ]
                 }, {
-                    token : "string",
-                    merge : true,
-                    regex : "`",
-                    next : "js"
+                    stateName: "js",
+                    token : "string", regex : "`", next : [
+                        {token : "string", regex : "`", next : "start"},
+                        {token : "constant.language.escape", regex : stringEscape},
+                        {defaultToken: "string"}
+                    ]
                 }, {
                     token : "string.regex",
-                    merge : true,
                     regex : "///",
                     next : "heregex"
                 }, {
                     token : "string.regex",
-                    regex : "/(?!\\s)[^[/\\n\\\\]*(?: (?:\\\\.|\\[[^\\]\\n\\\\]*(?:\\\\.[^\\]\\n\\\\]*)*\\])[^[/\\n\\\\]*)*/[imgy]{0,4}(?!\\w)"
+                    regex : /(?:\/(?![\s=])[^[\/\n\\]*(?:(?:\\[\s\S]|\[[^\]\n\\]*(?:\\[\s\S][^\]\n\\]*)*])[^[\/\n\\]*)*\/)(?:[imgy]{0,4})(?!\w)/
                 }, {
                     token : "comment",
-                    merge : true,
                     regex : "###(?!#)",
                     next : "comment"
                 }, {
                     token : "comment",
                     regex : "#.*"
                 }, {
+                    token : ["punctuation.operator", "text", "identifier"],
+                    regex : "(\\.)(\\s*)(" + illegal + ")"
+                }, {
                     token : "punctuation.operator",
-                    regex : "\\?|\\:|\\,|\\."
+                    regex : "\\."
+                }, {
+                    //class A extends B
+                    token : ["keyword", "text", "language.support.class",
+                     "text", "keyword", "text", "language.support.class"],
+                    regex : "(class)(\\s+)(" + identifier + ")(?:(\\s+)(extends)(\\s+)(" + identifier + "))?"
+                }, {
+                    //play = (...) ->
+                    token : ["entity.name.function", "text", "keyword.operator", "text"].concat(functionRule.token),
+                    regex : "(" + identifier + ")(\\s*)([=:])(\\s*)" + functionRule.regex
+                }, 
+                functionRule, 
+                {
+                    token : "variable",
+                    regex : "@(?:" + identifier + ")?"
+                }, {
+                    token: keywordMapper,
+                    regex : identifier
+                }, {
+                    token : "punctuation.operator",
+                    regex : "\\,|\\."
+                }, {
+                    token : "storage.type",
+                    regex : "[\\-=]>"
                 }, {
                     token : "keyword.operator",
-                    regex : "(?:[\\-=]>|[-+*/%<>&|^!?=]=|>>>=?|\\-\\-|\\+\\+|::|&&=|\\|\\|=|<<=|>>=|\\?\\.|\\.{2,3}|[!*+-=><])"
+                    regex : "(?:[-+*/%<>&|^!?=]=|>>>=?|\\-\\-|\\+\\+|::|&&=|\\|\\|=|<<=|>>=|\\?\\.|\\.{2,3}|[!*+-=><])"
                 }, {
                     token : "paren.lparen",
                     regex : "[({[]"
@@ -164,40 +187,8 @@ define(function(require, exports, module) {
                     token : "text",
                     regex : "\\s+"
                 }],
-            
-            qdoc : [{
-                token : "string",
-                regex : ".*?'''",
-                next : "start"
-            }, stringfill],
-            
-            qqdoc : [{
-                token : "string",
-                regex : '.*?"""',
-                next : "start"
-            }, stringfill],
-            
-            qstring : [{
-                token : "string",
-                regex : "[^\\\\']*(?:\\\\.[^\\\\']*)*'",
-                merge : true,
-                next : "start"
-            }, stringfill],
-            
-            qqstring : [{
-                token : "string",
-                regex : '[^\\\\"]*(?:\\\\.[^\\\\"]*)*"',
-                merge : true,
-                next : "start"
-            }, stringfill],
-            
-            js : [{
-                token : "string",
-                merge : true,
-                regex : "[^\\\\`]*(?:\\\\.[^\\\\`]*)*`",
-                next : "start"
-            }, stringfill],
-            
+
+
             heregex : [{
                 token : "string.regex",
                 regex : '.*?///[imgy]{0,4}',
@@ -207,20 +198,18 @@ define(function(require, exports, module) {
                 regex : "\\s+(?:#.*)?"
             }, {
                 token : "string.regex",
-                merge : true,
                 regex : "\\S+"
             }],
-            
+
             comment : [{
                 token : "comment",
-                regex : '.*?###',
+                regex : '###',
                 next : "start"
             }, {
-                token : "comment",
-                merge : true,
-                regex : ".+"
+                defaultToken : "comment"
             }]
         };
+        this.normalizeRules();
     }
 
     exports.CoffeeHighlightRules = CoffeeHighlightRules;

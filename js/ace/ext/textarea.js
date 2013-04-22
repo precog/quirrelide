@@ -1,39 +1,30 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ * Distributed under the BSD license:
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
  *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * The Original Code is Mozilla Skywriter.
- *
- * The Initial Developer of the Original Code is
- * Mozilla.
- * Portions created by the Initial Developer are Copyright (C) 2009
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Kevin Dangoor (kdangoor@mozilla.com)
- *      Julian Viereck <julian.viereck@gmail.com>
- *      Harutyun Amirjanyan [harutyun@c9.io]
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -45,7 +36,7 @@ var UA = require("../lib/useragent");
 var net = require("../lib/net");
 var ace = require("../ace");
 
-require("ace/theme/textmate");
+require("../theme/textmate");
 
 module.exports = exports = ace;
 
@@ -82,7 +73,7 @@ function applyStyles(elm, styles) {
 }
 
 function setupContainer(element, getValue) {
-        if (element.type != 'textarea') {
+    if (element.type != 'textarea') {
         throw "Textarea required!";
     }
 
@@ -141,11 +132,7 @@ function setupContainer(element, getValue) {
     resizeEvent();
 
     // Insert the div container after the element.
-    if (element.nextSibling) {
-        parentNode.insertBefore(container, element.nextSibling);
-    } else {
-        parentNode.appendChild(container);
-    }
+    parentNode.insertBefore(container, element.nextSibling);
 
     // Override the forms onsubmit function. Set the innerHTML and value
     // of the textarea before submitting.
@@ -154,7 +141,6 @@ function setupContainer(element, getValue) {
             var oldSumit = parentNode.onsubmit;
             // Override the onsubmit function of the form.
             parentNode.onsubmit = function(evt) {
-                element.innerHTML = getValue();
                 element.value = getValue();
                 // If there is a onsubmit function already, then call
                 // it with the current context and pass the event.
@@ -186,14 +172,14 @@ exports.transformTextarea = function(element, loader) {
         left: "0px",
         right: "0px",
         bottom: "0px",
-        border: "1px solid gray"
+        border: "1px solid gray",
+        position: "absolute"
     });
     container.appendChild(editorDiv);
 
     var settingOpener = document.createElement("div");
     applyStyles(settingOpener, {
         position: "absolute",
-        width: "15px",
         right: "0px",
         bottom: "0px",
         background: "red",
@@ -208,7 +194,7 @@ exports.transformTextarea = function(element, loader) {
     var settingDiv = document.createElement("div");
     var settingDivStyles = {
         top: "0px",
-        left: "0px",
+        left: "20%",
         right: "0px",
         bottom: "0px",
         position: "absolute",
@@ -217,7 +203,8 @@ exports.transformTextarea = function(element, loader) {
         color: "white",
         display: "none",
         overflow: "auto",
-        fontSize: "14px"
+        fontSize: "14px",
+        boxShadow: "-5px 2px 3px gray"
     };
     if (!UA.isOldIE) {
         settingDivStyles.backgroundColor = "rgba(0, 0, 0, 0.6)";
@@ -238,14 +225,14 @@ exports.transformTextarea = function(element, loader) {
     editor.focus();
 
     // Add the settingPanel opener to the editor's div.
-    editorDiv.appendChild(settingOpener);
+    container.appendChild(settingOpener);
 
     // Create the API.
     setupApi(editor, editorDiv, settingDiv, ace, options, loader);
 
     // Create the setting's panel.
     setupSettingPanel(settingDiv, settingOpener, editor, options);
-    
+
     var state = "";
     event.addListener(settingOpener, "mousemove", function(e) {
         var rect = this.getBoundingClientRect();
@@ -258,7 +245,7 @@ exports.transformTextarea = function(element, loader) {
             this.style.cursor = "nw-resize";
         }
     });
-    
+
     event.addListener(settingOpener, "mousedown", function(e) {
         if (state == "toggle") {
             editor.setDisplaySettings();
@@ -290,15 +277,24 @@ function setupApi(editor, editorDiv, settingDiv, ace, options, loader) {
     loader = loader || load;
 
     function toBool(value) {
-        return value == "true";
+        return value === "true" || value == true;
     }
 
     editor.setDisplaySettings = function(display) {
         if (display == null)
             display = settingDiv.style.display == "none";
-        settingDiv.style.display = display ? "block" : "none";
+        if (display) {
+            settingDiv.style.display = "block";
+            settingDiv.hideButton.focus();
+            editor.on("focus", function onFocus() {
+                editor.removeListener("focus", onFocus);
+                settingDiv.style.display = "none"
+            });
+        } else {
+            editor.focus();
+        };
     };
-    
+
     editor.setOption = function(key, value) {
         if (options[key] == value) return;
 
@@ -332,6 +328,19 @@ function setupApi(editor, editorDiv, settingDiv, ace, options, loader) {
 
             case "fontSize":
                 editorDiv.style.fontSize = value;
+            break;
+
+            case "keybindings":
+                switch (value) {
+                    case "vim":
+                        editor.setKeyboardHandler("ace/keyboard/vim");
+                        break;
+                    case "emacs":
+                        editor.setKeyboardHandler("ace/keyboard/emacs");
+                        break;
+                    default:
+                        editor.setKeyboardHandler(null);
+                }
             break;
 
             case "softWrap":
@@ -390,10 +399,7 @@ function setupApi(editor, editorDiv, settingDiv, ace, options, loader) {
 }
 
 function setupSettingPanel(settingDiv, settingOpener, editor, options) {
-    var BOOL = {
-        "true":  true,
-        "false": false
-    };
+    var BOOL = null;
 
     var desc = {
         mode:            "Mode:",
@@ -401,6 +407,7 @@ function setupSettingPanel(settingDiv, settingOpener, editor, options) {
         theme:           "Theme:",
         fontSize:        "Font Size:",
         softWrap:        "Soft Wrap:",
+        keybindings:     "Keyboard",
         showPrintMargin: "Show Print Margin:",
         useSoftTabs:     "Use Soft Tabs:",
         showInvisibles:  "Show Invisibles"
@@ -466,6 +473,11 @@ function setupSettingPanel(settingDiv, settingOpener, editor, options) {
             80:     "80",
             free:   "Free"
         },
+        keybindings: {
+            ace: "ace",
+            vim: "vim",
+            emacs: "emacs"
+        },
         showPrintMargin:    BOOL,
         useSoftTabs:        BOOL,
         showInvisibles:     BOOL
@@ -475,6 +487,14 @@ function setupSettingPanel(settingDiv, settingOpener, editor, options) {
     table.push("<table><tr><th>Setting</th><th>Value</th></tr>");
 
     function renderOption(builder, option, obj, cValue) {
+        if (!obj) {
+            builder.push(
+                "<input type='checkbox' title='", option, "' ",
+                    cValue == "true" ? "checked='true'" : "",
+               "'></input>"
+            );
+            return
+        }
         builder.push("<select title='" + option + "'>");
         for (var value in obj) {
             builder.push("<option value='" + value + "' ");
@@ -499,18 +519,21 @@ function setupSettingPanel(settingDiv, settingOpener, editor, options) {
     table.push("</table>");
     settingDiv.innerHTML = table.join("");
 
+    var onChange = function(e) {
+        var select = e.currentTarget;
+        editor.setOption(select.title, select.value);
+    };
+    var onClick = function(e) {
+        var cb = e.currentTarget;
+        editor.setOption(cb.title, cb.checked);
+    };
     var selects = settingDiv.getElementsByTagName("select");
-    for (var i = 0; i < selects.length; i++) {
-        var onChange = (function() {
-            var select = selects[i];
-            return function() {
-                var option = select.title;
-                var value  = select.value;
-                editor.setOption(option, value);
-            };
-        })();
+    for (var i = 0; i < selects.length; i++)
         selects[i].onchange = onChange;
-    }
+    var cbs = settingDiv.getElementsByTagName("input");
+    for (var i = 0; i < cbs.length; i++)
+        cbs[i].onclick = onClick;
+
 
     var button = document.createElement("input");
     button.type = "button";
@@ -519,6 +542,7 @@ function setupSettingPanel(settingDiv, settingOpener, editor, options) {
         editor.setDisplaySettings(false);
     });
     settingDiv.appendChild(button);
+    settingDiv.hideButton = button;
 }
 
 // Default startup options.
@@ -528,9 +552,10 @@ exports.options = {
     gutter:             "false",
     fontSize:           "12px",
     softWrap:           "off",
+    keybindings:        "ace",
     showPrintMargin:    "false",
     useSoftTabs:        "true",
-    showInvisibles:     "true"
+    showInvisibles:     "false"
 };
 
 });

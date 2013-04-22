@@ -1,38 +1,30 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ * Distributed under the BSD license:
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Sergi Mansilla <sergi AT c9 DOT io>
- *      Harutyun Amirjanyan <harutyun AT c9 DOT io>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * ***** END LICENSE BLOCK ***** */
  
@@ -40,6 +32,7 @@ define(function(require, exports, module) {
 
 "never use strict";
 
+var lang = require("../../lib/lang");
 var util = require("./maps/util");
 var motions = require("./maps/motions");
 var operators = require("./maps/operators");
@@ -82,13 +75,13 @@ var actions = exports.actions = {
         fn: function(editor, range, count, param) {
             switch (param) {
                 case "z":
-                    editor.alignCursor(null, 0.5);
+                    editor.renderer.alignCursor(null, 0.5);
                     break;
                 case "t":
-                    editor.alignCursor(null, 0);
+                    editor.renderer.alignCursor(null, 0);
                     break;
                 case "b":
-                    editor.alignCursor(null, 1);
+                    editor.renderer.alignCursor(null, 1);
                     break;
             }
         }
@@ -97,6 +90,8 @@ var actions = exports.actions = {
         param: true,
         fn: function(editor, range, count, param) {
             if (param && param.length) {
+                if (param.length > 1)
+                    param = param == "return" ? "\n" : param == "tab" ? "\t" : param;
                 repeat(function() { editor.insert(param); }, count || 1);
                 editor.navigateLeft();
             }
@@ -139,6 +134,18 @@ var actions = exports.actions = {
             ensureScrollMargin(editor);
             var r = editor.selection.getRange();
             editor.selection.setSelectionRange(r, true);
+        }
+    },
+    "m": {
+        param: true,
+        fn: function(editor, range, count, param) {
+            var s =  editor.session;
+            var markers = s.vimMarkers || (s.vimMarkers = {});
+            var c = editor.getCursorPosition();
+            if (!markers[param]) {
+                markers[param] = editor.session.doc.createAnchor(c);
+            }
+            markers[param].setPosition(c.row, c.column, true);
         }
     },
     "n": {
@@ -203,13 +210,14 @@ var actions = exports.actions = {
             editor.setOverwrite(false);
             if (defaultReg.isLine) {
                 var pos = editor.getCursorPosition();
-                var lines = defaultReg.text.split("\n");
-                editor.session.getDocument().insertLines(pos.row + 1, lines);
+                pos.column = editor.session.getLine(pos.row).length;
+                var text = lang.stringRepeat("\n" + defaultReg.text, count || 1);
+                editor.session.insert(pos, text);
                 editor.moveCursorTo(pos.row + 1, 0);
             }
             else {
                 editor.navigateRight();
-                editor.insert(defaultReg.text);
+                editor.insert(lang.stringRepeat(defaultReg.text, count || 1));
                 editor.navigateLeft();
             }
             editor.setOverwrite(true);
@@ -223,12 +231,13 @@ var actions = exports.actions = {
 
             if (defaultReg.isLine) {
                 var pos = editor.getCursorPosition();
-                var lines = defaultReg.text.split("\n");
-                editor.session.getDocument().insertLines(pos.row, lines);
-                editor.moveCursorTo(pos.row, 0);
+                pos.column = 0;
+                var text = lang.stringRepeat(defaultReg.text + "\n", count || 1);
+                editor.session.insert(pos, text);
+                editor.moveCursorToPosition(pos);
             }
             else {
-                editor.insert(defaultReg.text);
+                editor.insert(lang.stringRepeat(defaultReg.text, count || 1));
             }
             editor.setOverwrite(true);
             editor.selection.clearSelection();
@@ -276,17 +285,23 @@ var actions = exports.actions = {
     },
     ":": {
         fn: function(editor, range, count, param) {
-            // not implemented
+            var val = ":";
+            if (count > 1)
+                val = ".,.+" + count + val;
+            if (editor.showCommandLine)
+                editor.showCommandLine(val);
         }
     },
     "/": {
         fn: function(editor, range, count, param) {
-            // not implemented
+            if (editor.showCommandLine)
+                editor.showCommandLine("/");
         }
     },
     "?": {
         fn: function(editor, range, count, param) {
-            // not implemented
+            if (editor.showCommandLine)
+                editor.showCommandLine("?");
         }
     },
     ".": {
@@ -296,6 +311,16 @@ var actions = exports.actions = {
             if (previous) // If there is a previous action
                 inputBuffer.exec(editor, previous.action, previous.param);
         }
+    },
+    "ctrl-x": {
+        fn: function(editor, range, count, param) {
+            editor.modifyNumber(-(count || 1));
+        }
+    },
+    "ctrl-a": {
+        fn: function(editor, range, count, param) {
+            editor.modifyNumber(count || 1);
+        }
     }
 };
 
@@ -304,6 +329,7 @@ var inputBuffer = exports.inputBuffer = {
     currentCmd: null,
     //currentMode: 0,
     currentCount: "",
+    status: "",
 
     // Types
     operator: null,
@@ -311,73 +337,91 @@ var inputBuffer = exports.inputBuffer = {
 
     lastInsertCommands: [],
 
-    push: function(editor, char, keyId) {
+    push: function(editor, ch, keyId) {
+        var status = this.status;
+        var isKeyHandled = true;
         this.idle = false;
         var wObj = this.waitingForParam;
+        if (/^numpad\d+$/i.test(ch))
+            ch = ch.substr(6);
+            
         if (wObj) {
-            this.exec(editor, wObj, char);
+            this.exec(editor, wObj, ch);
         }
         // If input is a number (that doesn't start with 0)
-        else if (!(char === "0" && !this.currentCount.length) &&
-            (char.match(/^\d+$/) && this.isAccepting(NUMBER))) {
-            // Assuming that char is always of type String, and not Number
-            this.currentCount += char;
+        else if (!(ch === "0" && !this.currentCount.length) &&
+            (/^\d+$/.test(ch) && this.isAccepting(NUMBER))) {
+            // Assuming that ch is always of type String, and not Number
+            this.currentCount += ch;
             this.currentCmd = NUMBER;
             this.accepting = [NUMBER, OPERATOR, MOTION, ACTION];
         }
-        else if (!this.operator && this.isAccepting(OPERATOR) && operators[char]) {
+        else if (!this.operator && this.isAccepting(OPERATOR) && operators[ch]) {
             this.operator = {
-                char: char,
+                ch: ch,
                 count: this.getCount()
             };
             this.currentCmd = OPERATOR;
             this.accepting = [NUMBER, MOTION, ACTION];
             this.exec(editor, { operator: this.operator });
         }
-        else if (motions[char] && this.isAccepting(MOTION)) {
+        else if (motions[ch] && this.isAccepting(MOTION)) {
             this.currentCmd = MOTION;
 
             var ctx = {
                 operator: this.operator,
                 motion: {
-                    char: char,
+                    ch: ch,
                     count: this.getCount()
                 }
             };
 
-            if (motions[char].param)
+            if (motions[ch].param)
                 this.waitForParam(ctx);
             else
                 this.exec(editor, ctx);
         }
-        else if (alias[char] && this.isAccepting(MOTION)) {
-            alias[char].operator.count = this.getCount();
-            this.exec(editor, alias[char]);
+        else if (alias[ch] && this.isAccepting(MOTION)) {
+            alias[ch].operator.count = this.getCount();
+            this.exec(editor, alias[ch]);
         }
-        else if (actions[char] && this.isAccepting(ACTION)) {
+        else if (actions[ch] && this.isAccepting(ACTION)) {
             var actionObj = {
                 action: {
-                    fn: actions[char].fn,
+                    fn: actions[ch].fn,
                     count: this.getCount()
                 }
             };
 
-            if (actions[char].param) {
+            if (actions[ch].param) {
                 this.waitForParam(actionObj);
             }
             else {
                 this.exec(editor, actionObj);
             }
 
-            if (actions[char].acceptsMotion)
+            if (actions[ch].acceptsMotion)
                 this.idle = false;
         }
         else if (this.operator) {
-            this.exec(editor, { operator: this.operator }, char);
+            this.operator.count = this.getCount();
+            this.exec(editor, { operator: this.operator }, ch);
         }
         else {
+            isKeyHandled = ch.length == 1;
             this.reset();
         }
+        
+        if (this.waitingForParam || this.motion || this.operator) {
+            this.status += ch;
+        } else if (this.currentCount) {
+            this.status = this.currentCount;
+        } else if (this.status) {
+            this.status = "";
+        }
+        if (this.status != status)
+            editor._emit("changeStatus");
+        return isKeyHandled;
     },
 
     waitForParam: function(cmd) {
@@ -406,18 +450,18 @@ var inputBuffer = exports.inputBuffer = {
         }
 
         if (o && !editor.selection.isEmpty()) {
-            if (operators[o.char].selFn) {
-                operators[o.char].selFn(editor, editor.getSelectionRange(), o.count, param);
+            if (operators[o.ch].selFn) {
+                operators[o.ch].selFn(editor, editor.getSelectionRange(), o.count, param);
                 this.reset();
             }
             return;
         }
 
         // There is an operator, but no motion or action. We try to pass the
-        // current char to the operator to see if it responds to it (an example
+        // current ch to the operator to see if it responds to it (an example
         // of this is the 'dd' operator).
         else if (!m && !a && o && param) {
-            operators[o.char].fn(editor, null, o.count, param);
+            operators[o.ch].fn(editor, null, o.count, param);
             this.reset();
         }
         else if (m) {
@@ -430,7 +474,7 @@ var inputBuffer = exports.inputBuffer = {
                 }
             };
 
-            var motionObj = motions[m.char];
+            var motionObj = motions[m.ch];
             var selectable = motionObj.sel;
 
             if (!o) {
@@ -442,7 +486,7 @@ var inputBuffer = exports.inputBuffer = {
             else if (selectable) {
                 repeat(function() {
                     run(motionObj.sel);
-                    operators[o.char].fn(editor, editor.getSelectionRange(), o.count, param);
+                    operators[o.ch].fn(editor, editor.getSelectionRange(), o.count, param);
                 }, o.count || 1);
             }
             this.reset();
@@ -462,6 +506,7 @@ var inputBuffer = exports.inputBuffer = {
         this.operator = null;
         this.motion = null;
         this.currentCount = "";
+        this.status = "";
         this.accepting = [NUMBER, OPERATOR, MOTION, ACTION];
         this.idle = true;
         this.waitingForParam = null;

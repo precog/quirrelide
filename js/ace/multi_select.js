@@ -1,38 +1,30 @@
-/* vim:ts=4:sts=4:sw=4:
- * ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+/* ***** BEGIN LICENSE BLOCK *****
+ * Distributed under the BSD license:
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
  *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Harutyun Amirjanyan <amirjanyan AT gmail DOT com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -43,6 +35,7 @@ var Range = require("./range").Range;
 var Selection = require("./selection").Selection;
 var onMouseDown = require("./mouse/multi_select_handler").onMouseDown;
 var event = require("./lib/event");
+var lang = require("./lib/lang");
 var commands = require("./commands/multi_select_commands");
 exports.commands = commands.defaultCommands.concat(commands.multiSelectCommands);
 
@@ -73,12 +66,11 @@ var EditSession = require("./edit_session").EditSession;
     // automatically sorted list of ranges
     this.rangeList = null;
 
-    /** extension
-     * Selection.addRange(range, $blockChangeEvents) 
-     * - range (Range): The new range to add
-     * - $blockChangeEvents (Boolean): Whether or not to block changing events
-     *
+    /** 
      * Adds a range to a selection by entering multiselect mode, if necessary.
+     * @param {Range} range The new range to add
+     * @param {Boolean} $blockChangeEvents Whether or not to block changing events
+     * @method Selection.addRange
      **/
     this.addRange = function(range, $blockChangeEvents) {
         if (!range)
@@ -86,9 +78,13 @@ var EditSession = require("./edit_session").EditSession;
 
         if (!this.inMultiSelectMode && this.rangeCount == 0) {
             var oldRange = this.toOrientedRange();
-            if (range.intersects(oldRange))
+            this.rangeList.add(oldRange);
+            this.rangeList.add(range);
+            if (this.rangeList.ranges.length != 2) {
+                this.rangeList.removeAll();
                 return $blockChangeEvents || this.fromOrientedRange(range);
-
+            }
+            this.rangeList.removeAll();
             this.rangeList.add(oldRange);
             this.$onAddRange(oldRange);
         }
@@ -113,6 +109,10 @@ var EditSession = require("./edit_session").EditSession;
         return $blockChangeEvents || this.fromOrientedRange(range);
     };
 
+    /**
+     * @method Selection.toSingleRange
+     **/
+
     this.toSingleRange = function(range) {
         range = range || this.ranges[0];
         var removed = this.rangeList.removeAll();
@@ -121,12 +121,11 @@ var EditSession = require("./edit_session").EditSession;
 
         range && this.fromOrientedRange(range);
     };
-    
-    /** extension
-     * Selection.substractPoint(pos) -> Range
-     * - pos (Range): The position to remove, as a `{row, column}` object
-     *
+
+    /**
      * Removes a Range containing pos (if it exists).
+     * @param {Range} pos The position to remove, as a `{row, column}` object
+     * @method Selection.substractPoint
      **/
     this.substractPoint = function(pos) {
         var removed = this.rangeList.substractPoint(pos);
@@ -136,10 +135,9 @@ var EditSession = require("./edit_session").EditSession;
         }
     };
 
-    /** extension
-     * Selection.mergeOverlappingRanges() 
-     *
+    /**
      * Merges overlapping ranges ensuring consistency after changes
+     * @method Selection.mergeOverlappingRanges
      **/
     this.mergeOverlappingRanges = function() {
         var removed = this.rangeList.merge();
@@ -192,9 +190,19 @@ var EditSession = require("./edit_session").EditSession;
         this.rangeCount = 0;
     };
 
+    /**
+     * Returns a concatenation of all the ranges.
+     * @returns {Array}
+     * @method Selection.getAllRanges
+     **/
     this.getAllRanges = function() {
         return this.rangeList.ranges.concat();
     };
+
+    /**
+     * Splits all the ranges into lines.
+     * @method Selection.splitIntoLines
+     **/
 
     this.splitIntoLines = function () {
         if (this.rangeCount > 1) {
@@ -206,10 +214,19 @@ var EditSession = require("./edit_session").EditSession;
             this.setSelectionRange(range, lastRange.cursor == lastRange.start);
         } else {
             var range = this.getRange();
+            var isBackwards = this.isBackwards();
             var startRow = range.start.row;
             var endRow = range.end.row;
-            if (startRow == endRow)
+            if (startRow == endRow) {
+                if (isBackwards)
+                    var start = range.end, end = range.start;
+                else
+                    var start = range.start, end = range.end;
+                
+                this.addRange(Range.fromPoints(end, end));
+                this.addRange(Range.fromPoints(start, start));
                 return;
+            }
 
             var rectSel = [];
             var r = this.getLineRange(startRow, true);
@@ -227,6 +244,9 @@ var EditSession = require("./edit_session").EditSession;
         }
     };
 
+    /**
+     * @method Selection.toggleBlockSelection
+     **/
     this.toggleBlockSelection = function () {
         if (this.rangeCount > 1) {
             var ranges = this.rangeList.ranges;
@@ -244,15 +264,16 @@ var EditSession = require("./edit_session").EditSession;
         }
     };
 
-    /** extension
-     * Selection.rectangularRangeBlock(screenCursor, screenAnchor, includeEmptyLines) -> Range
-     * - screenCursor (Cursor): The cursor to use
-     * - screenAnchor (Anchor): The anchor to use
-     * - includeEmptyLins (Boolean): If true, this includes ranges inside the block which are empty due to clipping
-     *  
+    /**
+     * 
      * Gets list of ranges composing rectangular block on the screen
-     *
-     */
+     * 
+     * @param {Cursor} screenCursor The cursor to use
+     * @param {Anchor} screenAnchor The anchor to use
+     * @param {Boolean} includeEmptyLines If true, this includes ranges inside the block which are empty due to clipping
+     * @returns {Range}
+     * @method Selection.rectangularRangeBlock
+     **/
     this.rectangularRangeBlock = function(screenCursor, screenAnchor, includeEmptyLines) {
         var rectSel = [];
 
@@ -321,22 +342,23 @@ var EditSession = require("./edit_session").EditSession;
 // extend Editor
 var Editor = require("./editor").Editor;
 (function() {
-    
-    /** extension
-     * Editor.updateSelectionMarkers() 
-     *
+
+    /** 
+     * 
      * Updates the cursor and marker layers.
+     * @method Editor.updateSelectionMarkers
+     *
      **/
     this.updateSelectionMarkers = function() {
         this.renderer.updateCursor();
         this.renderer.updateBackMarkers();
     };
 
-    /** extension
-     * Editor.addSelectionMarker(orientedRange) -> Range
-     * - orientedRange (Range): A range containing a cursor
-     *
+    /** 
      * Adds the selection and cursor.
+     * @param {Range} orientedRange A range containing a cursor
+     * @returns {Range}
+     * @method Editor.addSelectionMarker
      **/
     this.addSelectionMarker = function(orientedRange) {
         if (!orientedRange.cursor)
@@ -350,11 +372,10 @@ var Editor = require("./editor").Editor;
         return orientedRange;
     };
 
-    /** extension
-     * Editor.removeSelectionMarker(range) 
-     * - range (Range): The selection range added with [[Editor.addSelectionMarker `addSelectionMarker()`]].
-     *
+    /** 
      * Removes the selection marker.
+     * @param {Range} The selection range added with [[Editor.addSelectionMarker `addSelectionMarker()`]].
+     * @method Editor.removeSelectionMarker
      **/
     this.removeSelectionMarker = function(range) {
         if (!range.marker)
@@ -397,7 +418,7 @@ var Editor = require("./editor").Editor;
             return;
         this.inMultiSelectMode = true;
 
-        this.setStyle("multiselect");
+        this.setStyle("ace_multiselect");
         this.keyBinding.addKeyboardHandler(commands.keyboardHandler);
         this.commands.on("exec", this.$onMultiSelectExec);
 
@@ -410,7 +431,7 @@ var Editor = require("./editor").Editor;
             return;
         this.inMultiSelectMode = false;
 
-        this.unsetStyle("multiselect");
+        this.unsetStyle("ace_multiselect");
         this.keyBinding.removeKeyboardHandler(commands.keyboardHandler);
 
         this.commands.removeEventListener("exec", this.$onMultiSelectExec);
@@ -429,6 +450,8 @@ var Editor = require("./editor").Editor;
             editor.multiSelect.mergeOverlappingRanges();
         } else if (command.multiSelectAction == "forEach") {
             editor.forEachSelection(command, e.args);
+        } else if (command.multiSelectAction == "forEachLine") {
+            editor.forEachSelection(command, e.args, true);
         } else if (command.multiSelectAction == "single") {
             editor.exitMultiSelectMode();
             command.exec(editor, e.args || {});
@@ -438,14 +461,13 @@ var Editor = require("./editor").Editor;
         e.preventDefault();
     };
 
-    /** extension
-     * Editor.forEachSelection(cmd, args) 
-     * - cmd (String): The command to execute
-     * - args (String): Any arguments for the command
-     *
+    /** 
      * Executes a command for each selection range.
-     **/
-    this.forEachSelection = function(cmd, args) {
+     * @param {String} cmd The command to execute
+     * @param {String} args Any arguments for the command
+     * @method Editor.forEachSelection
+     **/ 
+    this.forEachSelection = function(cmd, args, $byLines) {
         if (this.inVirtualSelectionMode)
             return;
 
@@ -459,6 +481,10 @@ var Editor = require("./editor").Editor;
         var tmpSel = new Selection(session);
         this.inVirtualSelectionMode = true;
         for (var i = rangeList.ranges.length; i--;) {
+            if ($byLines) {
+                while (i > 0 && rangeList.ranges[i].start.row == rangeList.ranges[i - 1].end.row)
+                    i--;
+            }
             tmpSel.fromOrientedRange(rangeList.ranges[i]);
             this.selection = session.selection = tmpSel;
             cmd.exec(this, args || {});
@@ -475,10 +501,9 @@ var Editor = require("./editor").Editor;
         this.onSelectionChange();
     };
 
-    /** extension
-    * Editor.exitMultiSelectMode() -> Void
-    *
+    /** 
     * Removes all the selections except the last added one.
+    * @method Editor.exitMultiSelectMode
     **/
     this.exitMultiSelectMode = function() {
         if (this.inVirtualSelectionMode)
@@ -490,11 +515,14 @@ var Editor = require("./editor").Editor;
         var text = "";
         if (this.inMultiSelectMode) {
             var ranges = this.multiSelect.rangeList.ranges;
-            text = [];
+            var buf = [];
             for (var i = 0; i < ranges.length; i++) {
-                text.push(this.session.getTextRange(ranges[i]));
+                buf.push(this.session.getTextRange(ranges[i]));
             }
-            text = text.join(this.session.getDocument().getNewLineCharacter());
+            var nl = this.session.getDocument().getNewLineCharacter();
+            text = buf.join(nl);
+            if (text.length == (buf.length - 1) * nl.length)
+                text = "";
         } else if (!this.selection.isEmpty()) {
             text = this.session.getTextRange(this.getSelectionRange());
         }
@@ -502,15 +530,19 @@ var Editor = require("./editor").Editor;
         return text;
     };
 
+    // todo this should change when paste becomes a command
     this.onPaste = function(text) {
-        this._emit("paste", text);
-        if (!this.inMultiSelectMode)
+        if (this.$readOnly)
+            return;
+
+        this._signal("paste", text);
+        if (!this.inMultiSelectMode || this.inVirtualSelectionMode)
             return this.insert(text);
 
         var lines = text.split(/\r\n|\r|\n/);
         var ranges = this.selection.rangeList.ranges;
 
-        if (lines.length > ranges.length || (lines.length <= 2 || !lines[1]))
+        if (lines.length > ranges.length || (lines.length <= 2 && !lines[1]))
             return this.commands.exec("insertstring", this, text);
 
         for (var i = ranges.length; i--; ) {
@@ -522,13 +554,14 @@ var Editor = require("./editor").Editor;
         }
     };
 
-    /** extension
-     * Editor.findAll(needle, options, additive) -> Number
-     * - needle (String): The text to find
-     * - options (Object): The search options
-     * - additive (Boolean): keeps
-     *
+    /**
      * Finds and selects all the occurences of `needle`.
+     * @param {String} The text to find
+     * @param {Object} The search options
+     * @param {Boolean} keeps
+     *
+     * @returns {Number} The cumulative count of all found matches 
+     * @method Editor.findAll
      **/
     this.findAll = function(needle, options, additive) {
         options = options || {};
@@ -553,14 +586,14 @@ var Editor = require("./editor").Editor;
         return ranges.length;
     };
 
-    // commands
-    /** extension
-     * Editor.selectMoreLines(dir, skip) 
-     * - dir (Number): The direction of lines to select: -1 for up, 1 for down
-     * - skip (Boolean): If `true`, removes the active selection range
-     *
+    /**
      * Adds a cursor above or below the active cursor.
-     **/
+     * 
+     * @param {Number} dir The direction of lines to select: -1 for up, 1 for down
+     * @param {Boolean} skip If `true`, removes the active selection range
+     *
+     * @method Editor.selectMoreLines 
+     */
     this.selectMoreLines = function(dir, skip) {
         var range = this.selection.toOrientedRange();
         var isBackwards = range.cursor == range.end;
@@ -599,11 +632,10 @@ var Editor = require("./editor").Editor;
             this.selection.substractPoint(toRemove);
     };
 
-    /** extension
-     * Editor.transposeSelections(dir) 
-     * - dir (Number): The direction to rotate selections
-     *
-     * Transposes the selected ranges. 
+    /** 
+     * Transposes the selected ranges.
+     * @param {Number} dir The direction to rotate selections
+     * @method Editor.transposeSelections
      **/
     this.transposeSelections = function(dir) {
         var session = this.session;
@@ -640,16 +672,15 @@ var Editor = require("./editor").Editor;
             range.start.row = tmp.start.row;
             range.start.column = tmp.start.column;
         }
-    }
+    };
 
-    /** extension
-     * Editor.selectMore(dir, skip) 
-     * - dir (Number): The direction of lines to select: -1 for up, 1 for down
-     * - skip (Boolean): If `true`, removes the active selection range
-     *
+    /** 
      * Finds the next occurence of text in an active selection and adds it to the selections.
+     * @param {Number} dir The direction of lines to select: -1 for up, 1 for down
+     * @param {Boolean} skip If `true`, removes the active selection range
+     * @method Editor.selectMore
      **/
-    this.selectMore = function (dir, skip) {
+    this.selectMore = function(dir, skip) {
         var session = this.session;
         var sel = session.multiSelect;
 
@@ -669,6 +700,120 @@ var Editor = require("./editor").Editor;
         if (skip)
             this.multiSelect.substractPoint(range.cursor);
     };
+
+    /** 
+     * Aligns the cursors or selected text.
+     * @method Editor.alignCursors
+     **/
+    this.alignCursors = function() {
+        var session = this.session;
+        var sel = session.multiSelect;
+        var ranges = sel.ranges;
+
+        if (!ranges.length) {
+            var range = this.selection.getRange();
+            var fr = range.start.row, lr = range.end.row;
+            var lines = this.session.doc.removeLines(fr, lr);
+            lines = this.$reAlignText(lines);
+            this.session.doc.insertLines(fr, lines);
+            range.start.column = 0;
+            range.end.column = lines[lines.length - 1].length;
+            this.selection.setRange(range);
+        } else {
+            // filter out ranges on same row
+            var row = -1;
+            var sameRowRanges = ranges.filter(function(r) {
+                if (r.cursor.row == row)
+                    return true;
+                row = r.cursor.row;
+            });
+            sel.$onRemoveRange(sameRowRanges);
+
+            var maxCol = 0;
+            var minSpace = Infinity;
+            var spaceOffsets = ranges.map(function(r) {
+                var p = r.cursor;
+                var line = session.getLine(p.row);
+                var spaceOffset = line.substr(p.column).search(/\S/g);
+                if (spaceOffset == -1)
+                    spaceOffset = 0;
+
+                if (p.column > maxCol)
+                    maxCol = p.column;
+                if (spaceOffset < minSpace)
+                    minSpace = spaceOffset;
+                return spaceOffset;
+            });
+            ranges.forEach(function(r, i) {
+                var p = r.cursor;
+                var l = maxCol - p.column;
+                var d = spaceOffsets[i] - minSpace;
+                if (l > d)
+                    session.insert(p, lang.stringRepeat(" ", l - d));
+                else
+                    session.remove(new Range(p.row, p.column, p.row, p.column - l + d));
+
+                r.start.column = r.end.column = maxCol;
+                r.start.row = r.end.row = p.row;
+                r.cursor = r.end;
+            });
+            sel.fromOrientedRange(ranges[0]);
+            this.renderer.updateCursor();
+            this.renderer.updateBackMarkers();
+        }
+    };
+
+    this.$reAlignText = function(lines) {
+        var isLeftAligned = true, isRightAligned = true;
+        var startW, textW, endW;
+
+        return lines.map(function(line) {
+            var m = line.match(/(\s*)(.*?)(\s*)([=:].*)/);
+            if (!m)
+                return [line];
+
+            if (startW == null) {
+                startW = m[1].length;
+                textW = m[2].length;
+                endW = m[3].length;
+                return m;
+            }
+
+            if (startW + textW + endW != m[1].length + m[2].length + m[3].length)
+                isRightAligned = false;
+            if (startW != m[1].length)
+                isLeftAligned = false;
+
+            if (startW > m[1].length)
+                startW = m[1].length;
+            if (textW < m[2].length)
+                textW = m[2].length;
+            if (endW > m[3].length)
+                endW = m[3].length;
+
+            return m;
+        }).map(isLeftAligned ? isRightAligned ? alignRight : alignLeft : unAlign);
+
+        function spaces(n) {
+            return lang.stringRepeat(" ", n);
+        }
+
+        function alignLeft(m) {
+            return !m[2] ? m[0] : spaces(startW) + m[2]
+                + spaces(textW - m[2].length + endW)
+                + m[4].replace(/^([=:])\s+/, "$1 ")
+        }
+        function alignRight(m) {
+            return !m[2] ? m[0] : spaces(startW + textW - m[2].length) + m[2]
+                + spaces(endW, " ")
+                + m[4].replace(/^([=:])\s+/, "$1 ")
+        }
+        function unAlign(m) {
+            return !m[2] ? m[0] : spaces(startW) + m[2]
+                + spaces(endW)
+                + m[4].replace(/^([=:])\s+/, "$1 ")
+        }
+    }
 }).call(Editor.prototype);
 
 
@@ -689,14 +834,10 @@ exports.onSessionChange = function(e) {
 
     var oldSession = e.oldSession;
     if (oldSession) {
-        // todo use events
-        if (oldSession.multiSelect && oldSession.multiSelect.editor == this)
-            oldSession.multiSelect.editor = null;
-
-        session.multiSelect.removeEventListener("addRange", this.$onAddRange);
-        session.multiSelect.removeEventListener("removeRange", this.$onRemoveRange);
-        session.multiSelect.removeEventListener("multiSelect", this.$onMultiSelect);
-        session.multiSelect.removeEventListener("singleSelect", this.$onSingleSelect);
+        oldSession.multiSelect.removeEventListener("addRange", this.$onAddRange);
+        oldSession.multiSelect.removeEventListener("removeRange", this.$onRemoveRange);
+        oldSession.multiSelect.removeEventListener("multiSelect", this.$onMultiSelect);
+        oldSession.multiSelect.removeEventListener("singleSelect", this.$onSingleSelect);
     }
 
     session.multiSelect.on("addRange", this.$onAddRange);
@@ -714,7 +855,7 @@ exports.onSessionChange = function(e) {
     }
 };
 
-// MultiSelect(editor) 
+// MultiSelect(editor)
 // adds multiple selection support to the editor
 // (note: should be called only once for each editor instance)
 function MultiSelect(editor) {

@@ -1,66 +1,57 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ * Distributed under the BSD license:
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Harutyun Amirjanyan <amirjanyan AT gmail DOT com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * ***** END LICENSE BLOCK ***** */
 
 define(function(require, exports, module) {
 "use strict";
-
+var Range = require("./range").Range;
+var comparePoints = Range.comparePoints;
 
 var RangeList = function() {
     this.ranges = [];
 };
 
 (function() {
-    this.comparePoints = function(p1, p2) {
-        return p1.row - p2.row || p1.column - p2.column;
-    };
+    this.comparePoints = comparePoints;
 
-    this.pointIndex = function(pos, startIndex) {
+    this.pointIndex = function(pos, excludeEdges, startIndex) {
         var list = this.ranges;
 
         for (var i = startIndex || 0; i < list.length; i++) {
             var range = list[i];
-            var cmp = this.comparePoints(pos, range.end);
-
-            if (cmp > 0)
+            var cmpEnd = comparePoints(pos, range.end);
+            if (cmpEnd > 0)
                 continue;
-            if (cmp == 0)
-                return i;
-            cmp = this.comparePoints(pos, range.start);
-            if (cmp >= 0)
+            var cmpStart = comparePoints(pos, range.start);
+            if (cmpEnd === 0)
+                return excludeEdges && cmpStart !== 0 ? -i-2 : i;
+            if (cmpStart > 0 || (cmpStart === 0 && !excludeEdges))
                 return i;
 
             return -i-1;
@@ -69,17 +60,17 @@ var RangeList = function() {
     };
 
     this.add = function(range) {
-        var startIndex = this.pointIndex(range.start);
+        var excludeEdges = !range.isEmpty();
+        var startIndex = this.pointIndex(range.start, excludeEdges);
         if (startIndex < 0)
             startIndex = -startIndex - 1;
 
-        var endIndex = this.pointIndex(range.end, startIndex);
+        var endIndex = this.pointIndex(range.end, excludeEdges, startIndex);
 
         if (endIndex < 0)
             endIndex = -endIndex - 1;
         else
             endIndex++;
-
         return this.ranges.splice(startIndex, endIndex - startIndex, range);
     };
 
@@ -102,18 +93,23 @@ var RangeList = function() {
     this.merge = function() {
         var removed = [];
         var list = this.ranges;
+        
+        list = list.sort(function(a, b) {
+            return comparePoints(a.start, b.start);
+        });
+        
         var next = list[0], range;
         for (var i = 1; i < list.length; i++) {
             range = next;
             next = list[i];
-            var cmp = this.comparePoints(range.end, next.start);
+            var cmp = comparePoints(range.end, next.start);
             if (cmp < 0)
                 continue;
 
-            if (cmp == 0 && !(range.isEmpty() || next.isEmpty()))
+            if (cmp == 0 && !range.isEmpty() && !next.isEmpty())
                 continue;
 
-            if (this.comparePoints(range.end, next.end) < 0) {
+            if (comparePoints(range.end, next.end) < 0) {
                 range.end.row = next.end.row;
                 range.end.column = next.end.column;
             }
@@ -123,6 +119,8 @@ var RangeList = function() {
             next = range;
             i--;
         }
+        
+        this.ranges = list;
 
         return removed;
     };
@@ -206,10 +204,16 @@ var RangeList = function() {
                 break;
 
             if (r.start.row == startRow && r.start.column >= start.column ) {
+                
                 r.start.column += colDiff;
                 r.start.row += lineDif;
             }
-            if (r.end.row == startRow && r.end.column >=  start.column) {
+            if (r.end.row == startRow && r.end.column >= start.column) {
+                // special handling for the case when two ranges share an edge
+                if (r.end.column == start.column && colDiff > 0 && i < n - 1) {                
+                    if (r.end.column > r.start.column && r.end.column == ranges[i+1].start.column)
+                        r.end.column -= colDiff;
+                }
                 r.end.column += colDiff;
                 r.end.row += lineDif;
             }

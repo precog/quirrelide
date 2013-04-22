@@ -13,6 +13,7 @@ var testNames = [
     "ace/anchor_test",
     "ace/background_tokenizer_test",
     "ace/commands/command_manager_test",
+    "ace/config_test",
     "ace/document_test",
     "ace/edit_session_test",
     "ace/editor_change_document_test",
@@ -20,35 +21,36 @@ var testNames = [
     "ace/editor_navigation_test",
     "ace/editor_text_edit_test",
     "ace/ext/static_highlight_test",
+    "ace/incremental_search_test",
+    "ace/keyboard/emacs_test",
+    "ace/keyboard/keybinding_test",
     "ace/layer/text_test",
     "ace/lib/event_emitter_test",
     "ace/mode/coffee/parser_test",
-    "ace/mode/coffee_highlight_rules_test",
     "ace/mode/coldfusion_test",
     "ace/mode/css_test",
-    "ace/mode/css_highlight_rules_test",
     "ace/mode/css_worker",
     "ace/mode/html_test",
-    "ace/mode/html_highlight_rules_test",
     "ace/mode/javascript_test",
-    "ace/mode/javascript_highlight_rules_test",
     "ace/mode/javascript_worker_test",
+    "ace/mode/logiql_test",
     "ace/mode/python_test",
-    "ace/mode/ruby_highlight_rules_test",
     "ace/mode/text_test",
     "ace/mode/xml_test",
-    "ace/mode/xml_highlight_rules_test",
     "ace/mode/folding/cstyle_test",
     "ace/mode/folding/html_test",
     "ace/mode/folding/pythonic_test",
     "ace/mode/folding/xml_test",
     "ace/mode/folding/coffee_test",
     "ace/multi_select_test",
+    "ace/occur_test",
     "ace/range_test",
     "ace/range_list_test",
     "ace/search_test",
     "ace/selection_test",
+    "ace/snippets_test",
     "ace/token_iterator_test",
+    "ace/tokenizer_test",
     "ace/virtual_renderer_test"
 ];
 
@@ -60,7 +62,7 @@ for (var i in testNames) {
 
 var nav = document.createElement("div");
 nav.innerHTML = html.join("");
-nav.style.cssText = "position:absolute;right:0;top:0"; 
+nav.style.cssText = "position:absolute;right:0;top:0";
 document.body.appendChild(nav);
 
 if (location.search)
@@ -72,7 +74,7 @@ require(testNames, function() {
         module.href = x;
         return module;
     });
-    
+
     async.list(tests)
         .expand(function(test) {
             return AsyncTest.testcase(test)
