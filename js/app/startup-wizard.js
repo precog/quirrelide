@@ -37,7 +37,7 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
         });
 
         $tip.find(".pg-frame").css({
-          "width" : (step.width || 200)+"px"
+          "width" : ((step && step.width) || 200)+"px"
         });
         closer.find("a").click(function() {
           goTo("#end");
