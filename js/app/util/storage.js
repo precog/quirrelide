@@ -4,6 +4,57 @@ define([
 ],
 
 function(traverse) {
+  var localStorage = window.localStorage || {
+        data : {},
+        length : 0,
+        key : function(index) {
+          var i = 0;
+          for(var key in this.data) {
+            if(index === i)
+              return key;
+            i++;
+          }
+        },
+        getItem : function(key) {
+          return data[key];
+        },
+        setItem : function(key, data) {
+          this.data[key] = data;
+        },
+        removeItem : function(key) {
+          delete this.data[key];
+        }
+      };
+  var store = {
+    set : function(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    get : function(key) {
+      var v = localStorage.getItem(key);
+      if(v)
+        return JSON.parse(v);
+      else
+        return null;
+    }
+  };
+
+  function migrate() {
+    var keys = $.jStorage.index(),
+        migrated = false;
+    keys.map(function(key) {
+      if(key.indexOf("labcoat") < 0) return;
+      var value = $.jStorage.get(key);
+      store.set(key, value);
+      $.jStorage.deleteKey(key);
+      migrated = true;
+    });
+    if(migrated)
+      console.log("MIGRATED LOCAL STORAGE");
+    $.jStorage.flush();
+  }
+
+  migrate();
+
   return function(key, defaults) {
     var LIMIT_SIZE = 500,
         dirty  = false,
@@ -47,15 +98,15 @@ function(traverse) {
 
     function save() {
       var o = cloneLimited(params, LIMIT_SIZE);
-      var result = $.jStorage.set(key, o);
+      var result = store.set(key, o);
       dirty = false;
     }
 
     function load() {
       if(enableDebug)
         console.log("Load Storage Data");
-      $.jStorage.reInit();
-      var value = $.jStorage.get(key);
+//      $.jStorage.reInit();
+      var value = store.get(key);
       $.extend(params, value);
     }
 
@@ -125,10 +176,6 @@ function(traverse) {
           },
           load : function() {
             load();
-          },
-          clear : function() {
-            // TODO: this should not flush everything
-            $.jStorage.flush();
           },
           toString : function() {
             return JSON.stringify(params);

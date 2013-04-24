@@ -92,10 +92,18 @@ function(qs, md5, guid, ie, localConfig /*, upload*/){
               $(q).trigger("execute", [text, this.lastExecution, id]);
               var me = this,
                   start = new Date().getTime();
-              map[id] = window.Precog.query(text, function(data, errors, warnings, headers) {
+              map[id] = window.Precog.query(text, function(data, result, headers) {
                   if(!map[id]) {
                     return;
                   }
+                  var errors   = result.errors,
+                      warnings = result.warnings;
+
+                  if(result.serverErrors && result.serverErrors.length)
+                    errors = errors.concat(result.serverErrors);
+                  if(result.serverWarnings && result.serverWarnings.length)
+                    warnings = warnings.concat(result.serverWarnings);
+
                   me.lastExecution = new Date().getTime() - start;
                   var extra = null;
                   if("undefined" !== typeof options.skip) {

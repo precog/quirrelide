@@ -28,12 +28,12 @@ function(notification, ui, createStore, createSteps, tplMain, tplCode, tplFileSy
             arrow   = $tip.find(".pg-arrow"),
             closer  = $tip.find(".close");
 
-        closer.css("opacity", 0);
+        closer.css("opacity", 0.35);
         $tip.mouseenter(function() {
           closer.css("opacity", 1);
         });
         $tip.mouseleave(function() {
-          closer.css("opacity", 0);
+          closer.css("opacity", 0.35);
         });
 
         $tip.find(".pg-frame").css({

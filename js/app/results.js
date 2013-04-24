@@ -73,6 +73,22 @@ function() {
     }
 
     function transform(type, id, msg) {
+      if("string" === typeof msg) {
+        var o = {
+          type        : type,
+          message     : msg,
+          timestamp   : new Date().toLocaleString(),
+          nline       : "",
+          ncol        : "",
+          detail      : msg,
+          line        : "",
+          linemessage : ""
+        };
+        if(type === "error") {
+          o.report = "report"
+        }
+        return o;
+      }
       if(!msg.position)
         return null;
 

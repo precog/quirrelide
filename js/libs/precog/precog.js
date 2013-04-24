@@ -714,7 +714,7 @@ throw new SyntaxError('JSON.parse');};}}());
     if(parameters.format === "detailed") {
       var old = success;
       success = function(o, headers) {
-        old(o.data, o.errors, o.warnings, headers);
+        old(o.data, o, headers);
       };
     }
 
@@ -751,7 +751,7 @@ throw new SyntaxError('JSON.parse');};}}());
     if(parameters.format === "detailed") {
       var old = success;
       success = function(o, headers) {
-        old(o.data, o.errors, o.warnings, headers);
+        old(o.data, o, headers);
       };
     }
     
