@@ -68,10 +68,10 @@ require([
     , "app/util/converters"
     , "app/util/notification"
     , "app/editortips"
-
+    , "app/util/uiconfig"
 ],
 
-function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildWizard, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips) {
+function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildWizard, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips, uiconfig) {
   function buildUrl(query) {
     var version  = precog.config.version,
         basePath = precog.config.basePath,
@@ -563,12 +563,17 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
         pardot.track_page("download_code");
       });
 
-      var wizard = buildWizard({
-        folders : folders
-      });
-      $(barmain).on("startWizard", function() {
-        wizard.start();
-      });
+      if(uiconfig.disableUpload) {
+        barmain.hideWizard();
+      } else {
+        var wizard = buildWizard({
+          folders : folders
+        });
+        $(barmain).on("startWizard", function() {
+          wizard.start();
+        });
+
+      }
 
       editors.load();
 

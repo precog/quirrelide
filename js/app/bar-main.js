@@ -15,7 +15,11 @@ define([
         BRAND_CLASS = "pg-precog";
 
     return function(el) {
-      var wrapper = {};
+      var wrapper = {
+        hideWizard : function() {
+          wizardBtn.hide();
+        }
+      };
     switch(document.location.host)
     {
 //        case "localhost":
@@ -244,7 +248,7 @@ define([
           });
         }
 
-        ui.button(right, {
+        var wizardBtn = ui.button(right, {
           icon : "ui-icon-star",
           description : "Getting Started Tutorial"
         }).click(function() {
