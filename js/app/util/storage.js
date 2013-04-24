@@ -30,7 +30,7 @@ function(traverse) {
       try {
         localStorage.setItem(key, JSON.stringify(value));
       } catch(e) {
-
+        console.error(e);
       }
     },
     get : function(key) {
