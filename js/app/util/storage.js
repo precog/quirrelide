@@ -57,7 +57,7 @@ function(traverse) {
     $.jStorage.flush();
   }
 
-  migrate();
+  $(migrate);
 
   return function(key, defaults) {
     var LIMIT_SIZE = 500,
