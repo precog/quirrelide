@@ -27,7 +27,11 @@ function(traverse) {
       };
   var store = {
     set : function(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch(e) {
+
+      }
     },
     get : function(key) {
       var v = localStorage.getItem(key);
@@ -42,7 +46,7 @@ function(traverse) {
     var keys = $.jStorage.index(),
         migrated = false;
     keys.map(function(key) {
-      if(key.indexOf("labcoat") < 0) return;
+      if(key.indexOf("labcoat") < 0 && key.indexOf("quirrel") < 0) return;
       var value = $.jStorage.get(key);
       store.set(key, value);
       $.jStorage.deleteKey(key);
