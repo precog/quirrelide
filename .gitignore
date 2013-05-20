@@ -42,3 +42,7 @@ projectFilesBackup/.idea/libraries/sass_stdlib.xml
 .idea/inspectionProfiles/profiles_settings.xml
 
 .idea/inspectionProfiles/profiles_settings.xml
+
+*.un~
+*.swp
+*.pyc
