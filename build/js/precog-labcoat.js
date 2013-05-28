@@ -55761,7 +55761,7 @@ define('app/util/dialog-export',[
     , "libs/jquery/zclip/jquery.zclip"
 ],
 
-function(tplDialog, uiconfig, ui, dom, notification) {
+function(tplDialog, uiconfig, ui, dom, precog, notification) {
     var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
         elText, elDialog, elActions, elForm, clip, formCallback, exportCallback, currentAction;
 
