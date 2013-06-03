@@ -14,7 +14,7 @@ import time
 
 # Configure user, private key, etc. for SFTP deployment
 env.user = 'ubuntu'
-env.hosts = ["devlabraptor.precog.com"] if not env.hosts else env.hosts
+env.hosts = ["devlabcoat.precog.com"] if not env.hosts else env.hosts
 env.colors = True
 env.release = time.strftime('%Y%m%d%H%M%S')
 env.basepath = '/var/www/labcoat' if not 'basepath' in env else env.basepath
