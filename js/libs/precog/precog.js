@@ -472,6 +472,8 @@ throw new SyntaxError('JSON.parse');};}}());
       }
 
       if (content !== undefined) {
+window.console.log(content);
+window.console.log(headers['Content-Type']);
         if(headers['Content-Type']) {
           request.send(content);
         } else {
@@ -693,7 +695,7 @@ throw new SyntaxError('JSON.parse');};}}());
   var executeQuery = function(query, success, failure, options) {
     options = options || {};
     var description = 'Precog query ' + query,
-        parameters = { apiKey : options.apiKey || $.Config.apiKey, q : query };
+        parameters = { apiKey : options.apiKey || $.Config.apiKey };
 
     if(options.limit)
       parameters.limit = options.limit || $.Config.limit;
@@ -718,10 +720,12 @@ throw new SyntaxError('JSON.parse');};}}());
       };
     }
 
-    return http.get(
+    return http.post(
       Util.actionUrl("analytics", "fs", options) + Util.actionPath(null, options),
+      query,
       Util.createCallbacks(success, failure, description),
-      parameters
+      parameters,
+      { "Content-Type" : "text/x-quirrel-script" }
     );
   };
 
