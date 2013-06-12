@@ -627,7 +627,7 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
         if(!precog.config.apiKey) {
           precog.config.apiKey = "5CDA81E8-9817-438A-A340-F34E578E86F8";
           precog.config.analyticsService = "https://labcoat.precog.com/";
-          window.Precog.$.Http.setUseJsonp(true);
+//          window.Precog.$.Http.setUseJsonp(true);
         }
         init();
       });
