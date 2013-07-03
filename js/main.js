@@ -63,15 +63,13 @@ require([
     , 'app/util/precog'
     , 'app/util/querystring'
     , 'app/eggmanager'
-    , 'app/gatrack'
-    , 'app/pardot_track'
     , "app/util/converters"
     , "app/util/notification"
     , "app/editortips"
     , "app/util/uiconfig"
 ],
 
-function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildWizard, buildResults, precog, qs, eastereggs, ga, pardot, convert, notification, editortips, uiconfig) {
+function(config, createLayout, openAccountDialog, createEditors, createHistory, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildQueries, buildSupport, buildWizard, buildResults, precog, qs, eastereggs, convert, notification, editortips, uiconfig) {
   function buildUrl(query) {
     var version  = precog.config.version,
         basePath = precog.config.basePath,
@@ -160,16 +158,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
       var output = buildOutput(layout.getOutput(), editors); // TODO editors should not be passed here
 
       var support = buildSupport(layout.getSupport());
-
-      support.addPanel('tutorial', 'https://quirrel.precog.com/tutorial.html', function() {
-        pardot.track_page("support_tutorial");
-      });
-      support.addPanel('reference', 'https://quirrel.precog.com/reference.html', function() {
-        pardot.track_page("support_reference");
-      });
-      support.addPanel('IRC channel', 'https://api.precog.com:9090/?channels=#quirrel', function() {
-        pardot.track_page("support_irc");
-      });
 
       $(layout).on('resizeCodeEditor', function() {
         output.resize();
@@ -271,8 +259,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
             editors.setOutputResults({ errors : errors, warnings : warnings }, index);
           }
         }
-        pardot.track_page("quirrel_success_"+(is_custom_query(execution)?"custom":"default"));
-        ga.trackQueryExecution("success");
       });
 
       function convertErrorToResultErrors(e) {
@@ -285,28 +271,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
           timestamp : +new Date()
         }];
       }
-
-      $(results).on("report", function(_, error) {
-        var info = {
-          name : editors.getName(),
-          query : editors.getCode()
-        };
-        if(pardot.track_error(
-          "quirrel_failure_"+(is_custom_query(info)?"custom":"default"),
-          {
-            error_message : JSON.stringify({
-              query : info.query,
-              error : error
-            })
-          },
-          "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
-        )) {
-          notification.success("Your report has been submitted!", {
-            hide : true
-            , history : true
-          });
-        }
-      });
 
       $(precog).on('failed', function(_, id, data) {
         data = data instanceof Array ? data[0] : data;
@@ -328,21 +292,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
             editors.setOutputResults({ errors : errors, warnings : warnings }, index);
           }
         }
-        /*
-         TODO Restore
-         pardot.track_error(
-         "quirrel_failure_"+(is_custom_query(execution)?"custom":"default"),
-         {
-         error_message : JSON.stringify({
-         query : execution.query,
-         error : data
-         })
-         },
-         "Uh oh, an error occurred while running a query. Can you please help our team by notifying us of your error? Please enter your email below."
-         );
-         */
-
-        ga.trackQueryExecution("undefined" !== typeof data.lineNum ? "syntax-error" : "service-error");
       });
 
       (function() {
@@ -354,10 +303,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
           } catch(e) {
             msg = "" + e;
           }
-          pardot.track_error(
-            "generic_error", { error_message : msg },
-            "Uh oh, an error occurred in Labcoat. Can you please help our team by notifying us of your error? Please enter your email below."
-          );
           if(old)
             old(e);
         };
@@ -367,7 +312,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
         var execution = executions[id];
         delete executions[id];
         status.endRequest(false);
-        ga.trackQueryExecution("aborted");
       });
 
       var execTimer;
@@ -404,7 +348,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
 
       $(editors).on('saved', function(_, data) {
         queries.querySave(data.name, data.code);
-        pardot.track_page("query_saved");
       });
 
       sync(editor, editors, config);
@@ -424,14 +367,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
           editors.activate(editors.count()-1);
         }
         editor.triggerExecute();
-      });
-
-      $(folders).on("uploadComplete", function() {
-        pardot.track_page("upload_success");
-      });
-
-      $(folders).on("uploadError", function() {
-        pardot.track_page("upload_failure");
       });
 
       $(folders).on("uploadComplete", function(_, e) {
@@ -478,8 +413,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
       queries = buildQueries(layout.getQueries());
       $(queries).on('requestopenquery', function(_, data) {
         editors.open(data.name, data.code);
-        console.log(data);
-        pardot.track_page("load_query_"+(precog.is_demo() && is_example_query(data.name)?"default":"custom"));
       });
       $(queries).on('removed', function(_, name) {
         var index = editors.getIndexByName(name);
@@ -557,10 +490,6 @@ function(config, createLayout, openAccountDialog, createEditors, createHistory, 
         if(editorbar.historyPanelIsOpen()) {
           refreshHistoryList();
         }
-      });
-
-      $(editorbar).on("exportCode", function() {
-        pardot.track_page("download_code");
       });
 
       if(uiconfig.disableUpload) {

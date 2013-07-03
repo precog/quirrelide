@@ -2,7 +2,6 @@ define([
       "rtext!templates/dialog.account.html"
     , "app/util/ui"
     , "app/util/querystring"
-    , "app/pardot_track"
 
 
     // FORCE INCLUSION?
@@ -18,7 +17,7 @@ define([
     , "libs/jquery/jquery.cookie/jquery.cookie"
 ],
 
-function(tplDialog, ui, qs, pardot) {
+function(tplDialog, ui, qs) {
     var elDialog, precog;
 
     function validateEmail(email) {
@@ -388,20 +387,6 @@ function(tplDialog, ui, qs, pardot) {
         );
       }
 
-      function trackAccountCreationWithPardot(email, profile, callback) {
-        pardot.submit_form(
-          "http://www2.precog.com/l/17892/2012-12-10/76rq ",
-          {
-            "jform[email1]" : email,
-            "jform[name]" : profile.name,
-            "jform[profile][company]" : profile.company,
-            "jform[username]" : email,
-            "jform[profile][jobtitle]" : profile.title
-          },
-          callback
-        );
-      }
-
       function actionCreate(email, password, profile)
       {
         elDialog.find("#account-create").button("disable");
@@ -414,7 +399,6 @@ function(tplDialog, ui, qs, pardot) {
             var server = servers[servers.length-1];
             window.Precog.createAccount(email, password,
               function(data) {
-                trackAccountCreationWithPardot(email, profile);
                 describeAndLogin(email, password, server, data.accountId);
               },
               function(err) {
